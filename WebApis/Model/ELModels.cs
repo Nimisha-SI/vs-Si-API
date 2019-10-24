@@ -44,6 +44,7 @@ namespace WebApis.Model
             public string ErrorType { get; set; }
             public string SType { get; set; }
         }
+
         public class FilteredEntityForCricket
         {
             public string CompType { get; set; }
@@ -71,6 +72,7 @@ namespace WebApis.Model
             public string Entityplayername { get; set; }
             public int MatchDate { get; set; }
         }
+
         public class SearchCricketExtendedResultData
         {
             public IEnumerable<SearchCricketResultData> ResultData { get; set; }
@@ -78,6 +80,7 @@ namespace WebApis.Model
             public Dictionary<string, Int64> ResultCount { get; set; }
             public CricketDerivedData ResultDerivedData { get; set; }
         }
+
         public class SearchS1CricketMasterData
         {
             public string ShotTypeId { get; set; }
@@ -98,6 +101,7 @@ namespace WebApis.Model
             public string BowlingArm { get; set; }
             public int MatchDate { get; set; }
         }
+
         public class CricketDerivedData
         {
             public Dictionary<string, Int64> RangeData { get; set; }
@@ -466,6 +470,37 @@ namespace WebApis.Model
             public string BowlingArm { get; set; }
             public string LanguageId { get; set; }
         }
+
+        public class FilteredEntityKabaddi
+        {
+            public string CompTypeId { get; set; }
+            public string CompType { get; set; }
+            public string VenueId { get; set; }
+            public string Venue { get; set; }
+            public string ParentSeriesId { get; set; }
+            public string ParentSeriesName { get; set; }
+            public string SeriesId { get; set; }
+            public string Series { get; set; }
+            public string Team1Id { get; set; }
+            public string Team1 { get; set; }
+            public string Team2Id { get; set; }
+            public string Team2 { get; set; }
+            public string MatchId { get; set; }
+            public string Match { get; set; }
+            public string OffensivePlayerId { get; set; }
+            public string OffensivePlayerName { get; set; }
+            public string DefensivePlayerId { get; set; }
+            public string DefensivePlayerName { get; set; }
+            public string AssistPlayer1Id { get; set; }
+            public string AssistPlayer1 { get; set; }
+            public string AssistPlayer2Id { get; set; }
+            public string AssistPlayer2 { get; set; }
+            public int MatchDate { get; set; }
+            public string Entityid { get; set; }
+            public string Entityname { get; set; }
+            public string Entityplayername { get; set; }
+        }
+
 
     }
 

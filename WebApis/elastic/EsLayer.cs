@@ -47,6 +47,22 @@ namespace WebApis.elastic
        });
             }
 
-        
+        public void BulkInsert(ElasticClient EsClient, List<KabaddiS1Data> documents)
+        {
+            var bulkAllObservable = EsClient.BulkAll(documents, b => b
+          .Index("kabaddi")
+
+          .BackOffTime("30s")
+          .BackOffRetries(2)
+          .RefreshOnCompleted()
+          .MaxDegreeOfParallelism(Environment.ProcessorCount)
+          .Size(10000)
+        )
+        .Wait(TimeSpan.FromMinutes(15), next =>
+        {
+        });
+        }
+
+
     }
 }

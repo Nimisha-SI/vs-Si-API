@@ -17,6 +17,7 @@ namespace WebApis.BOL
         private ESInterface _oLayer;
         private ICricket _cricket;
         ICricketS2 _cricketS2;
+        IKabaddi _kabaddi;
         string SportType = "";
         //searchcricket sc = new searchcricket();
         GetSearchS1DataForCricket _searchResult = new GetSearchS1DataForCricket();
@@ -37,14 +38,70 @@ namespace WebApis.BOL
         ElasticClient EsClient_obj;
         Dictionary<string, string> _columns;
 
-
-       public GetMatchDetails(ICon con, ESInterface oLayer, ICricket cricket,ICricketS2 cricketS2) {
+       public GetMatchDetails(ICon con, ESInterface oLayer, ICricket cricket,ICricketS2 cricketS2, IKabaddi kabaddi) {
             _con = con;
             _oLayer = oLayer;
             _cricket = cricket;
             _cricketS2 = cricketS2;
+            _kabaddi = kabaddi;
         }
 
+        //public ExtendedSearchResultFilterData searchStoryTeller(ELModels.MatchDetail _objMatchDetail, QueryContainer _objNestedQuery, dynamic _objS1Data, Dictionary<string, object> ObjectArray, IEnumerable<SearchResultFilterData> obj, string value, string IndexName)
+        //{
+        //    EsClient_obj = _oLayer.CreateConnection();
+        //    ExtendedSearchResultFilterData _objSearchResults = new ExtendedSearchResultFilterData();
+        //    _objSearchResults.ResultData = new List<SearchResultFilterData>();
+        //    _objSearchResults.Master = new MasterDatas();
+        //    _objSearchResults.Master.MasterData = new Dictionary<string, object>();
+        //    CommonFunction cf = new CommonFunction();
+        //    //Cricket objDetails = new Cricket();
+        //    //searchcricket sc = new searchcricket();
+        //    // SportType = sc.getType(_objMatchDetail.SportID);
+        //    //if ("CRICKET" == SportType) {
+        //    //string ReqShotType = _objS1Data["ShotType"]; string ReqDeliveryType = _objS1Data["DeliveryType"];
+        //    //string[] _objReqShotType = ReqShotType.Contains(",") ? _objReqShotType = ReqShotType.Split(",") : _objReqShotType = new string[] { _objS1Data["ShotType"] };
+        //    //string[] _objReqDeliveryType = ReqDeliveryType.Contains(",") ? _objReqDeliveryType = ReqDeliveryType.Split(",") : _objReqDeliveryType = new string[] { _objS1Data["DeliveryType"] };
+        //    //ObjectArray = GetDropdowns(_objNestedQuery, ObjectArray, EsClient, "cricket", GetColumnForEntity(13), _objReqShotType);
+        //    //ObjectArray = GetDropdowns(_objNestedQuery, ObjectArray, EsClient, "cricket", GetColumnForEntity(32), _objReqDeliveryType);
+
+        //    //_objSearchResults.Master.MasterData = ObjectArray;
+        //    Dictionary<string, object> ddlDropdowns = new Dictionary<string, object>();
+        //    //GetMatchDetails _objMatchDetails = new GetMatchDetails();
+        //    ddlDropdowns = _cricket.bindS1andS2Dropdown(_objS1Data);
+        //    if (value != null)
+        //    {
+        //        string[] valuess = value.Split(",");
+        //        foreach (var items in valuess)
+        //        {
+        //            var item = items.Split("::");
+        //            string Type = _objS1Data[item[0]];
+        //            string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
+        //            foreach (KeyValuePair<string, object> entry in ddlDropdowns)
+        //            {
+        //                // if (_objType.ToString() != "") {
+        //                if (item.ToString().Split(",")[0] != entry.Key.ToString())
+        //                {
+        //                    if (entry.Value.ToString() != "")
+        //                    {
+        //                        QueryContainer query = new TermQuery { Field = entry.Key, Value = entry.Value };
+        //                        _objNestedQuery &= query;
+        //                    }
+
+        //                }
+        //                //}
+
+
+        //            }
+
+        //            _objSearchResults.Master.MasterData = cf.GetDropdowns(_objNestedQuery, _objSearchResults.Master.MasterData, EsClient_obj, IndexName, cf.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
+        //        }
+        //    }
+
+        //    obj = cf.returnSportResult(EsClient_obj, _objNestedQuery, IndexName);
+        //    _objSearchResults.ResultData = obj;
+        //    return _objSearchResults;
+        //    //throw new NotImplementedException();
+        //}
 
         public ExtendedSearchResultFilterData GetSearchResultsFilter(STFilterRequestData _objReqData)
         {
@@ -68,15 +125,22 @@ namespace WebApis.BOL
                 if (_objS1Data != null)
                 {
                     _objNestedQuery = getDetailsAsPerSport(_objS1Data, _objNestedQuery, _objMatchDetail, _objMatchSituation, valueObj, _objMatchDetail.SportID);
-                    _objSearchResults = objCF.searchStoryTeller(_objMatchDetail, _objNestedQuery, _objS1Data, _objResult.Master.MasterData, _objResult.ResultData, value, SportName.ToLower());
-
+                    _objSearchResults = searchStoryTeller(_objMatchDetail, _objNestedQuery, _objS1Data, _objResult.Master.MasterData, _objResult.ResultData, value, SportName.ToLower());
                 }
+
                 if (_objMomentsData != null)
                 {
                     QueryContainer objMoment = new QueryContainer();
                     objMoment = objCF.GetMomentDetailsQueryST(_objMatchDetail, objMoment, _objMomentsData);
-                    _objSearchResults2.ResultData = _cricket.returnSportResult(EsClient_obj, objMoment, SportName);
+                    if (_objMatchDetail.SportID == 1)
+                        _objSearchResults2.ResultData = _cricket.returnSportResult(EsClient_obj, objMoment, SportName);
+                    else if (_objMatchDetail.SportID == 3)
+                    {
+                        _objSearchResults2.ResultData = _kabaddi.returnSportResult(EsClient_obj, objMoment, SportName);
+                        _objSearchResults2.ResultData = _objSearchResults2.ResultData.ToList().GroupBy(t => t.Id, (key, group) => group.First());
+                    }
                 }
+
                 _objResult.ResultData = _objSearchResults.ResultData.Union(_objSearchResults2.ResultData);
                 _objResult.Master = _objSearchResults.Master;
 
@@ -86,6 +150,7 @@ namespace WebApis.BOL
                     var innings = _cricket.getDropDownForMatch(_objResult.Master.MasterData, _objReqInnings);
                     //_objResult.Master.MasterData.Add("Innings", innings);
                 }
+               
             }
             return _objResult;
         }
@@ -347,7 +412,6 @@ namespace WebApis.BOL
             return result;
         }
 
-
         public string GetAllS2MastersBySport(SearchS2RequestData _objS2ReqData) {
             string response = string.Empty;
             try
@@ -384,7 +448,6 @@ namespace WebApis.BOL
             }
             return response;
         }
-
 
         public string GetMultiSelectForMatchDetail(MatchDetailMultiSelectRequestData _objMultiSelectResult)
         {
@@ -550,9 +613,6 @@ namespace WebApis.BOL
             return result;
         }
 
-
-
-
         //public Dictionary<string,object> bindS2Dropdown(PlayerDetail _objPlayerDetail) {
         //    Dictionary<string, object> ddlS2Dropwons = new Dictionary<string, object>();
         //    string[] _objReqShotTypes = _objPlayerDetail.ShotType.Contains(",") ? _objReqShotTypes = _objPlayerDetail.ShotType.Split(',') : _objReqShotTypes = new string[] { _objPlayerDetail.ShotType };
@@ -621,8 +681,6 @@ namespace WebApis.BOL
         //    return ddlS1Dropwons;
 
         //}
-
-
 
         private QueryContainer FinalSearchCricketData(MatchDetail _objMatchDetail, MatchSituation _objMatchSituation,QueryContainer _objNested)
         {
@@ -714,6 +772,7 @@ namespace WebApis.BOL
             _objNested &= qRangeQuery;
             return _objNested;
         }
+
         //public QueryContainer GetMatchDetailQueryST(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail)
         //{
         //    searchcricket sc = new searchcricket();
@@ -835,6 +894,7 @@ namespace WebApis.BOL
         //        }
         //        return _objNestedQuery;
         // }
+
         public QueryContainer GetPlayerDetails(dynamic _objS1Data, QueryContainer qFinal, List<string> valueObj, int sportid, string _sType, bool isMasterData = false)
         {
             CommonFunction objCf = new CommonFunction();
@@ -952,7 +1012,6 @@ namespace WebApis.BOL
 
             
         }
-        
 
         //private static QueryContainer GetCricketMatchSituationQuery(MatchDetail _objMatchDetail, PlayerDetail _objPlayerDetail, MatchSituation _objMatchSituation, QueryContainer _objNestedQuery)
         //{
@@ -1102,22 +1161,36 @@ namespace WebApis.BOL
         //    return _objNestedQuery;
         //}
 
-
         public QueryContainer getDetailsAsPerSport(dynamic _objS1Data, QueryContainer _objNestedQuery, MatchDetail _ObjMatchDetails, MatchSituation _objMatchSituation, List<string> valueObj, int sportid)
         {
             //QueryContainer _objMatchResult = new QueryContainer();
+            dynamic obj;
             if (_ObjMatchDetails != null)
             {
                 try
                 {
-                    _objNestedQuery = _cricket.GetMatchDetailQuery(_objNestedQuery, _ObjMatchDetails);
+                    switch (_ObjMatchDetails.SportID)
+                    {
+                        case 1:
+                            _objNestedQuery = _cricket.GetMatchDetailQuery(_objNestedQuery, _ObjMatchDetails);
+                            _objNestedQuery = _cricket.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
+                            obj = _cricket;
+                            break;
+                        case 3:
+                            _objNestedQuery = _kabaddi.GetMatchDetailQuery(_objNestedQuery, _ObjMatchDetails);
+                            _objNestedQuery = _kabaddi.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
+                            obj = _kabaddi;
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 catch (Exception ex)
                 {
                 }
 
             }
-            _objNestedQuery = GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid, "S1");
+            
             if (sportid == 1)// Only For Cricket
             {
                 _objNestedQuery = _cricket.GetCricketMatchSituationQueryST(_objNestedQuery, _objMatchSituation);
@@ -1631,6 +1704,85 @@ namespace WebApis.BOL
         //    return _objNestedQuery;
         //}
 
+        public ExtendedSearchResultFilterData searchStoryTeller(ELModels.MatchDetail _objMatchDetail, QueryContainer _objNestedQuery, dynamic _objS1Data, Dictionary<string, object> ObjectArray, IEnumerable<SearchResultFilterData> obj, string value, string IndexName)
+        {
+            ExtendedSearchResultFilterData _objSearchResults = new ExtendedSearchResultFilterData();
+            try
+            {
+                EsClient_obj = _oLayer.CreateConnection();
+                _objSearchResults.ResultData = new List<SearchResultFilterData>();
+                _objSearchResults.Master = new MasterDatas();
+                _objSearchResults.Master.MasterData = new Dictionary<string, object>();
+                //searchcricket sc = new searchcricket();
+                // SportType = sc.getType(_objMatchDetail.SportID);
+                //if ("CRICKET" == SportType) {
+                //string ReqShotType = _objS1Data["ShotType"]; string ReqDeliveryType = _objS1Data["DeliveryType"];
+                //string[] _objReqShotType = ReqShotType.Contains(",") ? _objReqShotType = ReqShotType.Split(",") : _objReqShotType = new string[] { _objS1Data["ShotType"] };
+                //string[] _objReqDeliveryType = ReqDeliveryType.Contains(",") ? _objReqDeliveryType = ReqDeliveryType.Split(",") : _objReqDeliveryType = new string[] { _objS1Data["DeliveryType"] };
+                //ObjectArray = GetDropdowns(_objNestedQuery, ObjectArray, EsClient, "cricket", GetColumnForEntity(13), _objReqShotType);
+                //ObjectArray = GetDropdowns(_objNestedQuery, ObjectArray, EsClient, "cricket", GetColumnForEntity(32), _objReqDeliveryType);
 
+                //_objSearchResults.Master.MasterData = ObjectArray;
+                Dictionary<string, object> ddlDropdowns = new Dictionary<string, object>();
+                //GetMatchDetails _objMatchDetails = new GetMatchDetails();
+
+                switch (_objMatchDetail.SportID)
+                {
+                    case 1:
+                        ddlDropdowns = _cricket.bindS1andS2Dropdown(_objS1Data);
+                        break;
+                    case 3:
+                        ddlDropdowns = _kabaddi.bindS1andS2Dropdown(_objS1Data);
+                        break;
+                    default:
+                        break;
+                }
+
+                if (value != null)
+                {
+                    string[] valuess = value.Split(",");
+                    foreach (var items in valuess)
+                    {
+                        var item = items.Split("::");
+                        string Type = _objS1Data[item[0]];
+                        string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
+                        foreach (KeyValuePair<string, object> entry in ddlDropdowns)
+                        {
+                            if (item.ToString().Split(",")[0] != entry.Key.ToString())
+                            {
+                                if (entry.Value.ToString() != "")
+                                {
+                                    QueryContainer query = new TermQuery { Field = entry.Key, Value = entry.Value };
+                                    _objNestedQuery &= query;
+                                }
+
+                            }
+                        }
+                        _objSearchResults.Master.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.Master.MasterData, EsClient_obj, IndexName, objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
+                    }
+                }
+
+                switch (_objMatchDetail.SportID)
+                {
+                    case 1:
+                        obj = _cricket.returnSportResult(EsClient_obj, _objNestedQuery, IndexName);
+                        break;
+                    case 3:
+                        obj = _kabaddi.returnSportResult(EsClient_obj, _objNestedQuery, IndexName);
+                        break;
+                    default:
+                        break;
+                }
+
+                _objSearchResults.ResultData = obj;
+                
+                //throw new NotImplementedException();
+            }
+            catch (Exception e)
+            {
+
+            }
+            return _objSearchResults;
+        }
     }
 }
