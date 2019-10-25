@@ -151,7 +151,7 @@ namespace WebApis.BOL
                     var innings = _cricket.getDropDownForMatch(_objResult.Master.MasterData, _objReqInnings);
                     //_objResult.Master.MasterData.Add("Innings", innings);
                 }
-               
+                string jsonDataresult = JsonConvert.SerializeObject(_objResult);
             }
             return _objResult;
         }
@@ -1174,12 +1174,12 @@ namespace WebApis.BOL
                     {
                         case 1:
                             _objNestedQuery = _cricket.GetMatchDetailQuery(_objNestedQuery, _ObjMatchDetails);
-                            _objNestedQuery = objCF.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
+                            _objNestedQuery = _cricket.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
                             obj = _cricket;
                             break;
                         case 3:
                             _objNestedQuery = _kabaddi.GetMatchDetailQuery(_objNestedQuery, _ObjMatchDetails);
-                            _objNestedQuery = objCF.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
+                            _objNestedQuery = _kabaddi.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
                             obj = _kabaddi;
                             break;
                         default:
@@ -1857,6 +1857,7 @@ namespace WebApis.BOL
                             var Result = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(0), EntityNames.ElementAt(0), EsClient_obj, searchtext);
                             responseResult = Result;
                         }
+                        string jsonDataresult = JsonConvert.SerializeObject(responseResult);
 
                         _objFilteredEntityKabaddi = null;
                     }
