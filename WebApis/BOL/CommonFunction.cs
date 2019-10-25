@@ -109,13 +109,13 @@ namespace WebApis.BOL
                     Column.Add("MatchId", "Match");
                     break;
                 case 10:
-                    Column.Add("OffensivePlayerId", "OffensivePlayerName");
+                    Column.Add("offensivePlayerId", "offensivePlayerName");
                     break;
                 case 11:
-                    Column.Add("DefensivePlayerId", "DefensivePlayerName");
+                    Column.Add("defensivePlayerId", "defensivePlayerName");
                     break;
                 case 12:
-                    Column.Add("AssistingPlayerId", "AssistingPlayer");
+                    //Column.Add("assistPlayer1Id", "assistPlayer1");
                     break;
                 case 13:
                     Column.Add("shotTypeId", "shotType");
@@ -156,11 +156,11 @@ namespace WebApis.BOL
                     Column.Add("CompTypeId", "CompType");
                     break;
                 case 25:
-                    Column.Add("AssistPlayer1Id", "AssistPlayer1");
-                    Column.Add("AssistPlayer2Id", "AssistPlayer2");
+                    Column.Add("assistPlayer1Id", "assistPlayer1");
+                    Column.Add("assistPlayer2Id", "assistPlayer2");
                     break;
                 case 26:
-                    Column.Add("AssistPlayer2Id", "AssistPlayer2");
+                    //Column.Add("AssistPlayer2Id", "AssistPlayer2");
                     break;
                 case 27:
                     Column.Add("GameTypeId", "GameType"); //new
@@ -173,17 +173,16 @@ namespace WebApis.BOL
                     Column.Add("ConceededPlayerId", "ConceededPlayerName"); //new
                     break;
                 case 30:
-                    Column.Add("OffensivePlayerId", "OffensivePlayerName");
+                    //Column.Add("OffensivePlayerId", "OffensivePlayerName");
                     Column.Add("Team1Id", "Team1");
                     break;
                 case 31:
-                    Column.Add("DefensivePlayerId", "DefensivePlayerName");
+                    //Column.Add("DefensivePlayerId", "DefensivePlayerName");
                     Column.Add("Team2Id", "Team2");
                     break;
                 case 32:
                     Column.Add("deliveryTypeId", "deliveryType");
                     break;
-
                 case 33:
                     Column.Add("shotZoneId", "shotZone");
                     break;
@@ -213,6 +212,9 @@ namespace WebApis.BOL
                     break;
                 case 42:
                     Column.Add("entityId_1", "entityName_3");
+                    break;
+                case 43:
+                    //Column.Add("assistPlayer2Id", "assistPlayer2");
                     break;
                 default:
                     break;
@@ -391,6 +393,126 @@ namespace WebApis.BOL
         {
             throw new NotImplementedException();
         }
+
+        public QueryContainer GetPlayerDetails(dynamic _objS1Data, QueryContainer qFinal, List<string> valueObj, int sportid, bool isMasterData = false)
+        {
+            CommonFunction objCf = new CommonFunction();
+            QueryContainer queryShouldS = new QueryContainer();
+            QueryContainer queryShould = new QueryContainer();
+            QueryContainer queryShouldB = new QueryContainer();
+            QueryContainer queryAnd_should = new QueryContainer();
+            if (_objS1Data != null)
+            {
+                if (_objS1Data["IsDefault"] != null && Convert.ToBoolean(_objS1Data["IsDefault"]))
+                {
+                    //QueryContainer query = new QueryContainer();
+                    string[] isDefaultvalues = objCf.ArrayIsDefaultForSport(sportid);
+                    for (int i = 0; i <= isDefaultvalues.Length - 1; i++)
+                    {
+                        QueryContainer query1 = new TermQuery { Field = isDefaultvalues[i], Value = 1 };
+                        queryShouldB |= query1;
+                    }
+                    qFinal &= queryShould;
+                }
+                else
+                {
+                    for (int i = 0; i <= valueObj.Count - 1; i++)
+                    {
+                        string sType = valueObj[i].Split(",")[1];
+                        if (sType == "Boolean")
+                        {
+                            var temp1 = Convert.ToBoolean(_objS1Data[valueObj[i].Split(":")[1].Split(",")[0]]);
+                            if (Convert.ToBoolean(_objS1Data[valueObj[i].Split(":")[1].Split(",")[0]]))
+                            {
+                                QueryContainer query1 = new TermQuery { Field = valueObj[i].Split(",")[2], Value = "1" };
+                                queryShouldB |= query1;
+                            }
+
+                        }
+                        if (sType == "string")
+                        {
+                            var temp = Convert.ToString(_objS1Data[valueObj[i].Split(":")[1]]);
+                            if (Convert.ToString(_objS1Data[valueObj[i].Split(":")[1]]) != "")
+                            {
+                                string slist = Convert.ToString(_objS1Data[valueObj[i].Split(",")[0].Split(":")[1]]);
+                                if (slist.Contains(","))
+                                {
+
+                                    string[] strArray = slist.Split(',');
+                                    foreach (string str in strArray)
+                                    {
+                                        QueryContainer query9 = new TermQuery { Field = valueObj[i].Split(",")[2], Value = str };
+                                        queryShouldS |= query9;
+                                    }
+                                }
+                                else
+                                {
+                                    if (Convert.ToString(_objS1Data[valueObj[i].Split(",")[0].Split(":")[1]]) != "")
+                                    {
+                                        QueryContainer query10 = new TermQuery { Field = valueObj[i].Split(",")[2], Value = Convert.ToString(_objS1Data[valueObj[i].Split(",")[0].Split(":")[1]]) };
+                                        qFinal &= query10;
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            qFinal &= queryShouldB;
+            return qFinal;
+        }
+
+        public QueryContainer GetPlayerDetailQueryForFilteredEntityBySport(QueryContainer _objNestedQuery, dynamic _objS1Data, int SportsId = 1)
+        {
+            QueryContainer qShould = new QueryContainer();
+            switch (SportsId)
+            {
+                case 1:
+                    {
+                        if (Convert.ToString(_objS1Data["BatsmanID"]) != "")
+                        {
+                            QueryContainer q1 = new TermQuery { Field = "batsmanId", Value = _objS1Data["BatsmanID"] };
+                            _objNestedQuery &= q1;
+                        }
+                        if (Convert.ToString(_objS1Data["BowlerID"]) != null)
+                        {
+                            QueryContainer q2 = new TermQuery { Field = "bowlerId", Value = _objS1Data["BowlerID"] };
+                            _objNestedQuery &= q2;
+                        }
+                        if (Convert.ToString(_objS1Data["FielderID"]) != null)
+                        {
+                            QueryContainer q3 = new TermQuery { Field = "fielderId", Value = _objS1Data["fielderId"] };
+                            _objNestedQuery &= q3;
+                        }
+                    }
+                    break;
+                case 3:
+                    {
+                        if (Convert.ToString(_objS1Data["OffensivePlayerId"]) != "")
+                        {
+                            QueryContainer q1 = new TermQuery { Field = "offensive_player_id", Value = _objS1Data["OffensivePlayerId"] };
+                            _objNestedQuery &= q1;
+                        }
+                        if (Convert.ToString(_objS1Data["DefensivePlayerId"]) != null)
+                        {
+                            QueryContainer q2 = new TermQuery { Field = "defensive_player_id", Value = _objS1Data["DefensivePlayerId"] };
+                            _objNestedQuery &= q2;
+                        }
+                        if (Convert.ToString(_objS1Data["AssistPlayerId"]) != null)
+                        {
+                            QueryContainer q3 = new TermQuery { Field = "assist_player_id_1", Value = _objS1Data["AssistPlayer1Id"] } ||
+                             new TermQuery { Field = "assist_player_id_2", Value = _objS1Data["AssistPlayer2Id"] };
+                            _objNestedQuery &= q3;
+                        }
+                    }
+                    break;
+            }
+
+            return _objNestedQuery;
+        }
+
 
         //private static List<SearchResultFilterData> SearchResultFilterDataMap(Searcher searcher, TopDocs topDocs, MatchDetail _objMatchDetail)
         //{

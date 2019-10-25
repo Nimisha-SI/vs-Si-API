@@ -133,10 +133,11 @@ namespace WebApis.BOL
                     QueryContainer objMoment = new QueryContainer();
                     objMoment = objCF.GetMomentDetailsQueryST(_objMatchDetail, objMoment, _objMomentsData);
                     if (_objMatchDetail.SportID == 1)
-                        _objSearchResults2.ResultData = _cricket.returnSportResult(EsClient_obj, objMoment, SportName);
+                    { }
+                    // _objSearchResults2.ResultData = _cricket.returnSportResult(EsClient_obj, objMoment, SportName);
                     else if (_objMatchDetail.SportID == 3)
                     {
-                        _objSearchResults2.ResultData = _kabaddi.returnSportResult(EsClient_obj, objMoment, SportName);
+                        //_objSearchResults2.ResultData = _kabaddi.returnSportResult(EsClient_obj, objMoment, SportName);
                         _objSearchResults2.ResultData = _objSearchResults2.ResultData.ToList().GroupBy(t => t.Id, (key, group) => group.First());
                     }
                 }
@@ -1173,12 +1174,12 @@ namespace WebApis.BOL
                     {
                         case 1:
                             _objNestedQuery = _cricket.GetMatchDetailQuery(_objNestedQuery, _ObjMatchDetails);
-                            _objNestedQuery = _cricket.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
+                            _objNestedQuery = objCF.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
                             obj = _cricket;
                             break;
                         case 3:
                             _objNestedQuery = _kabaddi.GetMatchDetailQuery(_objNestedQuery, _ObjMatchDetails);
-                            _objNestedQuery = _kabaddi.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
+                            _objNestedQuery = objCF.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
                             obj = _kabaddi;
                             break;
                         default:
@@ -1783,6 +1784,85 @@ namespace WebApis.BOL
 
             }
             return _objSearchResults;
+        }
+
+        public List<FilteredEntityKabaddi> GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData)
+        {
+            //System.Web.Script.Serialization.JavaScriptSerializer _objSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+
+            var responseResult = new List<FilteredEntityKabaddi>();
+            string searchtext = string.Empty;
+            string result = string.Empty;
+            if (_objReqData != null)
+            {
+                EsClient_obj = _oLayer.CreateConnection();
+                _objLstSearchQuery = new List<SearchQueryModel>();
+                string jsonData = JsonConvert.SerializeObject(_objReqData);
+                _objEntityReqData = JsonConvert.DeserializeObject<SearchEntityRequestData>(jsonData);
+                searchtext = _objEntityReqData.EntityText.Trim().ToLower();
+                _objMatchDetail = _objEntityReqData.MatchDetails;
+                _objMatchDetail.SeriesId = _objEntityReqData.EntityTypeId != 5 ? _objMatchDetail.SeriesId : string.Empty;
+                _objMatchDetail.MatchId = _objEntityReqData.EntityTypeId != 9 ? _objMatchDetail.MatchId : string.Empty;
+                if (_objEntityReqData != null)
+                {
+                    _columns = objCF.GetColumnForEntity(_objEntityReqData.EntityTypeId);
+                    IEnumerable<FilteredEntityKabaddi> _objFilteredEntityKabaddi = new List<FilteredEntityKabaddi>();
+                    _objNestedQuery = _kabaddi.GetMatchDetailQuery(_objNestedQuery, _objMatchDetail);
+                    _objNestedQuery = objCF.GetPlayerDetailQueryForFilteredEntityBySport(_objNestedQuery, _objEntityReqData.playerDetails, _objMatchDetail.SportID);//GetCricketPlayerDetailQuery(_objEntityReqData.playerDetails, _objNestedBoolQuery);
+                    if (!string.IsNullOrEmpty(_objMatchDetail.MatchDate))
+                    {
+                        _objNestedQuery = _kabaddi.GetEntityBySport(_objNestedQuery, _objMatchDetail, _columns, searchtext);
+                    }
+                    if (_columns.Count > 0)
+                    {
+                        List<string> EntityIds = new List<string>();
+                        List<string> EntityNames = new List<string>();
+                        foreach (var col in _columns)
+                        {
+                            EntityIds.Add(col.Key);
+                            EntityNames.Add(col.Value);
+
+                        }
+                        if (_objEntityReqData.EntityTypeId == 5)
+                        {
+                            var s1 = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(1), EntityNames.ElementAt(1), EsClient_obj, searchtext);
+                            var s1Result = s1.Select(a => a.ParentSeriesId = "1");
+                            var s2 = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(0), EntityNames.ElementAt(0), EsClient_obj, searchtext);
+                            var s2Result = s1.Select(a => a.ParentSeriesId = "0");
+                            var s = s1Result.Union(s2Result);
+                            //result = _objSerializer.Serialize(s);
+                            //responseResult = s;
+                        }
+                        if (_objEntityReqData.EntityTypeId == 3 || _objEntityReqData.EntityTypeId == 4)
+                        {
+                            //var s1 = _objFilteredEntityForCricket.Select(t => new { EntityId = t.Team1Id, EntityName = t.Team1 }).Distinct();
+                            //var s2 = _objFilteredEntityForCricket.Select(t => new { EntityId = t.Team2Id, EntityName = t.Team2 }).Distinct();
+                            //var s = s1.Union(s2).Where(r => r.EntityName.ToString() != "" && r.EntityName.ToLower().Contains(searchtext)).Distinct().OrderBy(r => r.EntityName);
+                            ////result = _objSerializer.Serialize(s);
+
+                            var s1 = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(1), EntityNames.ElementAt(1), EsClient_obj, searchtext);
+                            var s2 = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(0), EntityNames.ElementAt(0), EsClient_obj, searchtext);
+                            var s = s1.Union(s2);
+                        }
+
+                        if (_objEntityReqData.EntityTypeId == 30 || _objEntityReqData.EntityTypeId == 31)
+                        {
+                            var s1 = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(1), EntityNames.ElementAt(1), EsClient_obj, searchtext);
+                            var s2 = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(0), EntityNames.ElementAt(0), EsClient_obj, searchtext);
+                            var s = s1.Union(s2);
+                        }
+
+                        if (searchtext != "")
+                        {
+                            var Result = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(0), EntityNames.ElementAt(0), EsClient_obj, searchtext);
+                            responseResult = Result;
+                        }
+
+                        _objFilteredEntityKabaddi = null;
+                    }
+                }
+            }
+            return responseResult;
         }
     }
 }

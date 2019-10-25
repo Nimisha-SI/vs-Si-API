@@ -129,11 +129,28 @@ namespace WebApis.BOL
             {
                 if (searchText != "")
                 {
-                    if (eName == "bowler")
+                    //eName = "defensive_player_name";
+                    if (EntityName == "defensivePlayerName")
                     {
                         var response = EsClient.Search<SearchKabaddiData>(s => s.Index("kabaddi").Size(0).
                 Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.DefensivePlayerName).Value(searchText)))
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + eName + ".keyword'].value + '|' + doc['" + eId + ".keyword'].value")).Size(65243))));
+                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(65243))));
+                        var agg = response.Aggregations.Terms("my_agg").Buckets;
+                        foreach (var hits in agg)
+                        {
+                            obj.Add(new FilteredEntityKabaddi
+                            {
+                                Entityname = EntityName,
+                                Entityplayername = hits.Key.ToString().Split("|")[0],
+                                Entityid = hits.Key.ToString().Split("|")[1],
+                            });
+                        }
+                    }
+                    if (EntityName == "offensivePlayerName")
+                    {
+                        var response = EsClient.Search<SearchKabaddiData>(s => s.Index("kabaddi").Size(0).
+                Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.OffensivePlayerName).Value(searchText)))
+                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(65243))));
                         var agg = response.Aggregations.Terms("my_agg").Buckets;
                         foreach (var hits in agg)
                         {
@@ -150,7 +167,7 @@ namespace WebApis.BOL
                 {
                     var response = EsClient.Search<SearchKabaddiData>(s => s.Index("kabaddi").Size(0).
                 Query(q => qc)
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + eName + ".keyword'].value + '|' + doc['" + eId + ".keyword'].value")).Size(65243))));
+                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(65243))));
                     var agg = response.Aggregations.Terms("my_agg").Buckets;
                     foreach (var hits in agg)
                     {
@@ -360,6 +377,7 @@ namespace WebApis.BOL
                         string sType = valueObj[i].Split(",")[1];
                         if (sType == "Boolean")
                         {
+                            var temp1 = Convert.ToBoolean(_objS1Data[valueObj[i].Split(":")[1].Split(",")[0]]);
                             if (Convert.ToBoolean(_objS1Data[valueObj[i].Split(":")[1].Split(",")[0]]))
                             {
                                 QueryContainer query1 = new TermQuery { Field = valueObj[i].Split(",")[2], Value = "1" };
@@ -369,6 +387,7 @@ namespace WebApis.BOL
                         }
                         if (sType == "string")
                         {
+                            var temp = Convert.ToString(_objS1Data[valueObj[i].Split(":")[1]]);
                             if (Convert.ToString(_objS1Data[valueObj[i].Split(":")[1]]) != "")
                             {
                                 string slist = Convert.ToString(_objS1Data[valueObj[i].Split(",")[0].Split(":")[1]]);

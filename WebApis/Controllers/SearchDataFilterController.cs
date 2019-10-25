@@ -45,27 +45,36 @@ namespace WebApis.Controllers
         {
             try
             {
-                var responseResult = new List<FilteredEntityForCricket>();
                 CommonFunction objCF = new CommonFunction();
              
                 string SportName = objCF.getType(_objReqData.MatchDetails.SportID);
-                if (_objReqData != null) {
-                    if (SportName == "Cricket") {
-                        responseResult = _sObj.GetFilteredEntitiesBySport(_objReqData);
+                if (_objReqData != null)
+                {
+                    //if (SportName == "Cricket") {
+                    //    responseResult = _sObj.GetFilteredEntitiesBySport(_objReqData);
+                    //}
+                    if (_objReqData.MatchDetails.SportID == 1)
+                    {
+                        return Ok(new { responseText = _sObj.GetFilteredEntitiesBySport(_objReqData) });
                     }
-
+                    else if (_objReqData.MatchDetails.SportID == 3)
+                    {
+                        return Ok(new { responseText = _sObj.GetFilteredEntitiesBySportKabaddi(_objReqData) });
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
                 }
-
-                
-                return Ok(new { responseText = responseResult });
+                else
+                {
+                    return BadRequest();
+                }
             }
             catch (Exception ex)
             {
                 return BadRequest();
             }
-
-
-
         }
 
 

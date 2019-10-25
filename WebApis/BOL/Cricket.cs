@@ -434,11 +434,11 @@ namespace WebApis.BOL
                 if (searchText != "")
                 {
 
-                    if (eName == "bowler")
+                    if (EntityName == "bowler")
                     {
                         var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
                 Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.Bowler).Value(searchText)))
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + eName + ".keyword'].value + '|' + doc['" + eId + ".keyword'].value")).Size(802407))));
+                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
                         var agg = response.Aggregations.Terms("my_agg").Buckets;
                         foreach (var hits in agg)
                         {
@@ -454,7 +454,7 @@ namespace WebApis.BOL
                     {
                         var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
                 Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.Batsman).Value(searchText)))
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + eName + ".keyword'].value + '|' + doc['" + eId + ".keyword'].value")).Size(802407))));
+                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
                         var agg = response.Aggregations.Terms("my_agg").Buckets;
                         foreach (var hits in agg)
                         {
@@ -472,7 +472,7 @@ namespace WebApis.BOL
                 {
                     var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
                 Query(q => qc)
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + eName + ".keyword'].value + '|' + doc['" + eId + ".keyword'].value")).Size(802407))));
+                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
                     var agg = response.Aggregations.Terms("my_agg").Buckets;
                     foreach (var hits in agg)
                     {
@@ -519,10 +519,10 @@ namespace WebApis.BOL
             return result;
         }
 
-        public QueryContainer GetFilteredEntitiesBySport(MatchDetail _objReqData, QueryContainer _objNestedQuery, string sCase, int sDate, Dictionary<string, string> _columns, string searchText)
-        {
-            throw new NotImplementedException();
-        }
+        //public QueryContainer GetFilteredEntitiesBySport(MatchDetail _objReqData, QueryContainer _objNestedQuery, string sCase, int sDate, Dictionary<string, string> _columns, string searchText)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public override dynamic SearchS2(QueryContainer Bq, MatchDetail _objmatch, int Sportid = 6, string search = "")
         {
