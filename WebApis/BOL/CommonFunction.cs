@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Nest;
 using WebApis.elastic;
@@ -247,14 +248,21 @@ namespace WebApis.BOL
                 var agg = result.Aggregations.Terms("terms_agg").Buckets;
                 foreach (var items in agg)
                 {
-                    obj.Add(new FilteredEntityData
-                    {
-                        EntityId = items.Key.ToString().Split("|")[1],
-                        EntityName = items.Key.ToString().Split("|")[0],
-                        IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
-                    });
+                    if (items.Key.ToString() != "|"  ) {
+                        if (items.Key.ToString().Split("|")[0] !="")
+                        {
+                            obj.Add(new FilteredEntityData
+                            {
+                                EntityId = items.Key.ToString().Split("|")[1],
+                                EntityName = items.Key.ToString().Split("|")[0],
+                                IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
+                            });
+                        }
+                    }
+                    
+                   
                 }
-                ObjectArray.Add(EntityNames.ElementAt(0), obj);
+                ObjectArray.Add(EntityNames.ElementAt(0), obj.ToList().OrderBy(a=>a.EntityName));
             }
             return ObjectArray;
         }
@@ -262,7 +270,16 @@ namespace WebApis.BOL
 
 
 
-
+        public string ConvertStringArrayToString(string[] array)
+        {
+              StringBuilder strConvert = new StringBuilder();
+                foreach (string value in array)
+                 {
+                strConvert.Append(value);
+                strConvert.Append(',');
+                }
+            return strConvert.ToString().Remove(strConvert.Length-1,1);
+        }
 
 
 
@@ -275,7 +292,7 @@ namespace WebApis.BOL
             //_objSearchResults.ResultData = new List<SearchResultFilterData>();
             //_objSearchResults.Master = new MasterDatas();
             //_objSearchResults.Master.MasterData = new Dictionary<string, object>();
-            //CommonFunction cf = new CommonFunction();
+            //CommonFunction cf = new CommonFunction();-
             //Cricket objDetails = new Cricket();
             ////searchcricket sc = new searchcricket();
             //// SportType = sc.getType(_objMatchDetail.SportID);

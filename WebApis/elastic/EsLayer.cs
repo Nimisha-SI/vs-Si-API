@@ -25,7 +25,7 @@ namespace WebApis.elastic
             index = _con.GetKeyValueAppSetting("elasticsearch", "index");
             Uri EsInstance = new Uri(con);
             ConnectionSettings EsConfiguration = new ConnectionSettings(EsInstance);
-            //EsConfiguration.DefaultIndex(index);
+            EsConfiguration.DefaultIndex(index);
             EsConfiguration.DisableDirectStreaming();
             ElasticClient EsClient = new ElasticClient(EsConfiguration);
             return EsClient;

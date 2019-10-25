@@ -152,7 +152,7 @@ namespace WebApis.BOL
             string ReqShotType = _objS1Data["ShotType"]; string ReqDeliveryType = _objS1Data["DeliveryType"];
             string[] _objReqShotType = ReqShotType.Contains(",") ? _objReqShotType = ReqShotType.Split(",") : _objReqShotType = new string[] { _objS1Data["ShotType"] };
             string[] _objReqDeliveryType = ReqDeliveryType.Contains(",") ? _objReqDeliveryType = ReqDeliveryType.Split(",") : _objReqDeliveryType = new string[] { _objS1Data["DeliveryType"] };
-
+            //string[] _objReqInnings = _objMatchSituation.Innings.Contains(",") ? _objReqInnings = _objMatchSituation.Innings.Split(',') : _objReqInnings = new string[] { _objMatchSituation.Innings };
             if (_objS1Data["ShotType"] != "")
             {
                 ddlS1Dropwons.Add("shotTypeId", _objReqShotType[0].ToString());
@@ -524,5 +524,8 @@ namespace WebApis.BOL
         {
             throw new NotImplementedException();
         }
+
+
+       
     }
 }

@@ -18,5 +18,6 @@ namespace WebApis.BOL
         IEnumerable<SearchResultFilterData> GetMediaSearchResult(SearchRequestMediaData _objReqData, int type);
         string GetAutoCompleteData(string sportid, string stype, string term = "");
         string GetFilteredEntityBySportForS2(SearchS2RequestData _ObjreqData);
+        string GetSearchResults(SearchRequestData _objReqData);
     }
 }
