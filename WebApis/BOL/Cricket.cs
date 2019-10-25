@@ -34,6 +34,7 @@ namespace WebApis.BOL
             ObjectArray.Add("Innings", obj2.AsEnumerable());
             return ObjectArray;
         }
+
         public override IEnumerable<ELModels.SearchResultFilterData> returnSportResult(ElasticClient EsClient, QueryContainer _objNestedQuery, string IndexName)
         {
             EsClient = _oLayer.CreateConnection();
@@ -43,6 +44,7 @@ namespace WebApis.BOL
             _objSearchResultFilterData = SearchResultFilterDataMap(result);
             return _objSearchResultFilterData;
         }
+
         public override List<SearchResultFilterData> SearchResultFilterDataMap(ISearchResponse<SearchCricketData> result)
         {
             List<SearchResultFilterData> ListObj = new List<SearchResultFilterData>();
@@ -69,6 +71,7 @@ namespace WebApis.BOL
             }
             return ListObj;
         }
+
         public override QueryContainer GetPlayerDetails(dynamic _objS1Data, QueryContainer qFinal, List<string> valueObj, int sportid, bool isMasterData = false)
         {
             CommonFunction objCf = new CommonFunction();
@@ -129,23 +132,18 @@ namespace WebApis.BOL
                                             QueryContainer query10 = new TermQuery { Field = valueObj[i].Split(",")[2], Value = Convert.ToString(_objS1Data[valueObj[i].Split(",")[0].Split(":")[1]]) };
                                             qFinal &= query10;
                                         }
-                                   
-                                    
-
                                 }
                             }
 
                         }
                      }
                 }
-
-
             }
-
            
             qFinal &= queryShouldB;
             return qFinal;
            }
+
         public override Dictionary<string, object> bindS1andS2Dropdown(dynamic _objS1Data)
         {
             Dictionary<string, object> ddlS1Dropwons = new Dictionary<string, object>();
@@ -164,6 +162,7 @@ namespace WebApis.BOL
             return ddlS1Dropwons;
 
         }
+
         public override QueryContainer GetMatchDetailQuery(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, bool isMasterData = false)
         {
             
@@ -284,6 +283,7 @@ namespace WebApis.BOL
             }
             return _objNestedQuery;
         }
+
         public QueryContainer GetCricketMatchSituationQueryST(QueryContainer _objNestedQuery, MatchSituation _objMatchSituation)
         {
             if (_objMatchSituation != null)
@@ -300,6 +300,7 @@ namespace WebApis.BOL
             }
             return _objNestedQuery;
         }
+
         public QueryContainer GetPlayerDetailQueryForFilteredEntityBySport(QueryContainer _objNestedQuery, dynamic _objS1Data, int SportsId = 1)
         {
             QueryContainer qShould = new QueryContainer();
@@ -324,6 +325,7 @@ namespace WebApis.BOL
             return _objNestedQuery;
 
         }
+
         public QueryContainer GetFilteredEntitiesBySport(MatchDetail _objReqData, QueryContainer _objNestedQuery, string sCase, int sDate, Dictionary<string, string> _columns, string searchText, string Edate ="")
         {
             dynamic Result = null;
@@ -366,6 +368,7 @@ namespace WebApis.BOL
             }
             return _objNestedQuery;
         }
+
         public QueryContainer GetEntityBySport(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, Dictionary<string, string> _columns, string searchtext)
         {
             string dlist = _objMatchDetail.MatchDate;
@@ -384,6 +387,7 @@ namespace WebApis.BOL
             return _objNestedQuery;
 
         }
+
         public List<FilteredEntityForCricket> GetFilteredEntitiesBySportResult(QueryContainer qc, string EntityId, string EntityName, ElasticClient EsClient, string searchText, int sDate = 0, int Edate = 0)
         {
             List<FilteredEntityForCricket> obj = new List<FilteredEntityForCricket>();
@@ -430,11 +434,11 @@ namespace WebApis.BOL
                 if (searchText != "")
                 {
 
-                    if (eName == "bowler")
+                    if (EntityName == "bowler")
                     {
                         var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
                 Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.Bowler).Value(searchText)))
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + eName + ".keyword'].value + '|' + doc['" + eId + ".keyword'].value")).Size(802407))));
+                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
                         var agg = response.Aggregations.Terms("my_agg").Buckets;
                         foreach (var hits in agg)
                         {
@@ -450,7 +454,7 @@ namespace WebApis.BOL
                     {
                         var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
                 Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.Batsman).Value(searchText)))
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + eName + ".keyword'].value + '|' + doc['" + eId + ".keyword'].value")).Size(802407))));
+                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
                         var agg = response.Aggregations.Terms("my_agg").Buckets;
                         foreach (var hits in agg)
                         {
@@ -468,7 +472,7 @@ namespace WebApis.BOL
                 {
                     var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
                 Query(q => qc)
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + eName + ".keyword'].value + '|' + doc['" + eId + ".keyword'].value")).Size(802407))));
+                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
                     var agg = response.Aggregations.Terms("my_agg").Buckets;
                     foreach (var hits in agg)
                     {
@@ -515,10 +519,10 @@ namespace WebApis.BOL
             return result;
         }
 
-        public QueryContainer GetFilteredEntitiesBySport(MatchDetail _objReqData, QueryContainer _objNestedQuery, string sCase, int sDate, Dictionary<string, string> _columns, string searchText)
-        {
-            throw new NotImplementedException();
-        }
+        //public QueryContainer GetFilteredEntitiesBySport(MatchDetail _objReqData, QueryContainer _objNestedQuery, string sCase, int sDate, Dictionary<string, string> _columns, string searchText)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public override dynamic SearchS2(QueryContainer Bq, MatchDetail _objmatch, int Sportid = 6, string search = "")
         {

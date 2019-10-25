@@ -10,6 +10,7 @@ namespace WebApis.BOL
     {
         ExtendedSearchResultFilterData GetSearchResultsFilter(STFilterRequestData _objReqData);
         List<FilteredEntityForCricket> GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData);
+        List<FilteredEntityKabaddi> GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData);
         string GetSavedSearches(SaveSearchesRequestData objSavedSearchData);
         string GetSearchResultCount(SearchRequestData _objReqData);
         string GetAllS2MastersBySport(SearchS2RequestData _objS2ReqData);

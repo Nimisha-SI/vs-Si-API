@@ -44,7 +44,7 @@ namespace WebApis.Controllers
         //        for (int i = 1; i <= 120; i++)
         //        {
         //            obj2 = obj.getCricketData(connection, true, i, 10000);
-        //            if (obj2.Count >0)
+        //            if (obj2.Count > 0)
         //            {
         //                oLayer.BulkInsert(EsClient, obj2);
         //            }
@@ -60,11 +60,6 @@ namespace WebApis.Controllers
         //        return BadRequest(ex.ToString());
         //        // return request.CreateResponse(HttpStatusCode.BadRequest, "Invalid operation!");
         //    }
-
-
-
-
-
         //}
 
         //[System.Web.Http.HttpGet]
