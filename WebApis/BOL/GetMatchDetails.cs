@@ -1174,12 +1174,12 @@ namespace WebApis.BOL
                     {
                         case 1:
                             _objNestedQuery = _cricket.GetMatchDetailQuery(_objNestedQuery, _ObjMatchDetails);
-                            _objNestedQuery = objCF.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
+                            _objNestedQuery = _cricket.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
                             obj = _cricket;
                             break;
                         case 3:
                             _objNestedQuery = _kabaddi.GetMatchDetailQuery(_objNestedQuery, _ObjMatchDetails);
-                            _objNestedQuery = objCF.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
+                            _objNestedQuery = _kabaddi.GetPlayerDetails(_objS1Data, _objNestedQuery, valueObj, sportid);
                             obj = _kabaddi;
                             break;
                         default:

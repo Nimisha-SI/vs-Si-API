@@ -365,7 +365,7 @@ namespace WebApis.BOL
                     string[] isDefaultvalues = objCf.ArrayIsDefaultForSport(sportid);
                     for (int i = 0; i <= isDefaultvalues.Length - 1; i++)
                     {
-                        QueryContainer query1 = new TermQuery { Field = isDefaultvalues[i], Value = 1 };
+                        QueryContainer query1 = new TermQuery { Field = "eventId", Value = isDefaultvalues[i] };
                         queryShouldB |= query1;
                     }
                     qFinal &= queryShould;
