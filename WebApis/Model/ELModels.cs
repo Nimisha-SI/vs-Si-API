@@ -67,10 +67,12 @@ namespace WebApis.Model
             public string Fielder { get; set; }
             public string ParentSeriesId { get; set; }
             public string ParentSeriesName { get; set; }
-            public string Entityid { get; set; }
-            public string Entityname { get; set; }
-            public string Entityplayername { get; set; }
+            public string EntityId { get; set; }
+            public string EntityName { get; set; }
+            public string EntitTypeName { get; set; }
             public int MatchDate { get; set; }
+            public string IsParentSeries { get; set; }
+
         }
 
         public class SearchCricketExtendedResultData
@@ -496,9 +498,11 @@ namespace WebApis.Model
             public string AssistPlayer2Id { get; set; }
             public string AssistPlayer2 { get; set; }
             public int MatchDate { get; set; }
-            public string Entityid { get; set; }
-            public string Entityname { get; set; }
-            public string Entityplayername { get; set; }
+            public string EntityId { get; set; }
+            public string EntityName { get; set; }
+            public string EntityTypeName { get; set; }
+            public string IsParentSeries { get; set; }
+
         }
 
 

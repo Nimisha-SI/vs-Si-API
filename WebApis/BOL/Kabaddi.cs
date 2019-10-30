@@ -119,9 +119,9 @@ namespace WebApis.BOL
                 {
                     obj.Add(new FilteredEntityKabaddi
                     {
-                        Entityname = EntityName,
-                        Entityplayername = hits.Key.ToString().Split("|")[0],
-                        Entityid = hits.Key.ToString().Split("|")[1],
+                        EntityTypeName = EntityName,
+                        EntityName = hits.Key.ToString().Split("|")[0],
+                        EntityId = hits.Key.ToString().Split("|")[1],
                     });
                 }
             }
@@ -140,9 +140,9 @@ namespace WebApis.BOL
                         {
                             obj.Add(new FilteredEntityKabaddi
                             {
-                                Entityname = EntityName,
-                                Entityplayername = hits.Key.ToString().Split("|")[0],
-                                Entityid = hits.Key.ToString().Split("|")[1],
+                                EntityTypeName = EntityName,
+                                EntityName = hits.Key.ToString().Split("|")[0],
+                                EntityId = hits.Key.ToString().Split("|")[1],
                             });
                         }
                     }
@@ -156,9 +156,9 @@ namespace WebApis.BOL
                         {
                             obj.Add(new FilteredEntityKabaddi
                             {
-                                Entityname = EntityName,
-                                Entityplayername = hits.Key.ToString().Split("|")[0],
-                                Entityid = hits.Key.ToString().Split("|")[1],
+                                EntityTypeName = EntityName,
+                                EntityName = hits.Key.ToString().Split("|")[0],
+                                EntityId = hits.Key.ToString().Split("|")[1],
                             });
                         }
                     }
@@ -173,9 +173,9 @@ namespace WebApis.BOL
                     {
                         obj.Add(new FilteredEntityKabaddi
                         {
-                            Entityname = EntityName,
-                            Entityplayername = hits.Key.ToString().Split("|")[0],
-                            Entityid = hits.Key.ToString().Split("|")[1],
+                            EntityTypeName = EntityName,
+                            EntityName = hits.Key.ToString().Split("|")[0],
+                            EntityId = hits.Key.ToString().Split("|")[1],
                         });
                     }
                 }
@@ -352,6 +352,72 @@ namespace WebApis.BOL
 
         public override QueryContainer GetPlayerDetails(dynamic _objS1Data, QueryContainer qFinal, List<string> valueObj, int sportid, bool isMasterData = false)
         {
+            //CommonFunction objCf = new CommonFunction();
+            //QueryContainer queryShouldS = new QueryContainer();
+            //QueryContainer queryShould = new QueryContainer();
+            //QueryContainer queryShouldB = new QueryContainer();
+            //QueryContainer queryAnd_should = new QueryContainer();
+            //if (_objS1Data != null)
+            //{
+            //    if (_objS1Data["IsDefault"] != null && Convert.ToBoolean(_objS1Data["IsDefault"]))
+            //    {
+            //        //QueryContainer query = new QueryContainer();
+            //        string[] isDefaultvalues = objCf.ArrayIsDefaultForSport(sportid);
+            //        for (int i = 0; i <= isDefaultvalues.Length - 1; i++)
+            //        {
+            //            QueryContainer query1 = new TermQuery { Field = isDefaultvalues[i], Value = 1 };
+            //            queryShouldB |= query1;
+            //        }
+            //        qFinal &= queryShould;
+            //    }
+            //    else
+            //    {
+            //        for (int i = 0; i <= valueObj.Count - 1; i++)
+            //        {
+            //            string sType = valueObj[i].Split(",")[1];
+            //            if (sType == "Boolean")
+            //            {
+            //                var temp1 = Convert.ToBoolean(_objS1Data[valueObj[i].Split(":")[1].Split(",")[0]]);
+            //                if (Convert.ToBoolean(_objS1Data[valueObj[i].Split(":")[1].Split(",")[0]]))
+            //                {
+            //                    QueryContainer query1 = new TermQuery { Field = valueObj[i].Split(",")[2], Value = "1" };
+            //                    queryShouldB |= query1;
+            //                }
+
+            //            }
+            //            if (sType == "string")
+            //            {
+            //                var temp = Convert.ToString(_objS1Data[valueObj[i].Split(":")[1]]);
+            //                if (Convert.ToString(_objS1Data[valueObj[i].Split(":")[1]]) != "")
+            //                {
+            //                    string slist = Convert.ToString(_objS1Data[valueObj[i].Split(",")[0].Split(":")[1]]);
+            //                    if (slist.Contains(","))
+            //                    {
+
+            //                        string[] strArray = slist.Split(',');
+            //                        foreach (string str in strArray)
+            //                        {
+            //                            QueryContainer query9 = new TermQuery { Field = valueObj[i].Split(",")[2], Value = str };
+            //                            queryShouldS |= query9;
+            //                        }
+            //                    }
+            //                    else
+            //                    {
+            //                        if (Convert.ToString(_objS1Data[valueObj[i].Split(",")[0].Split(":")[1]]) != "")
+            //                        {
+            //                            QueryContainer query10 = new TermQuery { Field = valueObj[i].Split(",")[2], Value = Convert.ToString(_objS1Data[valueObj[i].Split(",")[0].Split(":")[1]]) };
+            //                            qFinal &= query10;
+            //                        }
+            //                    }
+            //                }
+
+            //            }
+            //        }
+            //    }
+            //}
+
+            //qFinal &= queryShouldB;
+            //return qFinal;
             CommonFunction objCf = new CommonFunction();
             QueryContainer queryShouldS = new QueryContainer();
             QueryContainer queryShould = new QueryContainer();
