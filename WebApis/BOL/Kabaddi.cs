@@ -119,9 +119,9 @@ namespace WebApis.BOL
                 {
                     obj.Add(new FilteredEntityKabaddi
                     {
-                        Entityname = EntityName,
-                        Entityplayername = hits.Key.ToString().Split("|")[0],
-                        Entityid = hits.Key.ToString().Split("|")[1],
+                        EntityTypeName = EntityName,
+                        EntityName = hits.Key.ToString().Split("|")[0],
+                        EntityId = hits.Key.ToString().Split("|")[1],
                     });
                 }
             }
@@ -140,9 +140,9 @@ namespace WebApis.BOL
                         {
                             obj.Add(new FilteredEntityKabaddi
                             {
-                                Entityname = EntityName,
-                                Entityplayername = hits.Key.ToString().Split("|")[0],
-                                Entityid = hits.Key.ToString().Split("|")[1],
+                                EntityTypeName = EntityName,
+                                EntityName = hits.Key.ToString().Split("|")[0],
+                                EntityId = hits.Key.ToString().Split("|")[1],
                             });
                         }
                     }
@@ -156,9 +156,9 @@ namespace WebApis.BOL
                         {
                             obj.Add(new FilteredEntityKabaddi
                             {
-                                Entityname = EntityName,
-                                Entityplayername = hits.Key.ToString().Split("|")[0],
-                                Entityid = hits.Key.ToString().Split("|")[1],
+                                EntityTypeName = EntityName,
+                                EntityName = hits.Key.ToString().Split("|")[0],
+                                EntityId = hits.Key.ToString().Split("|")[1],
                             });
                         }
                     }
@@ -173,9 +173,9 @@ namespace WebApis.BOL
                     {
                         obj.Add(new FilteredEntityKabaddi
                         {
-                            Entityname = EntityName,
-                            Entityplayername = hits.Key.ToString().Split("|")[0],
-                            Entityid = hits.Key.ToString().Split("|")[1],
+                            EntityTypeName = EntityName,
+                            EntityName = hits.Key.ToString().Split("|")[0],
+                            EntityId = hits.Key.ToString().Split("|")[1],
                         });
                     }
                 }

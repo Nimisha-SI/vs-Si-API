@@ -705,9 +705,9 @@ namespace WebApis.BOL
                 foreach (var hits in agg) {
                     obj.Add(new FilteredEntityForCricket
                     {
-                        Entityid = EntityName,
-                        Entityplayername = hits.Key.ToString().Split("|")[0],
-                        Entityname = hits.Key.ToString().Split("|")[1],
+                        EntitTypeName = EntityName,
+                        EntityName = hits.Key.ToString().Split("|")[0],
+                        EntityId = hits.Key.ToString().Split("|")[1],
                     });
                 }
                
@@ -726,9 +726,9 @@ namespace WebApis.BOL
                         {
                             obj.Add(new FilteredEntityForCricket
                             {
-                                Entityname = EntityName,
-                                Entityplayername = hits.Key.ToString().Split("|")[0],
-                                Entityid = hits.Key.ToString().Split("|")[1],
+                                EntitTypeName = EntityName,
+                                EntityName = hits.Key.ToString().Split("|")[0],
+                                EntityId = hits.Key.ToString().Split("|")[1],
                             });
                         }
                     }
@@ -742,9 +742,9 @@ namespace WebApis.BOL
                         {
                             obj.Add(new FilteredEntityForCricket
                             {
-                                Entityname = EntityName,
-                                Entityplayername = hits.Key.ToString().Split("|")[0],
-                                Entityid = hits.Key.ToString().Split("|")[1],
+                                EntitTypeName = EntityName,
+                                EntityName = hits.Key.ToString().Split("|")[0],
+                                EntityId = hits.Key.ToString().Split("|")[1],
                             });
                         }
                     }
@@ -759,18 +759,12 @@ namespace WebApis.BOL
                     {
                         obj.Add(new FilteredEntityForCricket
                         {
-                            Entityname = EntityName,
-                            Entityplayername = hits.Key.ToString().Split("|")[0],
-                            Entityid = hits.Key.ToString().Split("|")[1],
+                            EntitTypeName = EntityName,
+                            EntityName = hits.Key.ToString().Split("|")[0],
+                            EntityId = hits.Key.ToString().Split("|")[1],
                         });
                     }
-
                 }
-
-               
-               
-                    
-                    
             }
             return obj;
 

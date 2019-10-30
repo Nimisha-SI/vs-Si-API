@@ -26,6 +26,7 @@ namespace WebApis.Controllers
         [Route("api/GetSearchResultForFiltersTemp1")]
         public IActionResult GetSearchResultsFilterTemp(STFilterRequestData _objReqData)
         {
+            string _objResult = "";
             try
             {
                 if (_objReqData != null) {

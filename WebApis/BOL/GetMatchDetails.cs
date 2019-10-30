@@ -103,8 +103,10 @@ namespace WebApis.BOL
         //    //throw new NotImplementedException();
         //}
 
-        public ExtendedSearchResultFilterData GetSearchResultsFilter(STFilterRequestData _objReqData)
+        public string GetSearchResultsFilter(STFilterRequestData _objReqData)
+        //public ExtendedSearchResultFilterData GetSearchResultsFilter(STFilterRequestData _objReqData)
         {
+            string jsonDataresult = "";
             if (_objReqData != null)
             {
                 
@@ -151,9 +153,9 @@ namespace WebApis.BOL
                     var innings = _cricket.getDropDownForMatch(_objResult.Master.MasterData, _objReqInnings);
                     //_objResult.Master.MasterData.Add("Innings", innings);
                 }
-                string jsonDataresult = JsonConvert.SerializeObject(_objResult);
+                jsonDataresult = JsonConvert.SerializeObject(_objResult);
             }
-            return _objResult;
+            return jsonDataresult;
         }
 
         public List<FilteredEntityForCricket> GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData)
@@ -1786,10 +1788,11 @@ namespace WebApis.BOL
             return _objSearchResults;
         }
 
-        public List<FilteredEntityKabaddi> GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData)
+        //public List<FilteredEntityKabaddi> GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData)
+        public string GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData)
         {
             //System.Web.Script.Serialization.JavaScriptSerializer _objSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-
+            string jsonDataresult = "";
             var responseResult = new List<FilteredEntityKabaddi>();
             string searchtext = string.Empty;
             string result = string.Empty;
@@ -1826,9 +1829,9 @@ namespace WebApis.BOL
                         if (_objEntityReqData.EntityTypeId == 5)
                         {
                             var s1 = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(1), EntityNames.ElementAt(1), EsClient_obj, searchtext);
-                            var s1Result = s1.Select(a => a.ParentSeriesId = "1");
+                            var s1Result = s1.Select(a => a.IsParentSeries = "1");
                             var s2 = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(0), EntityNames.ElementAt(0), EsClient_obj, searchtext);
-                            var s2Result = s1.Select(a => a.ParentSeriesId = "0");
+                            var s2Result = s1.Select(a => a.IsParentSeries = "0");
                             var s = s1Result.Union(s2Result);
                             //result = _objSerializer.Serialize(s);
                             //responseResult = s;
@@ -1857,13 +1860,13 @@ namespace WebApis.BOL
                             var Result = _kabaddi.GetFilteredEntitiesBySportResult(_objNestedQuery, EntityIds.ElementAt(0), EntityNames.ElementAt(0), EsClient_obj, searchtext);
                             responseResult = Result;
                         }
-                        string jsonDataresult = JsonConvert.SerializeObject(responseResult);
+                        jsonDataresult = JsonConvert.SerializeObject(responseResult);
 
                         _objFilteredEntityKabaddi = null;
                     }
                 }
             }
-            return responseResult;
+            return jsonDataresult;
         }
     }
 }

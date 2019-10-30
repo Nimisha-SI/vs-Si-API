@@ -8,9 +8,11 @@ namespace WebApis.BOL
 {
     public interface ISearchDataFilter
     {
-        ExtendedSearchResultFilterData GetSearchResultsFilter(STFilterRequestData _objReqData);
+        //ExtendedSearchResultFilterData GetSearchResultsFilter(STFilterRequestData _objReqData);
+        string GetSearchResultsFilter(STFilterRequestData _objReqData);
         List<FilteredEntityForCricket> GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData);
-        List<FilteredEntityKabaddi> GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData);
+        //List<FilteredEntityKabaddi> GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData);
+        string GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData);
         string GetSavedSearches(SaveSearchesRequestData objSavedSearchData);
         string GetSearchResultCount(SearchRequestData _objReqData);
         string GetAllS2MastersBySport(SearchS2RequestData _objS2ReqData);
