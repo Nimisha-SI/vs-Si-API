@@ -75,6 +75,27 @@ namespace WebApis.Model
 
         }
 
+        public class KabaddiRequestData
+        {
+            public List<MatchDetail> MatchDetails { get; set; }
+            public List<KabaddiPlayerDetail> PlayerDetails { get; set; }
+        }
+
+        public class SearchResultsExtendedData
+        {
+
+            public Dictionary<string, Int64> ResultCount { get; set; }
+            public dynamic ResultData { get; set; }
+            public SearchResultsDerivedData ResultDerivedData { get; set; }
+
+        }
+
+        public class SearchResultsDerivedData
+        {
+            public Dictionary<string, Int64> RangeData { get; set; }
+            public Dictionary<string, object> MasterData { get; set; }
+        }
+
         public class SearchCricketExtendedResultData
         {
             public IEnumerable<SearchCricketResultData> ResultData { get; set; }
@@ -207,9 +228,21 @@ namespace WebApis.Model
             public string EntityText { get; set; }
             public MatchDetail MatchDetails { get; set; }
             public dynamic playerDetails { get; set; }
-
-
+            public List<MatchSituation> MatchSituations { get; set; }
         }
+
+        public class SearchEntityRequestDataGlobal
+        {
+            //public int SportId { get; set; }
+            //public int EntityId { get; set; }
+            //public int EntityTypeId { get; set; }
+            //public int EntityRoleId { get; set; }
+            //public string EntityText { get; set; }
+            public MatchDetail matchDetails { get; set; }
+            public dynamic playerDetails { get; set; }
+            //public List<MatchSituation> MatchSituations { get; set; }
+        }
+
         public class SearchQueryModel
         {
             public string FieldName { get; set; }
@@ -377,6 +410,8 @@ namespace WebApis.Model
             public string BowlingArm { get; set; }
             public bool BowlerSpin { get; set; }
             public bool BowlerPace { get; set; }
+
+
         }
 
         public class SearchCricketResultTempData
@@ -503,6 +538,54 @@ namespace WebApis.Model
             public string EntityTypeName { get; set; }
             public string IsParentSeries { get; set; }
 
+        }
+
+        public class KabaddiPlayerDetail
+        {
+            public string EventId { get; set; }
+            public string EventName { get; set; }
+            public string EventText { get; set; }
+            public string EventGroup { get; set; }
+            public string OffensivePlayerId { get; set; }
+            public string OffensivePlayerName { get; set; }
+            public string DefensivePlayerId { get; set; }
+            public string DefensivePlayerName { get; set; }
+            public string ReplacedPlayerId { get; set; }
+            public string ReplacedPlayerName { get; set; }
+            public string OffensivePlayerTeam { get; set; }
+            public string TouchTypeId { get; set; }
+            public string TouchType { get; set; }
+            public string TackleTypeId { get; set; }
+            public string TackleType { get; set; }
+            public bool IsSuccessfulRaid { get; set; }
+            public bool IsEmptyRaid { get; set; }
+            public bool IsFailedRaid { get; set; }
+            public bool IsDoOrDieRaid { get; set; }
+            public bool IsMultiPointRaid { get; set; }
+            public bool IsSuccessfulTackle { get; set; }
+            public bool IsFailedTackle { get; set; }
+            public bool IsSuperTackle { get; set; }
+            public bool IsAllOut { get; set; }
+            public bool IsDeclaration { get; set; }
+            public bool IsTimeOut { get; set; }
+            public bool IsSubstitution { get; set; }
+            public bool IsPursuit { get; set; }
+            public bool IsTechnicalPoint { get; set; }
+            public bool IsBonusPoint { get; set; }
+            public bool IsSuperRaid { get; set; }
+            public bool IsTouchPoint { get; set; }
+            public bool IsDefault { get; set; }
+            public bool IsMasterData { get; set; }
+            public string AssistPlayerId { get; set; }
+            public string AssistPlayer { get; set; }
+            public string AssistPlayer2Id { get; set; }
+            public string AssistPlayer2 { get; set; }
+            public string AssistTypeId { get; set; }
+            public string AssistType { get; set; }
+            public string AssistType2Id { get; set; }
+            public string AssistType2 { get; set; }
+            public string NoOfDefenders { get; set; }
+            public string CurrentSelector { get; set; }
         }
 
 

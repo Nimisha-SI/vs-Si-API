@@ -156,6 +156,50 @@ namespace WebApis.Model
         public KabaddiPlayerDetail PlayerDetails { get; set; }
     }
 
+
+    public class KabaddiResultDataTempdata
+    {
+        public string Id { get; set; }
+        public string ClearId { get; set; }
+        public string ClearId2 { get; set; }
+        public string ClearId3 { get; set; }
+        public string ClearId4 { get; set; }
+        public string ClearId5 { get; set; }
+        public string ClearId6 { get; set; }
+        public string ClearId7 { get; set; }
+        public string MatchId { get; set; }
+        public string MarkIn { get; set; }
+        public string MarkOut { get; set; }
+        public string ShortMarkIn { get; set; }
+        public string ShortMarkOut { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Duration { get; set; }
+        public string IsAsset { get; set; }
+        public int MatchDate { get; set; }
+        public string EventId { get; set; }
+        public string EventName { get; set; }
+        public string EventText { get; set; }
+        public string MediaId { get; set; }
+        public string MediaId2 { get; set; }
+        public string MediaId3 { get; set; }
+        public string MediaId4 { get; set; }
+        public string MediaId5 { get; set; }
+        public string MediaId6 { get; set; }
+        public string MediaId7 { get; set; }
+        public string TouchTypeId { get; set; }
+        public string TouchType { get; set; }
+        public string TackleTypeId { get; set; }
+        public string TackleType { get; set; }
+        public string AssistType1Id { get; set; }
+        public string AssistType1 { get; set; }
+        public string AssistType2Id { get; set; }
+        public string AssistType2 { get; set; }
+        public string NoOfDefenders { get; set; }
+        public string LanguageId { get; set; }
+
+    }
+
     public class SearchResultFilterDataHIndi
     {
         public string Id { get; set; }

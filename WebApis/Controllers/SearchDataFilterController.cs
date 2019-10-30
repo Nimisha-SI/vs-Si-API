@@ -105,16 +105,17 @@ namespace WebApis.Controllers
 
         [System.Web.Http.HttpPost]
         [Route("api/GetSearchResultCount")]
-        public IActionResult GetSearchResultCount(IEnumerable<SearchRequestData> _objReqData) {
+        //public IActionResult GetSearchResultCount(IEnumerable<SearchRequestData> _objReqData) {
+        public IActionResult GetSearchResultCount(dynamic _objReqData) {
             try
             {
                 string result = string.Empty;
-                List<SearchRequestData> _objLstReqData = new List<SearchRequestData>();
                 //ExtendedSearchResultFilterData _objrespData = new ExtendedSearchResultFilterData();
                 // _objLstReqData.MatchDetails = new List<MatchDetail>();
                 //_objLstReqData.MatchSituations = new List<MatchSituation>();
                 //_objLstReqData.PlayerDetails = new List<PlayerDetail>();
                 string jsonData = JsonConvert.SerializeObject(_objReqData);
+                List<SearchRequestData> _objLstReqData = new List<SearchRequestData>();
                 _objLstReqData = JsonConvert.DeserializeObject<List<SearchRequestData>>(jsonData);
                 //_objLstReqData.MatchDetails = JsonConvert.DeserializeObject<List<MatchDetail>>(jsonData);
                 //_objLstReqData.MatchSituations = JsonConvert.DeserializeObject<List<MatchSituation>>(jsonData);
@@ -122,12 +123,59 @@ namespace WebApis.Controllers
                 if (_objLstReqData != null)
                 {
                     SearchRequestData _objReqDataRes = _objLstReqData.FirstOrDefault();
-                    result = _sObj.GetSearchResultCount(_objReqDataRes);
+                    switch (_objReqDataRes.MatchDetails.FirstOrDefault().SportID)
+                    {
+                        case 1:
+                            result = _sObj.GetSearchResultCount(_objReqDataRes);
+                            break;
+                        case 3:
+                            var _objLstReqDatakabaddi = JsonConvert.DeserializeObject<List<KabaddiRequestData>>(jsonData);
+                            result = _sObj.GetSearchResultCountForKabaddi(_objLstReqDatakabaddi.FirstOrDefault());
+                            break;
+                    }
+                    
                 }
                 //string jsonString = JsonConvert.SerializeObject(result);
                 return Ok( new { result });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+
+        }
+
+        [System.Web.Http.HttpPost]
+        [Route("api/GetSearchResults")]
+        //public IActionResult GetSearchResultCount(IEnumerable<SearchRequestData> _objReqData) {
+        public IActionResult GetSearchResultsForKabaddi(dynamic _objReqData)
+        {
+            try
+            {
+                string result = string.Empty;
+                string jsonData = JsonConvert.SerializeObject(_objReqData);
+                List<SearchRequestData> _objLstReqData = new List<SearchRequestData>();
+                _objLstReqData = JsonConvert.DeserializeObject<List<SearchRequestData>>(jsonData);
+                if (_objLstReqData != null)
+                {
+                    SearchRequestData _objReqDataRes = _objLstReqData.FirstOrDefault();
+                    switch (_objReqDataRes.MatchDetails.FirstOrDefault().SportID)
+                    {
+                        case 1:
+                            result = _sObj.GetSearchResultCount(_objReqDataRes);
+                            break;
+                        case 3:
+                            var _objLstReqDatakabaddi = JsonConvert.DeserializeObject<List<KabaddiRequestData>>(jsonData);
+                            result = _sObj.GetSearchResultsForKabaddi(_objLstReqDatakabaddi.FirstOrDefault());
+                            break;
+                    }
+
+                }
+                //string jsonString = JsonConvert.SerializeObject(result);
+                return Ok(new { result });
+            }
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message.ToString());
             }
 

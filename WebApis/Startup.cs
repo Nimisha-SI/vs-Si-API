@@ -42,8 +42,7 @@ namespace WebApis
             services.AddSingleton<ICricket, Cricket>();
             services.AddSingleton<ICricketS2, CricketS2>();
             services.AddSingleton<IKabaddi, Kabaddi>();
-    
-
+            services.AddSingleton<IKabaddiS2, KabaddiS2>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

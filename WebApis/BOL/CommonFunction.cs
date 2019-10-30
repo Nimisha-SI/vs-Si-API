@@ -214,7 +214,19 @@ namespace WebApis.BOL
                     Column.Add("entityId_1", "entityName_3");
                     break;
                 case 43:
-                    //Column.Add("assistPlayer2Id", "assistPlayer2");
+                    Column.Add("touchTypeId", "touchType");
+                    break;
+                case 44:
+                    Column.Add("tackleTypeId", "tackleType");
+                    break;
+                case 45:
+                    Column.Add("noOfDefenders", "noOfDefenders");
+                    break;
+                case 46:
+                    Column.Add("assistType1Id", "assistType1");
+                    break;
+                case 47:
+                    Column.Add("assistType2Id", "assistType2");
                     break;
                 default:
                     break;
