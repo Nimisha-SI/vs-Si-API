@@ -35,11 +35,11 @@ namespace WebApis.BOL
 
             if (_objS1Data.TouchType != "" && _objReqTouchTypes.Length > 0)
             {
-                ddlS2Dropwons.Add("touchTypeId", _objReqTouchTypes);
+                ddlS2Dropwons.Add("touchType", _objReqTouchTypes);
             }
             if (_objS1Data.TackleType != "" && _objReqTackleTypes.Length > 0)
             {
-                ddlS2Dropwons.Add("tackleTypeId", _objReqTackleTypes);
+                ddlS2Dropwons.Add("tackleType", _objReqTackleTypes);
             }
             if (_objS1Data.EventId != "" && _objReqEvents.Length > 0)
             {
@@ -47,11 +47,11 @@ namespace WebApis.BOL
             }
             if (_objS1Data.AssistType != null && _objReqAssistType.Length > 0)
             {
-                ddlS2Dropwons.Add("assistType1Id", _objReqAssistType1);
+                ddlS2Dropwons.Add("assistType1", _objReqAssistType1);
             }
             if (_objS1Data.AssistType2 != null && _objReqAssistType2.Length > 0)
             {
-                ddlS2Dropwons.Add("assistType2Id", _objReqAssistType2);
+                ddlS2Dropwons.Add("assistType2", _objReqAssistType2);
             }
             if (_objS1Data.NoOfDefenders != null && _objReqNoOfDefenders.Length > 0)
             {
