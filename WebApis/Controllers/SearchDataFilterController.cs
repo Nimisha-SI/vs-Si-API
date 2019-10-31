@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nest;
 using Newtonsoft.Json;
 using WebApis.BOL;
+using WebApis.Model;
 using static WebApis.Model.ELModels;
 
 namespace WebApis.Controllers
@@ -23,8 +24,8 @@ namespace WebApis.Controllers
                 _sObj = sObj;
         }
         [System.Web.Http.HttpPost]
-        [Route("api/GetSearchResultForFiltersTemp1")]
-        public IActionResult GetSearchResultsFilterTemp(STFilterRequestData _objReqData)
+        [Route("api/GetSearchResultForFilters")]
+        public IActionResult GetSearchResultsFilter(STFilterRequestData _objReqData)
         {
             string _objResult = "";
             try
@@ -41,7 +42,7 @@ namespace WebApis.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        [Route("api/GetFilterBySportTemp")]
+        [Route("api/GetFilterBySport")]
         public IActionResult GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData)
         {
             try
@@ -282,6 +283,90 @@ namespace WebApis.Controllers
                 return BadRequest(ex.Message.ToString());
             }
             return Ok(new { Response = result });
+        }
+
+
+
+        [System.Web.Http.HttpPost]
+        [Route("api/AddUpdateLuceneForSearch")]
+        public IActionResult AddUpdateForSearch(Stream data)
+        {
+            bool isSuccess = false;
+            string RequestData = string.Empty;
+            try {
+                using (StreamReader reader = new StreamReader(data))
+                {
+                    RequestData = reader.ReadToEnd();
+                    reader.Close();
+                    reader.Dispose();
+                }
+                if (!string.IsNullOrEmpty(RequestData)) {
+                    isSuccess = _sObj.AddUpdateForSearch(RequestData,1, false);
+                }
+            }
+            catch(Exception ex)
+            {
+            return BadRequest(ex.Message.ToString());
+            }
+
+            return Ok(new { Response = isSuccess });
+        }
+
+        [System.Web.Http.HttpPost]
+        [Route("api/AddUpdateLuceneForKabaddiSearch")]
+        public IActionResult AddUpdateAddUpdateElasticForKabaddi(Stream data)
+        {
+            bool isSuccess = false;
+            string RequestData = string.Empty;
+            try
+            {
+                using (StreamReader reader = new StreamReader(data))
+                {
+                    RequestData = reader.ReadToEnd();
+                    reader.Close();
+                    reader.Dispose();
+                }
+                if (!string.IsNullOrEmpty(RequestData))
+                {
+                    isSuccess = _sObj.AddUpdateForSearch(RequestData,3,false);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+
+            return Ok(new { Response = isSuccess });
+        }
+
+
+
+
+        [System.Web.Http.HttpPost]
+        [Route("api/AddUpdateS2LuceneForSearch")]
+        public IActionResult AddUpdateS2ElasticForSearch(Stream data)
+        {
+            bool isSuccess = false;
+            string RequestData = string.Empty;
+            try
+            {
+                using (StreamReader reader = new StreamReader(data))
+                {
+                    RequestData = reader.ReadToEnd();
+                    reader.Close();
+                    reader.Dispose();
+                }
+                if (!string.IsNullOrEmpty(RequestData))
+                {
+                    isSuccess = _sObj.AddUpdateForSearch(RequestData, 1, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+
+            return Ok(new { Response = isSuccess });
         }
 
     }

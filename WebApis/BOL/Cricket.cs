@@ -94,7 +94,7 @@ namespace WebApis.BOL
                         }
 
                     }
-                    qFinal &= queryShould;
+                    //qFinal &= queryShould;
                 }
                 else
                 {

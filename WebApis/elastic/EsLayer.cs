@@ -31,27 +31,27 @@ namespace WebApis.elastic
             return EsClient;
         }
 
-        public void BulkInsert(ElasticClient EsClient,  List<SearchS2Data> documents)
-            {
-           var bulkAllObservable = EsClient.BulkAll(documents, b => b
-         .Index("crickets2data")
+       // public void BulkInsert(ElasticClient EsClient,  List<SearchS2Data> documents)
+       //     {
+       //    var bulkAllObservable = EsClient.BulkAll(documents, b => b
+       //  .Index("crickets2data")
                   
-         .BackOffTime("30s")
-         .BackOffRetries(2)
-         .RefreshOnCompleted()
-         .MaxDegreeOfParallelism(Environment.ProcessorCount)
-         .Size(10000)
-       )
-       .Wait(TimeSpan.FromMinutes(15), next =>
-       {
-       });
-            }
+       //  .BackOffTime("30s")
+       //  .BackOffRetries(2)
+       //  .RefreshOnCompleted()
+       //  .MaxDegreeOfParallelism(Environment.ProcessorCount)
+       //  .Size(10000)
+       //)
+       //.Wait(TimeSpan.FromMinutes(15), next =>
+       //{
+       //});
+       //     }
 
-        public void BulkInsert(ElasticClient EsClient, List<KabaddiS1Data> documents)
+
+        public void BulkInsert<T>(ElasticClient EsClient, List<T> documents,string IndexName) where T:class
         {
-            var bulkAllObservable = EsClient.BulkAll(documents, b => b
-          .Index("kabaddi")
-
+           var bulkAllObservable = EsClient.BulkAll(documents, b => b
+          .Index(IndexName)
           .BackOffTime("30s")
           .BackOffRetries(2)
           .RefreshOnCompleted()
@@ -62,6 +62,24 @@ namespace WebApis.elastic
         {
         });
         }
+
+
+
+        //public void BulkInsert(ElasticClient EsClient, List<KabaddiS1Data> documents)
+        //{
+        //    var bulkAllObservable = EsClient.BulkAll(documents, b => b
+        //  .Index("kabaddi")
+
+        //  .BackOffTime("30s")
+        //  .BackOffRetries(2)
+        //  .RefreshOnCompleted()
+        //  .MaxDegreeOfParallelism(Environment.ProcessorCount)
+        //  .Size(10000)
+        //)
+        //.Wait(TimeSpan.FromMinutes(15), next =>
+        //{
+        //});
+        //}
 
 
     }

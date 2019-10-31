@@ -46,7 +46,7 @@ namespace WebApis.BOL
             switch (sportId)
             {
                 case 1:
-                    Arry = new string[] { "isSix", "isFour", "isWicket", "isAppeal", "isDropped", "isMisField", "shotTypeId", "deliveryTypeId" };
+                    Arry = new string[] { "isSix", "isFour", "isWicket", "isAppeal", "isDropped", "isMisField" };
                     break;
                 case 3:
                     Arry = new string[] { "1", "2", "9", "10", "11" };

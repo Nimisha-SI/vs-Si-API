@@ -18,6 +18,7 @@ namespace WebApis.BOL
         private ICricket _cricket;
         ICricketS2 _cricketS2;
         IKabaddi _kabaddi;
+        IAddUpdateIndex _addUpdateIndex;
         string SportType = "";
         //searchcricket sc = new searchcricket();
         GetSearchS1DataForCricket _searchResult = new GetSearchS1DataForCricket();
@@ -38,12 +39,13 @@ namespace WebApis.BOL
         ElasticClient EsClient_obj;
         Dictionary<string, string> _columns;
 
-       public GetMatchDetails(ICon con, ESInterface oLayer, ICricket cricket,ICricketS2 cricketS2, IKabaddi kabaddi) {
+       public GetMatchDetails(ICon con, ESInterface oLayer, ICricket cricket,ICricketS2 cricketS2, IKabaddi kabaddi,IAddUpdateIndex addUpdateIndex) {
             _con = con;
             _oLayer = oLayer;
             _cricket = cricket;
             _cricketS2 = cricketS2;
             _kabaddi = kabaddi;
+            _addUpdateIndex = addUpdateIndex;
         }
 
         //public ExtendedSearchResultFilterData searchStoryTeller(ELModels.MatchDetail _objMatchDetail, QueryContainer _objNestedQuery, dynamic _objS1Data, Dictionary<string, object> ObjectArray, IEnumerable<SearchResultFilterData> obj, string value, string IndexName)
@@ -157,17 +159,18 @@ namespace WebApis.BOL
             }
             return jsonDataresult;
         }
-
-        public List<FilteredEntityForCricket> GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData)
+        //List<FilteredEntityForCricket>
+        public string GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData)
         {
+            string jsonDataresult = "";
             var responseResult = new List<FilteredEntityForCricket>();
             string searchtext = string.Empty;
             if (_objReqData != null) {
                 EsClient_obj = _oLayer.CreateConnection();
                 _objLstSearchQuery = new List<SearchQueryModel>();
-                searchtext = _objEntityReqData.EntityText.Trim().ToLower();
                 string jsonData = JsonConvert.SerializeObject(_objReqData);
                 _objEntityReqData = JsonConvert.DeserializeObject<SearchEntityRequestData>(jsonData);
+                searchtext = _objEntityReqData.EntityText.Trim().ToLower();
                 _objMatchDetail.SeriesId = _objEntityReqData.EntityTypeId != 5 ? _objMatchDetail.SeriesId : string.Empty;
                 _objMatchDetail.MatchId = _objEntityReqData.EntityTypeId != 9 ? _objMatchDetail.MatchId : string.Empty;
                 if (_objEntityReqData != null)
@@ -222,7 +225,8 @@ namespace WebApis.BOL
                 }
 
             }
-            return responseResult;
+            jsonDataresult = JsonConvert.SerializeObject(responseResult);
+            return jsonDataresult;
         }
 
         public string GetSavedSearches(SaveSearchesRequestData objSavedSearchData)
@@ -1868,5 +1872,63 @@ namespace WebApis.BOL
             }
             return jsonDataresult;
         }
+
+        public bool AddUpdateForSearch(string RequestData, int sportId, bool isS2= false)
+        {
+            bool isSuccess = false;
+            if (sportId == 1)
+            {
+                if (isS2)
+                {
+
+                    List<SearchS2Data> _objLstSearchData = JsonConvert.DeserializeObject<List<SearchS2Data>>(RequestData);
+                    try
+                    {
+                        if (_objLstSearchData != null && _objLstSearchData.Count > 0)
+                        {
+                            isSuccess = _addUpdateIndex.AddUpdateElasticIndex(_objLstSearchData, 3, false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        isSuccess = false;
+                    }
+
+                }
+                else {
+                    List<SearchCricketData> _objLstSearchData = JsonConvert.DeserializeObject<List<SearchCricketData>>(RequestData);
+                    try
+                    {
+                        if (_objLstSearchData != null && _objLstSearchData.Count > 0)
+                        {
+                            isSuccess = _addUpdateIndex.AddUpdateElasticIndex(_objLstSearchData, 1, false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        isSuccess = false;
+                    }
+                }
+            }
+            else if (sportId == 3) {
+                List<KabaddiS1Data> _objLstSearchData = JsonConvert.DeserializeObject<List<KabaddiS1Data>>(RequestData);
+                try
+                {
+                    if (_objLstSearchData != null && _objLstSearchData.Count > 0)
+                    {
+                        isSuccess = _addUpdateIndex.AddUpdateElasticIndex(_objLstSearchData, 3, false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    isSuccess = false;
+                }
+
+            }
+            
+            return isSuccess;
+        }
+
+       
     }
 }

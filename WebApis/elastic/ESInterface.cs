@@ -10,6 +10,7 @@ namespace WebApis.elastic
     public interface ESInterface
     {
           ElasticClient CreateConnection();
-          void BulkInsert(ElasticClient EsClient, List<SearchS2Data> cricketdata);
+        void BulkInsert<T>(ElasticClient EsClient, List<T> documents, string IndexName) where T : class;
+          //void BulkInsert(ElasticClient EsClient, List<SearchS2Data> cricketdata);
     }
 }
