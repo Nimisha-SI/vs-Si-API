@@ -228,17 +228,21 @@ namespace WebApis.BOL
                 case 47:
                     Column.Add("assistType2Id", "assistType2");
                     break;
+                case 48:
+                    Column.Add("eventId", "eventName");
+                    break;
                 default:
                     break;
             }
             return Column;
         }
 
-        public Dictionary<string, object> GetDropdowns(QueryContainer _objNestedQuery, Dictionary<string, object> ObjectArray, ElasticClient EsClient, string IndexName, Dictionary<string, string> _columns, string[] sFilterArray)
+        public Dictionary<string, object> GetDropdowns(QueryContainer _objNestedQuery, Dictionary<string, object> ObjectArray, ElasticClient EsClient, string IndexName, Dictionary<string, string> _columns, string[] sFilterArray, int sportid)
         {
             IEnumerable<SearchResultFilterData> _objSearchResultsFilterData = new List<SearchResultFilterData>();
             List<SearchResultFilterData> _objSearchResultFilterData = new List<SearchResultFilterData>();
             List<FilteredEntityData> obj = new List<FilteredEntityData>();
+            List<FilteredEntityData> obj2 = new List<FilteredEntityData>();
 
             if (_columns != null && _columns.Count > 0)
             {
@@ -252,21 +256,64 @@ namespace WebApis.BOL
 
                 }
 
-                var result = EsClient.Search<SearchCricketData>(a => a.Index(IndexName).Size(0).Query(s => _objNestedQuery)
-           .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(802407)) //crickets2-802407
-           )
-          );
-                var agg = result.Aggregations.Terms("terms_agg").Buckets;
-                foreach (var items in agg)
+                switch (sportid)
                 {
-                    obj.Add(new FilteredEntityData
-                    {
-                        EntityId = items.Key.ToString().Split("|")[1],
-                        EntityName = items.Key.ToString().Split("|")[0],
-                        IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
-                    });
+                    case 1:
+                        {
+                            var result = EsClient.Search<SearchCricketData>(a => a.Index(IndexName).Size(0).Query(s => _objNestedQuery)
+          .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(802407)) //crickets2-802407
+          )
+         );
+                            var agg = result.Aggregations.Terms("terms_agg").Buckets;
+                            foreach (var items in agg)
+                            {
+                                obj.Add(new FilteredEntityData
+                                {
+                                    EntityId = items.Key.ToString().Split("|")[1],
+                                    EntityName = items.Key.ToString().Split("|")[0],
+                                    IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
+                                });
+                            }
+                            ObjectArray.Add(EntityNames.ElementAt(0), obj);
+                        }
+                        break;
+                    case 3:
+                        {
+                            var result = EsClient.Search<SearchKabaddiData>(a => a.Index(IndexName).Size(0).Query(s => _objNestedQuery)
+          .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(802407)) //crickets2-802407
+          )
+         );
+                            var agg = result.Aggregations.Terms("terms_agg").Buckets;
+                            foreach (var items in agg)
+                            {
+                                obj.Add(new FilteredEntityData
+                                {
+                                    EntityId = items.Key.ToString().Split("|")[1],
+                                    EntityName = items.Key.ToString().Split("|")[0],
+                                    IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
+                                });
+                            }
+                            obj = obj.Where(x => !string.IsNullOrEmpty(x.EntityId)).ToList();
+
+                            if (EntityNames.ElementAt(0) == "eventName")
+                            {
+                                ObjectArray.Add("allevents", obj);
+                                string[] _objReqDiscEvents = "9,10,11".Split(',');//Green Card, Yellow Card, Red Card
+                                obj.RemoveAll(x => !_objReqDiscEvents.Contains(x.EntityId));
+                            }
+
+                            ObjectArray.Add(EntityNames.ElementAt(0), obj);
+
+                            if (EntityNames.ElementAt(0) == "assistType2")
+                            {
+                                var assistType1arr = new List<Object>((IEnumerable<Object>)ObjectArray["assistType1"]); 
+                                var assistType2arr = new List<Object>((IEnumerable<Object>)ObjectArray["assistType2"]);
+                                var assistType = assistType1arr.Union(assistType2arr);
+                                ObjectArray.Add("assistType", assistType);
+                            }
+                        }
+                        break;
                 }
-                ObjectArray.Add(EntityNames.ElementAt(0), obj);
             }
             return ObjectArray;
         }

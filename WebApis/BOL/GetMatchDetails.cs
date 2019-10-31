@@ -333,7 +333,7 @@ namespace WebApis.BOL
 
                                         var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
                                         string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
-                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
+                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
                                     }
                                 }
 
@@ -381,14 +381,14 @@ namespace WebApis.BOL
                                     {
                                         var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
                                         string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
-                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
+                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
 
                                     }
                                     else
                                     {
                                         //var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
                                         string[] _objType = new string[] { "0" };
-                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
+                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
 
                                     }
                                 }
@@ -1796,7 +1796,7 @@ namespace WebApis.BOL
 
                             }
                         }
-                        _objSearchResults.Master.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.Master.MasterData, EsClient_obj, IndexName, objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
+                        _objSearchResults.Master.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.Master.MasterData, EsClient_obj, IndexName, objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
                     }
                 }
 
@@ -2003,7 +2003,7 @@ namespace WebApis.BOL
 
                                         var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
                                         string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
-                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
+                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
                                     }
                                 }
                             }
@@ -2023,7 +2023,7 @@ namespace WebApis.BOL
                             //_objSearchS1MasterData = _cricketS2.SearchS1MasterData(_objNestedQuery, EsClient_obj);
 
                             ddlDropdowns = _kabaddiS2.bindS1andS2Dropdown(_objPlayerDetailskabaddi);
-
+                            
                             if (objDropdown != null)
                             {
                                 string[] valuess = objDropdown.Split(",");
@@ -2046,17 +2046,28 @@ namespace WebApis.BOL
 
                                     if (ddlDropdowns.Count > 0)
                                     {
-                                        var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
-                                        string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
-                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
-
+                                        if (ddlDropdowns.Keys.Contains(item[0]))
+                                        {
+                                            //var t = ddlDropdowns.Values.ToList()[0];
+                                            //string s1 = string.Join(",", ddlDropdowns.Values.ToList()[0]);
+                                            string[] resultArray = ddlDropdowns.Values.ToList()[0] as string[];
+                                            //var Type = ddlDropdowns[item[0]].ToString();
+                                            //_objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
+                                            _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), resultArray, _objMatchDetail.SportID);
+                                        }
+                                        else
+                                        {
+                                            string[] _objType = new string[] { "0" };
+                                            _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
+                                        }
                                     }
                                     else
                                     {
                                         //var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
                                         string[] _objType = new string[] { "0" };
-                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
-
+                                        var data = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
+                                        
+                                        _objSearchResults.ResultDerivedData.MasterData = data;
                                     }
                                 }
                             }

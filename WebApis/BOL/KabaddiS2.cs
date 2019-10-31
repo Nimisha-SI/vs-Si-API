@@ -22,13 +22,17 @@ namespace WebApis.BOL
         public override Dictionary<string, object> bindS1andS2Dropdown(dynamic _objS1Data)
         {
             Dictionary<string, object> ddlS2Dropwons = new Dictionary<string, object>();
-            string[] _objReqTouchTypes = _objS1Data.TouchType.Contains(",") ? _objReqTouchTypes = _objS1Data.TouchType.Split(',') : _objReqTouchTypes = new string[] { _objS1Data.TouchType };
-            string[] _objReqTackleTypes = _objS1Data.ShotZone.Contains(",") ? _objReqTackleTypes = _objS1Data.ShotZone.Split(',') : _objReqTackleTypes = new string[] { _objS1Data.ShotZone };
-            string[] _objReqEvents = _objS1Data.DismissalType.Contains(",") ? _objReqEvents = _objS1Data.DismissalType.Split(',') : _objReqEvents = new string[] { _objS1Data.DismissalType };
-            string[] _objReqAssistType = _objS1Data.DeliveryType.Contains(",") ? _objReqAssistType = _objS1Data.DeliveryType.Split(',') : _objReqAssistType = new string[] { _objS1Data.DeliveryType };
-            string[] _objReqDiscEvents = _objS1Data.BowlingLength.Contains(",") ? _objReqDiscEvents = _objS1Data.BowlingLength.Split(',') : _objReqDiscEvents = new string[] { _objS1Data.BowlingLength };
-            string[] _objReqNoOfDefenders = _objS1Data.BowlingLine.Contains(",") ? _objReqNoOfDefenders = _objS1Data.BowlingLine.Split(',') : _objReqNoOfDefenders = new string[] { _objS1Data.BowlingLine };
+            string[] _objReqTouchTypes = _objS1Data.TouchTypeId.Contains(",") ? _objReqTouchTypes = _objS1Data.TouchTypeId.Split(',') : _objReqTouchTypes = new string[] { _objS1Data.TouchTypeId };
+            string[] _objReqTackleTypes = _objS1Data.TackleTypeId.Contains(",") ? _objReqTackleTypes = _objS1Data.TackleTypeId.Split(',') : _objReqTackleTypes = new string[] { _objS1Data.TackleTypeId };
+            string[] _objReqEvents = _objS1Data.EventId.Contains(",") ? _objReqEvents = _objS1Data.EventId.Split(',') : _objReqEvents = new string[] { _objS1Data.EventId };
+            string[] _objReqAssistType = _objS1Data.AssistTypeId.Contains(",") ? _objReqAssistType = _objS1Data.AssistTypeId.Split(',') : _objReqAssistType = new string[] { _objS1Data.AssistTypeId };
            
+            string[] _objReqAssistType1 = _objS1Data.AssistTypeId != null ? _objS1Data.AssistTypeId.Contains(",") ? _objReqAssistType1 = _objS1Data.AssistTypeId.Split(',') : _objReqAssistType1 = new string[] { _objS1Data.AssistTypeId } : new string[] { "" };
+            string[] _objReqAssistType2 = _objS1Data.AssistType2Id != null ? _objS1Data.AssistType2Id.Contains(",") ? _objReqAssistType2 = _objS1Data.AssistType2Id.Split(',') : _objReqAssistType2 = new string[] { _objS1Data.AssistType2Id }: new string[] { "" };
+            string[] _objReqNoOfDefenders = _objS1Data.NoOfDefenders != null ? _objS1Data.NoOfDefenders.Contains(",") ? _objReqNoOfDefenders = _objS1Data.NoOfDefenders.Split(',') : _objReqNoOfDefenders = new string[] { _objS1Data.NoOfDefenders }: new string[] { "" };
+
+            string[] _objReqDiscEvents = "9,10,11".Split(',');//Green Card, Yellow Card, Red Card
+
             if (_objS1Data.TouchType != "" && _objReqTouchTypes.Length > 0)
             {
                 ddlS2Dropwons.Add("touchTypeId", _objReqTouchTypes);
@@ -37,7 +41,23 @@ namespace WebApis.BOL
             {
                 ddlS2Dropwons.Add("tackleTypeId", _objReqTackleTypes);
             }
-           
+            if (_objS1Data.EventId != "" && _objReqEvents.Length > 0)
+            {
+                ddlS2Dropwons.Add("eventName", _objReqEvents);
+            }
+            if (_objS1Data.AssistType != null && _objReqAssistType.Length > 0)
+            {
+                ddlS2Dropwons.Add("assistType1Id", _objReqAssistType1);
+            }
+            if (_objS1Data.AssistType2 != null && _objReqAssistType2.Length > 0)
+            {
+                ddlS2Dropwons.Add("assistType2Id", _objReqAssistType2);
+            }
+            if (_objS1Data.NoOfDefenders != null && _objReqNoOfDefenders.Length > 0)
+            {
+                ddlS2Dropwons.Add("noOfDefenders", _objReqNoOfDefenders);
+            }
+
             return ddlS2Dropwons;
         }
 
@@ -265,12 +285,14 @@ namespace WebApis.BOL
             QueryContainer queryAnd_should = new QueryContainer();
             if (_objS1Data != null)
             {
+                string e = Convert.ToString(_objS1Data.EventId);
                 if (isMasterData)
                 {
                     string[] _objReqEvents = "2,3,4".Split(',');
                     if (!string.IsNullOrEmpty(_objS1Data.EventId) && !_objReqEvents.ToList().Contains(_objS1Data.EventId))
                     {
-                        string[] strnums = Convert.ToString(_objS1Data.EventId).Split(',').ToArray();
+                        string[] strnums = e.Contains(",") ? Convert.ToString(_objS1Data.EventId).Split(',') : new string[] { _objS1Data.EventId };
+
                         foreach (string str in strnums)
                         {
                             QueryContainer query1 = new TermQuery { Field = "eventId", Value = str };
@@ -281,7 +303,7 @@ namespace WebApis.BOL
                 }
                 else if (!string.IsNullOrEmpty(_objS1Data.EventId))
                 {
-                    string[] strnums = Convert.ToString(_objS1Data.EventId).Split(',').ToArray();
+                    string[] strnums = e.Contains(",") ? Convert.ToString(_objS1Data.EventId).Split(','): new string[] { _objS1Data.EventId };
                     foreach (string str in strnums)
                     {
                         QueryContainer query1 = new TermQuery { Field = "eventId", Value = str };
