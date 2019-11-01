@@ -33,30 +33,36 @@ namespace WebApis.BOL
 
             string[] _objReqDiscEvents = "9,10,11".Split(',');//Green Card, Yellow Card, Red Card
 
-            if (_objS1Data.TouchType != "" && _objReqTouchTypes.Length > 0)
-            {
-                ddlS2Dropwons.Add("touchType", _objReqTouchTypes);
-            }
-            if (_objS1Data.TackleType != "" && _objReqTackleTypes.Length > 0)
-            {
-                ddlS2Dropwons.Add("tackleType", _objReqTackleTypes);
-            }
-            if (_objS1Data.EventId != "" && _objReqEvents.Length > 0)
-            {
-                ddlS2Dropwons.Add("eventName", _objReqEvents);
-            }
-            if (_objS1Data.AssistType != null && _objReqAssistType.Length > 0)
-            {
-                ddlS2Dropwons.Add("assistType1", _objReqAssistType1);
-            }
-            if (_objS1Data.AssistType2 != null && _objReqAssistType2.Length > 0)
-            {
-                ddlS2Dropwons.Add("assistType2", _objReqAssistType2);
-            }
-            if (_objS1Data.NoOfDefenders != null && _objReqNoOfDefenders.Length > 0)
-            {
-                ddlS2Dropwons.Add("noOfDefenders", _objReqNoOfDefenders);
-            }
+                if (!string.IsNullOrEmpty(_objS1Data.TouchTypeId) && _objReqTouchTypes.Length > 0)
+                {
+                    string touchTypeIds = objCf.ConvertStringArrayToString(_objReqTouchTypes);
+                    ddlS2Dropwons.Add("touchTypeId", touchTypeIds);
+                }
+                if (!string.IsNullOrEmpty(_objS1Data.TackleTypeId) && _objReqTackleTypes.Length > 0)
+                {
+                    string tackleTypeIds = objCf.ConvertStringArrayToString(_objReqTackleTypes);
+                    ddlS2Dropwons.Add("tackleTypeId", tackleTypeIds);
+                }
+                if (!string.IsNullOrEmpty(_objS1Data.EventId) && _objReqEvents.Length > 0)
+                {
+                    string eventIds = objCf.ConvertStringArrayToString(_objReqEvents);
+                    ddlS2Dropwons.Add("eventId", eventIds);
+                }
+                if (!string.IsNullOrEmpty(_objS1Data.AssistTypeId) && _objReqAssistType.Length > 0)
+                {
+                    string assistType1Ids = objCf.ConvertStringArrayToString(_objReqAssistType1);
+                    ddlS2Dropwons.Add("assistType1Id", assistType1Ids);
+                }
+                if (!string.IsNullOrEmpty(_objS1Data.AssistType2Id) && _objReqAssistType2.Length > 0)
+                {
+                    string assistType2Ids = objCf.ConvertStringArrayToString(_objReqAssistType2);
+                    ddlS2Dropwons.Add("assistType2Id", assistType2Ids);
+                }
+                if (!string.IsNullOrEmpty(_objS1Data.NoOfDefenders) && _objReqNoOfDefenders.Length > 0)
+                {
+                    string noOfDefenderss = objCf.ConvertStringArrayToString(_objReqNoOfDefenders);
+                    ddlS2Dropwons.Add("noOfDefenders", noOfDefenderss);
+                }
 
             return ddlS2Dropwons;
         }
@@ -360,12 +366,12 @@ namespace WebApis.BOL
                 }
                 if (!string.IsNullOrEmpty(Convert.ToString(_objS1Data.OffensivePlayerId)))
                 {
-                    QueryContainer q1 = new TermQuery { Field = "offensive_player_id", Value = _objS1Data.OffensivePlayerId };
+                    QueryContainer q1 = new TermQuery { Field = "offensivePlayerId", Value = _objS1Data.OffensivePlayerId };
                     qFinal &= q1;
                 }
                 if (!string.IsNullOrEmpty(Convert.ToString(_objS1Data.DefensivePlayerId)))
                 {
-                    QueryContainer q2 = new TermQuery { Field = "defensive_player_id", Value = _objS1Data.DefensivePlayerId };
+                    QueryContainer q2 = new TermQuery { Field = "defensivePlayerId", Value = _objS1Data.DefensivePlayerId };
                     qFinal &= q2;
                 }
                 if (!string.IsNullOrEmpty(Convert.ToString(_objS1Data.AssistPlayerId)))
@@ -401,7 +407,7 @@ namespace WebApis.BOL
                 }
                 if (!string.IsNullOrEmpty(_objS1Data.TouchTypeId) && !isMasterData)
                 {
-                    string[] strnums = Convert.ToString(_objS1Data.TouchTypeId).Split(',').ToArray();
+                    string[] strnums = Convert.ToString(_objS1Data.TouchTypeId).Split(',');
                     foreach (string str in strnums)
                     {
                         QueryContainer q1ors = new TermQuery { Field = "touchTypeId", Value = str };
@@ -430,7 +436,7 @@ namespace WebApis.BOL
                 }
                 if (!string.IsNullOrEmpty(_objS1Data.TackleTypeId) && !isMasterData)
                 {
-                    string[] strnums = Convert.ToString(_objS1Data.TackleTypeId).Split(',').ToArray();
+                    string[] strnums = Convert.ToString(_objS1Data.TackleTypeId).Split(',');
                     foreach (string str in strnums)
                     {
                         QueryContainer q1ors = new TermQuery { Field = "tackleTypeId", Value = str };
@@ -440,11 +446,11 @@ namespace WebApis.BOL
                 }
                 if (!string.IsNullOrEmpty(_objS1Data.AssistTypeId) && !isMasterData)
                 {
-                    string[] strnums = Convert.ToString(_objS1Data.AssistTypeId).Split(',').ToArray();
+                    string[] strnums = Convert.ToString(_objS1Data.AssistTypeId).Split(',');
                     foreach (string str in strnums)
                     {
-                        QueryContainer q3 = new TermQuery { Field = "assistType1Id", Value = _objS1Data["AssistType1Id"] } ||
-                    new TermQuery { Field = "assistType2Id", Value = _objS1Data["AssistType2Id"] };
+                        QueryContainer q3 = new TermQuery { Field = "assistType1Id", Value = str } ||
+                        new TermQuery { Field = "assistType2Id", Value = str };
                         qFinal &= q3;
                     }
                 }
@@ -452,7 +458,7 @@ namespace WebApis.BOL
                 {
                     if (_objS1Data.AssistPlayerId.Contains(","))
                     {
-                        string[] ArrAssistsPlayers = _objS1Data.AssistPlayerId.Split(',').ToArray();
+                        string[] ArrAssistsPlayers = _objS1Data.AssistPlayerId.Split(',');
 
                         QueryContainer q3 = new TermQuery { Field = "assistType1Id", Value = ArrAssistsPlayers[0] } &&
                        new TermQuery { Field = "assistType2Id", Value = ArrAssistsPlayers[1] };
@@ -461,14 +467,14 @@ namespace WebApis.BOL
                     }
                     else
                     {
-                        QueryContainer q3 = new TermQuery { Field = "assistType1Id", Value = _objS1Data["AssistType1Id"] } ||
-                    new TermQuery { Field = "assistType2Id", Value = _objS1Data["AssistType2Id"] };
+                        QueryContainer q3 = new TermQuery { Field = "assistType1Id", Value = _objS1Data["AssistTypeId"].Trim() } ||
+                        new TermQuery { Field = "assistType2Id", Value = _objS1Data["AssistType2Id"].Trim() };
                         qFinal &= q3;
                     }
                 }
                 if (!string.IsNullOrEmpty(_objS1Data.NoOfDefenders) && !isMasterData)
                 {
-                    string[] strnums = Convert.ToString(_objS1Data.NoOfDefenders).Split(',').ToArray();
+                    string[] strnums = Convert.ToString(_objS1Data.NoOfDefenders).Split(',');
                     foreach (string str in strnums)
                     {
                         QueryContainer q1ors = new TermQuery { Field = "tackleTypeId", Value = str };
@@ -1045,8 +1051,8 @@ namespace WebApis.BOL
 
         public dynamic SearchS1(QueryContainer _objNestedQuery, ElasticClient EsClient)
         {
-            QueryContainer qcIstagged = new TermQuery { Field = "isAsset", Value = "1" };
-            _objNestedQuery &= qcIstagged;
+            //QueryContainer qcIstagged = new TermQuery { Field = "isAsset", Value = "1" };
+            //_objNestedQuery &= qcIstagged;
             dynamic result1 = null;
             IEnumerable<KabaddiResultDataTempdata> _objSearchResultFilterData = new List<KabaddiResultDataTempdata>();
             List<KabaddiResultDataTempdata> _objSearchResult = new List<KabaddiResultDataTempdata>();

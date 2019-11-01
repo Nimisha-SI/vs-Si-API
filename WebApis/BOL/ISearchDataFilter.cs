@@ -41,5 +41,8 @@ namespace WebApis.BOL
         bool AddUpdateForSearch(string RequestData, int sportId,bool isS2= false);
         string GetSearchResults(SearchRequestData _objReqData);
         // bool AddUpdateLuceneIndexForS2(IEnumerable<SearchS2Data> sampleDatas, bool isFullIndex = true, int sportid = 1);
+
+
+       
     }
 }
