@@ -257,9 +257,41 @@ namespace WebApis.Controllers
             return Ok(new { Response = result });
         }
 
-        
-
         [System.Web.Http.HttpPost]
+        [Route("api/GetSearchResult")]
+        public IActionResult GetSearchResult(IEnumerable<SearchRequestData> _objReqData)
+        {
+            try
+            {
+                string result = string.Empty;
+
+                SearchRequestData _ObjReqData = new SearchRequestData();
+                SearchCricketExtendedResultData _objSearchResults = new SearchCricketExtendedResultData();
+                IEnumerable<SearchCricketResultData> searchResults = new List<SearchCricketResultData>();
+                Dictionary<string, Int64> _objDicSearchResultCount = new Dictionary<string, Int64>();
+
+                List<SearchRequestData> _objLstReqData = new List<SearchRequestData>();
+                string jsonData = JsonConvert.SerializeObject(_objReqData);
+                _objLstReqData = JsonConvert.DeserializeObject<List<SearchRequestData>>(jsonData);
+
+                if (_objLstReqData != null)
+                {
+                    SearchRequestData _objReqDataRes = _objLstReqData.FirstOrDefault();
+                    result = _sObj.GetSearchResults(_objReqDataRes);
+                }
+                //string jsonString = JsonConvert.SerializeObject(result);
+                return Ok(new { result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+
+        }
+
+  
+
+    [System.Web.Http.HttpPost]
         [Route("api/GetFilteredEntityBySportForS2")]
         public IActionResult GetFilteredEntityBySportForS2(IEnumerable<SearchS2RequestData> _objReqData)
         {

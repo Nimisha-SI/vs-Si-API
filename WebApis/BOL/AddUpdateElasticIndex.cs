@@ -13,7 +13,7 @@ namespace WebApis.BOL
         CommonFunction _objCf =new  CommonFunction();
         private ESInterface _oLayer;
         ElasticClient EsClient_obj;
-        AddUpdateElasticIndex(ESInterface oLayer) {
+        public AddUpdateElasticIndex(ESInterface oLayer) {
             _oLayer = oLayer;
         }
 

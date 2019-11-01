@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Nest;
 using WebApis.elastic;
@@ -221,7 +222,6 @@ namespace WebApis.BOL
             }
             return Column;
         }
-
         public Dictionary<string, object> GetDropdowns(QueryContainer _objNestedQuery, Dictionary<string, object> ObjectArray, ElasticClient EsClient, string IndexName, Dictionary<string, string> _columns, string[] sFilterArray)
         {
             IEnumerable<SearchResultFilterData> _objSearchResultsFilterData = new List<SearchResultFilterData>();
@@ -241,23 +241,68 @@ namespace WebApis.BOL
                 }
 
                 var result = EsClient.Search<SearchCricketData>(a => a.Index(IndexName).Size(0).Query(s => _objNestedQuery)
-           .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(802407)) //crickets2-802407
+           .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(409846)) //crickets2-802407
            )
           );
                 var agg = result.Aggregations.Terms("terms_agg").Buckets;
                 foreach (var items in agg)
                 {
-                    obj.Add(new FilteredEntityData
+                    if (items.Key.ToString() != "|")
                     {
-                        EntityId = items.Key.ToString().Split("|")[1],
-                        EntityName = items.Key.ToString().Split("|")[0],
-                        IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
-                    });
+                        if (items.Key.ToString().Split("|")[0] != "")
+                        {
+                            obj.Add(new FilteredEntityData
+                            {
+                                EntityId = items.Key.ToString().Split("|")[1],
+                                EntityName = items.Key.ToString().Split("|")[0],
+                                IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
+                            });
+                        }
+                    }
+
+
                 }
-                ObjectArray.Add(EntityNames.ElementAt(0), obj);
+                ObjectArray.Add(EntityNames.ElementAt(0), obj.ToList().OrderBy(a => a.EntityName));
             }
             return ObjectArray;
         }
+
+        //public Dictionary<string, object> GetDropdowns(QueryContainer _objNestedQuery, Dictionary<string, object> ObjectArray, ElasticClient EsClient, string IndexName, Dictionary<string, string> _columns, string[] sFilterArray)
+        //{
+        //    IEnumerable<SearchResultFilterData> _objSearchResultsFilterData = new List<SearchResultFilterData>();
+        //    List<SearchResultFilterData> _objSearchResultFilterData = new List<SearchResultFilterData>();
+        //    List<FilteredEntityData> obj = new List<FilteredEntityData>();
+
+        //    if (_columns != null && _columns.Count > 0)
+        //    {
+        //        KeyValuePair<string, string> _column = _columns.FirstOrDefault();
+        //        List<string> EntityIds = new List<string>();
+        //        List<string> EntityNames = new List<string>();
+        //        foreach (var col in _columns)
+        //        {
+        //            EntityIds.Add(col.Key);
+        //            EntityNames.Add(col.Value);
+
+        //        }
+
+        //        var result = EsClient.Search<SearchCricketData>(a => a.Index(IndexName).Size(0).Query(s => _objNestedQuery)
+        //   .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(802407)) //crickets2-802407
+        //   )
+        //  );
+        //        var agg = result.Aggregations.Terms("terms_agg").Buckets;
+        //        foreach (var items in agg)
+        //        {
+        //            obj.Add(new FilteredEntityData
+        //            {
+        //                EntityId = items.Key.ToString().Split("|")[1],
+        //                EntityName = items.Key.ToString().Split("|")[0],
+        //                IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
+        //            });
+        //        }
+        //        ObjectArray.Add(EntityNames.ElementAt(0), obj);
+        //    }
+        //    return ObjectArray;
+        //}
 
         //public ExtendedSearchResultFilterData searchStoryTeller(ELModels.MatchDetail _objMatchDetail, QueryContainer _objNestedQuery, dynamic _objS1Data, Dictionary<string, object> ObjectArray, IEnumerable<SearchResultFilterData> obj, string value, string IndexName)
         //{
@@ -513,6 +558,16 @@ namespace WebApis.BOL
             return _objNestedQuery;
         }
 
+        public string ConvertStringArrayToString(string[] array)
+        {
+            StringBuilder strConvert = new StringBuilder();
+            foreach (string value in array)
+            {
+                strConvert.Append(value);
+                strConvert.Append(',');
+            }
+            return strConvert.ToString().Remove(strConvert.Length - 1, 1);
+        }
 
         //private static List<SearchResultFilterData> SearchResultFilterDataMap(Searcher searcher, TopDocs topDocs, MatchDetail _objMatchDetail)
         //{
