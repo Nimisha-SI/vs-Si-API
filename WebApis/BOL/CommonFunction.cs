@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Nest;
 using WebApis.elastic;
@@ -46,7 +47,7 @@ namespace WebApis.BOL
             switch (sportId)
             {
                 case 1:
-                    Arry = new string[] { "isSix", "isFour", "isWicket", "isAppeal", "isDropped", "isMisField", "shotTypeId", "deliveryTypeId" };
+                    Arry = new string[] { "isSix", "isFour", "isWicket", "isAppeal", "isDropped", "isMisField" };
                     break;
                 case 3:
                     Arry = new string[] { "1", "2", "9", "10", "11" };
@@ -242,7 +243,6 @@ namespace WebApis.BOL
             IEnumerable<SearchResultFilterData> _objSearchResultsFilterData = new List<SearchResultFilterData>();
             List<SearchResultFilterData> _objSearchResultFilterData = new List<SearchResultFilterData>();
             List<FilteredEntityData> obj = new List<FilteredEntityData>();
-            List<FilteredEntityData> obj2 = new List<FilteredEntityData>();
 
             if (_columns != null && _columns.Count > 0)
             {
@@ -255,7 +255,6 @@ namespace WebApis.BOL
                     EntityNames.Add(col.Value);
 
                 }
-
                 switch (sportid)
                 {
                     case 1:
@@ -267,14 +266,21 @@ namespace WebApis.BOL
                             var agg = result.Aggregations.Terms("terms_agg").Buckets;
                             foreach (var items in agg)
                             {
-                                obj.Add(new FilteredEntityData
+                                if (items.Key.ToString() != "|")
                                 {
-                                    EntityId = items.Key.ToString().Split("|")[1],
-                                    EntityName = items.Key.ToString().Split("|")[0],
-                                    IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
-                                });
+                                    if (items.Key.ToString().Split("|")[0] != "")
+                                    {
+                                        obj.Add(new FilteredEntityData
+                                        {
+                                            EntityId = items.Key.ToString().Split("|")[1],
+                                            EntityName = items.Key.ToString().Split("|")[0],
+                                            IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
+                                        });
+                                    }
+                                }
                             }
-                            ObjectArray.Add(EntityNames.ElementAt(0), obj);
+                            //ObjectArray.Add(EntityNames.ElementAt(0), obj);
+                            ObjectArray.Add(EntityNames.ElementAt(0), obj.ToList().OrderBy(a => a.EntityName));
                         }
                         break;
                     case 3:
@@ -286,12 +292,18 @@ namespace WebApis.BOL
                             var agg = result.Aggregations.Terms("terms_agg").Buckets;
                             foreach (var items in agg)
                             {
-                                obj.Add(new FilteredEntityData
+                                if (items.Key.ToString() != "|")
                                 {
-                                    EntityId = items.Key.ToString().Split("|")[1],
-                                    EntityName = items.Key.ToString().Split("|")[0],
-                                    IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
-                                });
+                                    if (items.Key.ToString().Split("|")[0] != "")
+                                    {
+                                        obj.Add(new FilteredEntityData
+                                        {
+                                            EntityId = items.Key.ToString().Split("|")[1],
+                                            EntityName = items.Key.ToString().Split("|")[0],
+                                            IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
+                                        });
+                                    }
+                                }
                             }
                             obj = obj.Where(x => !string.IsNullOrEmpty(x.EntityId)).ToList();
 
@@ -306,7 +318,7 @@ namespace WebApis.BOL
 
                             if (EntityNames.ElementAt(0) == "assistType2")
                             {
-                                var assistType1arr = new List<Object>((IEnumerable<Object>)ObjectArray["assistType1"]); 
+                                var assistType1arr = new List<Object>((IEnumerable<Object>)ObjectArray["assistType1"]);
                                 var assistType2arr = new List<Object>((IEnumerable<Object>)ObjectArray["assistType2"]);
                                 var assistType = assistType1arr.Union(assistType2arr);
                                 ObjectArray.Add("assistType", assistType);
@@ -314,9 +326,49 @@ namespace WebApis.BOL
                         }
                         break;
                 }
+
             }
             return ObjectArray;
+
+
+
         }
+        //public Dictionary<string, object> GetDropdowns(QueryContainer _objNestedQuery, Dictionary<string, object> ObjectArray, ElasticClient EsClient, string IndexName, Dictionary<string, string> _columns, string[] sFilterArray)
+        //{
+        //    IEnumerable<SearchResultFilterData> _objSearchResultsFilterData = new List<SearchResultFilterData>();
+        //    List<SearchResultFilterData> _objSearchResultFilterData = new List<SearchResultFilterData>();
+        //    List<FilteredEntityData> obj = new List<FilteredEntityData>();
+
+        //    if (_columns != null && _columns.Count > 0)
+        //    {
+        //        KeyValuePair<string, string> _column = _columns.FirstOrDefault();
+        //        List<string> EntityIds = new List<string>();
+        //        List<string> EntityNames = new List<string>();
+        //        foreach (var col in _columns)
+        //        {
+        //            EntityIds.Add(col.Key);
+        //            EntityNames.Add(col.Value);
+
+        //        }
+
+        //        var result = EsClient.Search<SearchCricketData>(a => a.Index(IndexName).Size(0).Query(s => _objNestedQuery)
+        //   .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(802407)) //crickets2-802407
+        //   )
+        //  );
+        //        var agg = result.Aggregations.Terms("terms_agg").Buckets;
+        //        foreach (var items in agg)
+        //        {
+        //            obj.Add(new FilteredEntityData
+        //            {
+        //                EntityId = items.Key.ToString().Split("|")[1],
+        //                EntityName = items.Key.ToString().Split("|")[0],
+        //                IsSelectedEntity = sFilterArray.Contains(items.Key.ToString().Split("|")[1]) ? 1 : 0
+        //            });
+        //        }
+        //        ObjectArray.Add(EntityNames.ElementAt(0), obj);
+        //    }
+        //    return ObjectArray;
+        //}
 
         //public ExtendedSearchResultFilterData searchStoryTeller(ELModels.MatchDetail _objMatchDetail, QueryContainer _objNestedQuery, dynamic _objS1Data, Dictionary<string, object> ObjectArray, IEnumerable<SearchResultFilterData> obj, string value, string IndexName)
         //{
@@ -572,6 +624,16 @@ namespace WebApis.BOL
             return _objNestedQuery;
         }
 
+        public string ConvertStringArrayToString(string[] array)
+        {
+            StringBuilder strConvert = new StringBuilder();
+            foreach (string value in array)
+            {
+                strConvert.Append(value);
+                strConvert.Append(',');
+            }
+            return strConvert.ToString().Remove(strConvert.Length - 1, 1);
+        }
 
         //private static List<SearchResultFilterData> SearchResultFilterDataMap(Searcher searcher, TopDocs topDocs, MatchDetail _objMatchDetail)
         //{

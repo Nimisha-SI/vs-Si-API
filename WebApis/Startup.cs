@@ -42,6 +42,9 @@ namespace WebApis
             services.AddSingleton<ICricket, Cricket>();
             services.AddSingleton<ICricketS2, CricketS2>();
             services.AddSingleton<IKabaddi, Kabaddi>();
+            services.AddSingleton<IAddUpdateIndex, AddUpdateElasticIndex>();
+
+
             services.AddSingleton<IKabaddiS2, KabaddiS2>();
         }
 

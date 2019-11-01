@@ -173,7 +173,7 @@ namespace WebApis.BOL
                         {
                             SearchCricketResultData result = new SearchCricketResultData()
                             {
-                                Id = Convert.ToInt16(str.Id),
+                                Id = str.Id,
                                 ClearId = str.ClearId,
                                 MediaId = str.MediaId,
                                 MatchDate = str.MatchDate,
@@ -220,7 +220,7 @@ namespace WebApis.BOL
                         {
                             SearchCricketResultData result = new SearchCricketResultData()
                             {
-                                Id = Convert.ToInt16(str.Id),
+                                Id = str.Id,
                                 ClearId = str.ClearId2,
                                 MediaId = str.MediaId2,
                                 MatchDate = str.MatchDate,
@@ -265,7 +265,7 @@ namespace WebApis.BOL
                         {
                             SearchCricketResultData result = new SearchCricketResultData()
                             {
-                                Id = Convert.ToInt16(str.Id),
+                                Id = str.Id,
                                 ClearId = str.ClearId3,
                                 MediaId = str.MediaId3,
                                 MatchDate = str.MatchDate,
@@ -311,7 +311,7 @@ namespace WebApis.BOL
                         {
                             SearchCricketResultData result = new SearchCricketResultData()
                             {
-                                Id = Convert.ToInt16(str.Id),
+                                Id = str.Id,
                                 ClearId = str.ClearId4,
                                 MediaId = str.MediaId4,
                                 MatchDate = str.MatchDate,
@@ -357,7 +357,7 @@ namespace WebApis.BOL
                         {
                             SearchCricketResultData result = new SearchCricketResultData()
                             {
-                                Id = Convert.ToInt16(str.Id),
+                                Id = str.Id,
                                 ClearId = str.ClearId5,
                                 MediaId = str.MediaId5,
                                 MatchDate = str.MatchDate,
@@ -402,7 +402,7 @@ namespace WebApis.BOL
                         {
                             SearchCricketResultData result = new SearchCricketResultData()
                             {
-                                Id = Convert.ToInt16(str.Id),
+                                Id = str.Id,
                                 ClearId = str.ClearId6,
                                 MediaId = str.MediaId6,
                                 MatchDate = str.MatchDate,
@@ -447,7 +447,7 @@ namespace WebApis.BOL
                         {
                             SearchCricketResultData result = new SearchCricketResultData()
                             {
-                                Id = Convert.ToInt16(str.Id),
+                                Id = str.Id,
                                 ClearId = str.ClearId,
                                 MediaId = str.MediaId,
                                 MatchDate = str.MatchDate,
@@ -736,6 +736,59 @@ namespace WebApis.BOL
             return _objNestedQuery;
         }
 
+        //public override Dictionary<string, object> bindS1andS2Dropdown(dynamic _objS1Data)
+        //{
+        //    Dictionary<string, object> ddlS2Dropwons = new Dictionary<string, object>();
+        //    string[] _objReqShotTypes = _objS1Data.ShotType.Contains(",") ? _objReqShotTypes = _objS1Data.ShotType.Split(',') : _objReqShotTypes = new string[] { _objS1Data.ShotType };
+        //    string[] _objReqShotZones = _objS1Data.ShotZone.Contains(",") ? _objReqShotZones = _objS1Data.ShotZone.Split(',') : _objReqShotZones = new string[] { _objS1Data.ShotZone };
+        //    string[] _objReqDismissalTypes = _objS1Data.DismissalType.Contains(",") ? _objReqDismissalTypes = _objS1Data.DismissalType.Split(',') : _objReqDismissalTypes = new string[] { _objS1Data.DismissalType };
+        //    string[] _objReqDeliveryType = _objS1Data.DeliveryType.Contains(",") ? _objReqDeliveryType = _objS1Data.DeliveryType.Split(',') : _objReqDeliveryType = new string[] { _objS1Data.DeliveryType };
+        //    string[] _objReqBowlingLength = _objS1Data.BowlingLength.Contains(",") ? _objReqBowlingLength = _objS1Data.BowlingLength.Split(',') : _objReqBowlingLength = new string[] { _objS1Data.BowlingLength };
+        //    string[] _objReqBowlingLine = _objS1Data.BowlingLine.Contains(",") ? _objReqBowlingLine = _objS1Data.BowlingLine.Split(',') : _objReqBowlingLine = new string[] { _objS1Data.BowlingLine };
+        //    string[] _objReqFielderPosition = _objS1Data.FieldingPosition.Contains(",") ? _objReqFielderPosition = _objS1Data.FieldingPosition.Split(',') : _objReqFielderPosition = new string[] { _objS1Data.FieldingPosition };
+        //    string[] _objReqBattingOrder = _objS1Data.BattingOrder.Contains(",") ? _objReqBattingOrder = _objS1Data.BattingOrder.Split(',') : _objReqBattingOrder = new string[] { _objS1Data.BattingOrder };
+        //    string[] _objReqBowlingArm = _objS1Data.BowlingArm.Contains(",") ? _objReqBowlingArm = _objS1Data.BowlingArm.Split(',') : _objReqBowlingArm = new string[] { _objS1Data.BowlingArm };
+
+        //    if (_objS1Data.ShotZone != "" && _objReqShotZones.Length > 0)
+        //    {
+        //        ddlS2Dropwons.Add("shotZoneId", _objReqShotZones);
+        //    }
+        //    if (_objS1Data.ShotType != "" && _objReqShotTypes.Length > 0)
+        //    {
+        //        ddlS2Dropwons.Add("shotTypeId", _objReqShotTypes);
+        //    }
+        //    if (_objS1Data.DismissalType != "" && _objReqDismissalTypes.Length > 0)
+        //    {
+        //        ddlS2Dropwons.Add("dismissalTypeId", _objReqDismissalTypes);
+        //    }
+        //    if (_objS1Data.DeliveryType != "" && _objReqDeliveryType.Length > 0)
+        //    {
+        //        ddlS2Dropwons.Add("deliveryTypeId", _objReqDeliveryType);
+        //    }
+        //    if (_objS1Data.BowlingLength != "" && _objReqBowlingLength.Length > 0)
+        //    {
+        //        ddlS2Dropwons.Add("bowlingLengthId", _objReqBowlingLength);
+        //    }
+        //    if (_objS1Data.BowlingLine != "" && _objReqBowlingLine.Length > 0)
+        //    {
+        //        ddlS2Dropwons.Add("bowlingLineId", _objReqBowlingLine);
+        //    }
+        //    if (_objS1Data.FieldingPosition != "" && _objReqFielderPosition.Length > 0)
+        //    {
+        //        ddlS2Dropwons.Add("fieldingPositionId", _objReqFielderPosition);
+        //    }
+        //    if (_objS1Data.BattingOrder != "" && _objReqBattingOrder.Length > 0)
+        //    {
+        //        ddlS2Dropwons.Add("battingOrder", _objReqBattingOrder);
+        //    }
+        //    if (_objS1Data.BowlingArm != "" && _objReqBowlingArm.Length > 0)
+        //    {
+        //        ddlS2Dropwons.Add("bowlingArm", _objReqBowlingArm);
+        //    }
+        //    return ddlS2Dropwons;
+        //}
+
+
         public override Dictionary<string, object> bindS1andS2Dropdown(dynamic _objS1Data)
         {
             Dictionary<string, object> ddlS2Dropwons = new Dictionary<string, object>();
@@ -751,39 +804,48 @@ namespace WebApis.BOL
 
             if (_objS1Data.ShotZone != "" && _objReqShotZones.Length > 0)
             {
-                ddlS2Dropwons.Add("shotZoneId", _objReqShotZones);
+                string strReqShotZones = objCf.ConvertStringArrayToString(_objReqShotZones);
+                ddlS2Dropwons.Add("shotZoneId", strReqShotZones);
             }
             if (_objS1Data.ShotType != "" && _objReqShotTypes.Length > 0)
             {
-                ddlS2Dropwons.Add("shotTypeId", _objReqShotTypes);
+                string strReqShotTypes = objCf.ConvertStringArrayToString(_objReqShotTypes);
+                ddlS2Dropwons.Add("shotTypeId", strReqShotTypes);
             }
             if (_objS1Data.DismissalType != "" && _objReqDismissalTypes.Length > 0)
             {
-                ddlS2Dropwons.Add("dismissalTypeId", _objReqDismissalTypes);
+                string strReqDismissalTypes = objCf.ConvertStringArrayToString(_objReqDismissalTypes);
+                ddlS2Dropwons.Add("dismissalTypeId", strReqDismissalTypes);
             }
             if (_objS1Data.DeliveryType != "" && _objReqDeliveryType.Length > 0)
             {
-                ddlS2Dropwons.Add("deliveryTypeId", _objReqDeliveryType);
+                string strReqDeliveryType = objCf.ConvertStringArrayToString(_objReqDeliveryType);
+                ddlS2Dropwons.Add("deliveryTypeId", strReqDeliveryType);
             }
             if (_objS1Data.BowlingLength != "" && _objReqBowlingLength.Length > 0)
             {
-                ddlS2Dropwons.Add("bowlingLengthId", _objReqBowlingLength);
+                string strReqBowlingLength = objCf.ConvertStringArrayToString(_objReqBowlingLength);
+                ddlS2Dropwons.Add("bowlingLengthId", strReqBowlingLength);
             }
             if (_objS1Data.BowlingLine != "" && _objReqBowlingLine.Length > 0)
             {
-                ddlS2Dropwons.Add("bowlingLineId", _objReqBowlingLine);
+                string strReqBowlingLine = objCf.ConvertStringArrayToString(_objReqBowlingLine);
+                ddlS2Dropwons.Add("bowlingLineId", strReqBowlingLine);
             }
             if (_objS1Data.FieldingPosition != "" && _objReqFielderPosition.Length > 0)
             {
-                ddlS2Dropwons.Add("fieldingPositionId", _objReqFielderPosition);
+                string strReqFielderPosition = objCf.ConvertStringArrayToString(_objReqFielderPosition);
+                ddlS2Dropwons.Add("fieldingPositionId", strReqFielderPosition);
             }
             if (_objS1Data.BattingOrder != "" && _objReqBattingOrder.Length > 0)
             {
-                ddlS2Dropwons.Add("battingOrder", _objReqBattingOrder);
+                string strReqBowlingLength = objCf.ConvertStringArrayToString(_objReqBattingOrder);
+                ddlS2Dropwons.Add("battingOrder", strReqBowlingLength);
             }
             if (_objS1Data.BowlingArm != "" && _objReqBowlingArm.Length > 0)
             {
-                ddlS2Dropwons.Add("bowlingArm", _objReqBowlingArm);
+                string strReqBowlingArm = objCf.ConvertStringArrayToString(_objReqBowlingArm);
+                ddlS2Dropwons.Add("bowlingArm", strReqBowlingArm);
             }
             return ddlS2Dropwons;
         }
@@ -1397,44 +1459,142 @@ namespace WebApis.BOL
             }
             return count;
         }
+        //public int getMatchCount(QueryContainer _objNestedQuery, ElasticClient EsClient, string sType)
+        //{
+        //    int Count = 0;
+        //    if (sType == "Matches")
+        //    {
+        //        var response = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
+        //        Query(q => _objNestedQuery)
+        //        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.MatchId.Suffix("keyword")).Size(802407)
+        //        )));
+        //        var agg = response.Aggregations.Terms("commit_count");
+        //        Count = agg.Buckets.Count;
+        //    }
+        //    else if (sType == "Videos")
+        //    {
+        //       // QueryContainer TempQuery = new QueryContainer(); 
+        //        QueryContainer qMust = new TermQuery { Field = "isAsset", Value = "0" };
+
+        //        _objNestedQuery &= qMust;
+        //        var response = EsClient.Search<SearchCricketResultTempData>(a => a.Index("cricket").Size(0). //SearchS2Data
+        //        Query(q => _objNestedQuery)
+        //       .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.IsAsset.Suffix("keyword")).Size(802407)
+        //       )));
+        //        var agg = response.Aggregations.Terms("commit_count");
+        //        Count = agg.Buckets.Count;
+
+        //    }
+        //    else if (sType == "Assets")
+        //    {
+        //       // QueryContainer TempQuery = new QueryContainer();
+        //        QueryContainer qMust = new TermQuery { Field="isAsset", Value="1"};
+        //        //TempQuery = _objNestedQuery;
+        //        _objNestedQuery &= qMust;
+        //        var response = EsClient.Search<SearchCricketResultTempData>(a => a.Index("cricket").Size(0). //SearchS2Data
+        //         Query(q => _objNestedQuery)
+        //         .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.MatchId.Suffix("keyword")).Size(802407)
+        //         )));
+        //        var agg = response.Aggregations.Terms("commit_count");
+        //        Count = agg.Buckets.Count;
+
+        //    }
+
+
+        //    return Count;
+        //}
+
         public int getMatchCount(QueryContainer _objNestedQuery, ElasticClient EsClient, string sType)
         {
+
             int Count = 0;
             if (sType == "Matches")
             {
                 var response = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
                 Query(q => _objNestedQuery)
-                .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.MatchId.Suffix("keyword")).Size(802407)
+                .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.MatchId.Suffix("keyword")).Size(802407)//409846 802407
                 )));
                 var agg = response.Aggregations.Terms("commit_count");
                 Count = agg.Buckets.Count;
             }
             else if (sType == "Videos")
             {
-               // QueryContainer TempQuery = new QueryContainer(); 
+                QueryContainer TempQuery = new QueryContainer();
                 QueryContainer qMust = new TermQuery { Field = "isAsset", Value = "0" };
-                
-                _objNestedQuery &= qMust;
-                var response = EsClient.Search<SearchCricketResultTempData>(a => a.Index("cricket").Size(0). //SearchS2Data
-                Query(q => _objNestedQuery)
-               .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.IsAsset.Suffix("keyword")).Size(802407)
-               )));
-                var agg = response.Aggregations.Terms("commit_count");
-                Count = agg.Buckets.Count;
+                TempQuery = _objNestedQuery;
+                TempQuery &= qMust;
+                // var response = EsClient.Search<SearchCricketResultTempData>(a => a.Index("cricket").Size(0). //SearchS2Data
+                // Query(q => TempQuery)
+                //.Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.IsAsset.Suffix("keyword")).Size(802407)
+                //)));
+                // var agg = response.Aggregations.Terms("commit_count");
+                // Count = agg.Buckets.Count;
+
+
+                // var response1 = EsClient.Search<SearchCricketData>(a => a.Index("cricket"). //SearchS2Data
+                //Query(q => TempQuery).Size(802407)
+                //var result = EsClient.Search<SearchCricketData>(s => s.Index("cricket").From(0).Take(10000).Scroll("2m").Query(q => TempQuery).Size(10000));
+                //List<SearchCricketData> results = new List<SearchCricketData>();
+                //if (!result.IsValid || string.IsNullOrEmpty(result.ScrollId))
+                //    throw new Exception(result.ServerError.Error.Reason);
+                //if (result.Documents.Any())
+                //    results.AddRange(result.Documents);
+                //string scrollid = result.ScrollId;
+                //bool isScrollSetHasData = true;
+                //while (isScrollSetHasData)
+                //{
+                //    ISearchResponse<SearchCricketData> loopingResponse = EsClient.Scroll<SearchCricketData>("2m", scrollid);
+                //    if (loopingResponse.IsValid)
+                //    {
+                //        results.AddRange(loopingResponse.Documents);
+                //        scrollid = loopingResponse.ScrollId;
+                //    }
+                //    isScrollSetHasData = loopingResponse.Documents.Any();
+                //}
+                //.Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.IsAsset.Suffix("keyword")).Size(802407)
+                //)
+                //)
+                //);
+                //  Count = Convert.ToInt32(result.Hits);
+                CountRequest countRequest = new CountRequest()
+                {
+
+                    Query = TempQuery
+                };
+                var result = EsClient.Count(countRequest).Count;
+
+                //var agg = result.Aggregations.Terms("commit_count");
+                Count = Convert.ToInt32(result);
 
             }
             else if (sType == "Assets")
             {
-               // QueryContainer TempQuery = new QueryContainer();
-                QueryContainer qMust = new TermQuery { Field="isAsset", Value="1"};
-                //TempQuery = _objNestedQuery;
-                _objNestedQuery &= qMust;
-                var response = EsClient.Search<SearchCricketResultTempData>(a => a.Index("cricket").Size(0). //SearchS2Data
-                 Query(q => _objNestedQuery)
-                 .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.MatchId.Suffix("keyword")).Size(802407)
-                 )));
-                var agg = response.Aggregations.Terms("commit_count");
-                Count = agg.Buckets.Count;
+                QueryContainer TempQuery = new QueryContainer();
+                QueryContainer qMust = new TermQuery { Field = "isAsset", Value = "1" };
+                TempQuery = _objNestedQuery;
+                TempQuery &= qMust;
+
+                //var response = EsClient.Search<SearchCricketResultTempData>(a => a.Index("cricket").Size(0). //SearchS2Data
+                // Query(q => TempQuery)
+                // .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.MatchId.Suffix("keyword")).Size(802407)
+                // )));
+
+                //var response = EsClient.Search<SearchCricketData>(a => a.Index("cricket"). //SearchS2Data
+                //Query(q => TempQuery).Size(802407)
+                //// .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.MatchId.Suffix("keyword")).Size(802407)
+                ////))
+                //);
+                // var result = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Query(q => TempQuery).Sort(a => a.Ascending(p => p.Id.Suffix("keyword"))).Size(10000));
+                // var result = EsClient.coun<SearchCricketData>(s => s.Index("cricket").Query(q => TempQuery).Size(802407));
+                CountRequest countRequest = new CountRequest()
+                {
+
+                    Query = TempQuery
+                };
+                var result = EsClient.Count(countRequest).Count;
+
+                //var agg = result.Aggregations.Terms("commit_count");
+                Count = Convert.ToInt32(result);
 
             }
 
@@ -1442,11 +1602,12 @@ namespace WebApis.BOL
             return Count;
         }
 
+
         public dynamic SearchS1(QueryContainer _objNestedQuery, ElasticClient EsClient)
         {
 
-            QueryContainer qcIstagged = new TermQuery { Field = "isAsset", Value = "1" };
-            _objNestedQuery &= qcIstagged;
+            //QueryContainer qcIstagged = new TermQuery { Field = "isAsset", Value = "1" };
+            //_objNestedQuery &= qcIstagged;
             dynamic result1 = null;
             IEnumerable<SearchCricketResultTempData> _objSearchResultFilterData = new List<SearchCricketResultTempData>();
             List<SearchCricketResultTempData> _objSearchResult = new List<SearchCricketResultTempData>();
@@ -1508,13 +1669,47 @@ namespace WebApis.BOL
             }
             return _objSearchResult;
         }
+        //public dynamic SearchS1MasterData(QueryContainer _objNestedQuery, ElasticClient EsClient)
+        //{
+        //    dynamic result1 = null;
+        //    IEnumerable<SearchS1CricketMasterData> _objSearchResultFilterData = new List<SearchS1CricketMasterData>();
+        //    var result = EsClient.Search<SearchS1CricketMasterData>(s => s.Index("cricket").Query(q => _objNestedQuery).Size(802407));
+        //    return result1 = result.Hits.ToList();
+        //}
+
         public dynamic SearchS1MasterData(QueryContainer _objNestedQuery, ElasticClient EsClient)
         {
             dynamic result1 = null;
             IEnumerable<SearchS1CricketMasterData> _objSearchResultFilterData = new List<SearchS1CricketMasterData>();
+
+            List<SearchS1CricketMasterData> _objSearchResult = new List<SearchS1CricketMasterData>();
             var result = EsClient.Search<SearchS1CricketMasterData>(s => s.Index("cricket").Query(q => _objNestedQuery).Size(802407));
-            return result1 = result.Hits.ToList();
+            var response = result.Hits.ToList();
+            foreach (var items in result.Hits)
+            {
+                _objSearchResult.Add(new SearchS1CricketMasterData
+                {
+                    BattingOrder = items.Source.BattingOrder.ToString(),
+                    BowlingArm = items.Source.BowlingArm.ToString(),
+                    MatchDate = Convert.ToInt32(items.Source.MatchDate.ToString()),
+                    FielderPosition = items.Source.FielderPosition.ToString(),
+                    FielderPositionId = items.Source.FielderPositionId.ToString(),
+                    BowlingLine = items.Source.BowlingLine.ToString(),
+                    BowlingLineId = items.Source.BowlingLineId.ToString(),
+                    BowlingLengthId = items.Source.BowlingLengthId.ToString(),
+                    DeliveryType = items.Source.DeliveryType.ToString(),
+                    DeliveryTypeId = items.Source.DeliveryTypeId.ToString(),
+                    Dismissal = items.Source.Dismissal.ToString(),
+                    DismissalId = items.Source.DismissalId.ToString(),
+                    ShotZone = items.Source.ShotZone.ToString(),
+                    ShotType = items.Source.ShotType.ToString(),
+                    ShotZoneId = items.Source.ShotZoneId.ToString(),
+                    ShotTypeId = items.Source.ShotTypeId.ToString(),
+                });
+            }
+            return _objSearchResult;
         }
+
 
 
         public QueryContainer GetS2ActionQueryResult(S2ActionData _objActionData, QueryContainer _objNestedQuery, bool isMasterData = false)

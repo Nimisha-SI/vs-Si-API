@@ -33,35 +33,35 @@ namespace WebApis.Controllers
             oLayer = new EsLayer(_con);
         }
 
-        [System.Web.Http.HttpGet]
-        [Route("api/getData")]
-        public IActionResult Get()
-        {
-            EsClient = oLayer.CreateConnection();
-            List<KabaddiS1Data> obj2 = new List<KabaddiS1Data>();
-            string connection = obj.GetConnectionString("ConnectionStrings", "DefaultConnection");
-            try
-            {
-                //dynamic DyObj = new List<SearchCricketData>();
-                for (int i = 1; i <= 120; i++)
-                {
-                    obj2 = obj.GetSearchDataS1ForKabaddi(connection, true);
-                    if (obj2.Count > 0)
-                    {
-                        oLayer.BulkInsert(EsClient, obj2);
-                    }
+        //[System.Web.Http.HttpGet]
+        //[Route("api/getData")]
+        //public IActionResult Get()
+        //{
+        //    EsClient = oLayer.CreateConnection();
+        //    List<KabaddiS1Data> obj2 = new List<KabaddiS1Data>();
+        //    string connection = obj.GetConnectionString("ConnectionStrings", "DefaultConnection");
+        //    try
+        //    {
+        //        //dynamic DyObj = new List<SearchCricketData>();
+        //        for (int i = 1; i <= 120; i++)
+        //        {
+        //            obj2 = obj.GetSearchDataS1ForKabaddi(connection, true);
+        //            if (obj2.Count > 0)
+        //            {
+        //                oLayer.BulkInsert(EsClient, obj2);
+        //            }
 
-                }
-                //  return Request.CreateResponse(HttpStatusCode.Created, "Index Created successfully.");
-                return Ok("Success");
-            }
-            catch (Exception ex)
-            {
+        //        }
+        //        //  return Request.CreateResponse(HttpStatusCode.Created, "Index Created successfully.");
+        //        return Ok("Success");
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                // return Request.CreateResponse(HttpStatusCode.BadRequest, ex.ToString());
-                return BadRequest(ex.ToString());
-                // return request.CreateResponse(HttpStatusCode.BadRequest, "Invalid operation!");
-            }
-        }
+        //        // return Request.CreateResponse(HttpStatusCode.BadRequest, ex.ToString());
+        //        return BadRequest(ex.ToString());
+        //        // return request.CreateResponse(HttpStatusCode.BadRequest, "Invalid operation!");
+        //    }
+        //}
     }
 }

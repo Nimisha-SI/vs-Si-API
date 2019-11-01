@@ -773,7 +773,7 @@ namespace WebApis.BOL
         public enum SportType {
         CRICKET = 1,
         FOOTBALL = 2,
-        kabadibulk = 3,
+        kabaddi = 3,
         F1 = 4,
         TENNIS = 7,
         HOCKEY = 9,

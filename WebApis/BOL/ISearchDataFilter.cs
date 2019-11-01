@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static WebApis.Model.ELModels;
+using System.IO;
+using WebApis.Model;
 
 namespace WebApis.BOL
 {
@@ -11,9 +13,8 @@ namespace WebApis.BOL
         //ExtendedSearchResultFilterData GetSearchResultsFilter(STFilterRequestData _objReqData);
 
         string GetSearchResultsFilter(STFilterRequestData _objReqData);
-
-        List<FilteredEntityForCricket> GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData);
-
+        //List<FilteredEntityForCricket> GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData);
+        string GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData);
         //List<FilteredEntityKabaddi> GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData);
 
         string GetFilteredEntitiesBySportKabaddi(SearchEntityRequestData _objReqData);
@@ -37,5 +38,8 @@ namespace WebApis.BOL
         string GetAutoCompleteData(string sportid, string stype, string term = "");
 
         string GetFilteredEntityBySportForS2(SearchS2RequestData _ObjreqData);
+        bool AddUpdateForSearch(string RequestData, int sportId,bool isS2= false);
+        string GetSearchResults(SearchRequestData _objReqData);
+        // bool AddUpdateLuceneIndexForS2(IEnumerable<SearchS2Data> sampleDatas, bool isFullIndex = true, int sportid = 1);
     }
 }

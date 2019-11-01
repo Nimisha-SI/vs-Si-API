@@ -468,7 +468,7 @@ namespace WebApis.Model
 
         public class SearchCricketResultData
         {
-            public Int64 Id { get; set; }
+            public string Id { get; set; }
             public string ClearId { get; set; }
             public string MediaId { get; set; }
             public string MatchId { get; set; }
