@@ -183,10 +183,58 @@ namespace WebApis.BOL
             return obj;
         }
 
-        public override dynamic getFinalResult(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, ElasticClient EsClient, string sportid = "1")
+        public override dynamic getFinalResult(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, ElasticClient EsClient, string type="")
         {
-            throw new NotImplementedException();
+            string input = Convert.ToInt32(Convert.ToBoolean(_objMatchDetail.IsAsset)).ToString();
+            QueryContainer query = new TermQuery { Field = "isAsset", Value = input };
+            _objNestedQuery &= query;
+            dynamic result;
+            switch (type)
+            {
+                case "comptype":
+                    List<FilteredEntityData> lstsearchresults = new List<FilteredEntityData>();
+                    var resultsMultiSelectData = EsClient.Search<MatchDetailMultiSelectResulttData>(s => s.Index("kabaddi").Query(q => _objNestedQuery)
+                    .Aggregations(a => a.Terms("agg_MultiSelect", t => t.Field(p => p.CompType)))
+                    .Size(65243));
+                    var response = resultsMultiSelectData.Aggregations.Terms("agg_MultiSelect");
+                    foreach (var items in response.Buckets)
+                    {
+                        lstsearchresults.Add(new FilteredEntityData
+                        {
+                            EntityId = items.Key.ToString(),
+                            EntityName = items.Key.ToString()
+                        });
+                    }
+                    result = lstsearchresults;
+                    return result;
+                    break;
+                case "matchstage":
+                    List<FilteredEntityData> lstsearchresultsMatchStage = new List<FilteredEntityData>();
+                    var resultsMultiSelectDatamatchstage = EsClient.Search<MatchDetailMultiSelectResulttData>(s => s.Index("kabaddi").Query(q => _objNestedQuery)
+                    .Aggregations(a => a.Terms("agg_MultiSelect", t => t.Field(p => p.MatchStage)))
+                    .Size(65243));
+                    var responsematchstage = resultsMultiSelectDatamatchstage.Aggregations.Terms("agg_MultiSelect");
+                    foreach (var items in responsematchstage.Buckets)
+                    {
+                        lstsearchresultsMatchStage.Add(new FilteredEntityData
+                        {
+                            EntityId = items.Key.ToString(),
+                            EntityName = items.Key.ToString()
+                        });
+                    }
+                    result = lstsearchresultsMatchStage;
+                    return result;
+                    break;
+                default:
+                    return "";
+                    break;
+            }
         }
+
+        //public override dynamic getFinalResult(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, ElasticClient EsClient, string sportid = "1")
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public QueryContainer GetKabaddiMatchSituationQueryST(QueryContainer _objNestedQuery, MatchSituation _objMatchSituation)
         {
@@ -551,6 +599,5 @@ namespace WebApis.BOL
         {
             throw new NotImplementedException();
         }
-
     }
 }

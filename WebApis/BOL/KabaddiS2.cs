@@ -33,32 +33,32 @@ namespace WebApis.BOL
 
             string[] _objReqDiscEvents = "9,10,11".Split(',');//Green Card, Yellow Card, Red Card
 
-                if (!string.IsNullOrEmpty(_objS1Data.TouchTypeId) && _objReqTouchTypes.Length > 0)
+                //if (!string.IsNullOrEmpty(_objS1Data.TouchTypeId) && _objReqTouchTypes.Length > 0)
                 {
                     string touchTypeIds = objCf.ConvertStringArrayToString(_objReqTouchTypes);
                     ddlS2Dropwons.Add("touchTypeId", touchTypeIds);
                 }
-                if (!string.IsNullOrEmpty(_objS1Data.TackleTypeId) && _objReqTackleTypes.Length > 0)
+                //if (!string.IsNullOrEmpty(_objS1Data.TackleTypeId) && _objReqTackleTypes.Length > 0)
                 {
                     string tackleTypeIds = objCf.ConvertStringArrayToString(_objReqTackleTypes);
                     ddlS2Dropwons.Add("tackleTypeId", tackleTypeIds);
                 }
-                if (!string.IsNullOrEmpty(_objS1Data.EventId) && _objReqEvents.Length > 0)
+                //if (!string.IsNullOrEmpty(_objS1Data.EventId) && _objReqEvents.Length > 0)
                 {
                     string eventIds = objCf.ConvertStringArrayToString(_objReqEvents);
                     ddlS2Dropwons.Add("eventId", eventIds);
                 }
-                if (!string.IsNullOrEmpty(_objS1Data.AssistTypeId) && _objReqAssistType.Length > 0)
+                //if (!string.IsNullOrEmpty(_objS1Data.AssistTypeId) && _objReqAssistType.Length > 0)
                 {
                     string assistType1Ids = objCf.ConvertStringArrayToString(_objReqAssistType1);
                     ddlS2Dropwons.Add("assistType1Id", assistType1Ids);
                 }
-                if (!string.IsNullOrEmpty(_objS1Data.AssistType2Id) && _objReqAssistType2.Length > 0)
+                //if (!string.IsNullOrEmpty(_objS1Data.AssistType2Id) && _objReqAssistType2.Length > 0)
                 {
                     string assistType2Ids = objCf.ConvertStringArrayToString(_objReqAssistType2);
                     ddlS2Dropwons.Add("assistType2Id", assistType2Ids);
                 }
-                if (!string.IsNullOrEmpty(_objS1Data.NoOfDefenders) && _objReqNoOfDefenders.Length > 0)
+                //if (!string.IsNullOrEmpty(_objS1Data.NoOfDefenders) && _objReqNoOfDefenders.Length > 0)
                 {
                     string noOfDefenderss = objCf.ConvertStringArrayToString(_objReqNoOfDefenders);
                     ddlS2Dropwons.Add("noOfDefenders", noOfDefenderss);
@@ -616,7 +616,7 @@ namespace WebApis.BOL
                                 AssistType2Id = str.AssistType2Id,
                                 AssistType2 = str.AssistType2,
                                 NoOfDefenders = str.NoOfDefenders,
-                                LanguageId = "5"
+                                LanguageId = "5",
                             };
                             _objresult.Add(result);
                         }

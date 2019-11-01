@@ -286,7 +286,7 @@ namespace WebApis.BOL
                     case 3:
                         {
                             var result = EsClient.Search<SearchKabaddiData>(a => a.Index(IndexName).Size(0).Query(s => _objNestedQuery)
-          .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(802407)) //crickets2-802407
+          .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(65243)) //crickets2-802407
           )
          );
                             var agg = result.Aggregations.Terms("terms_agg").Buckets;

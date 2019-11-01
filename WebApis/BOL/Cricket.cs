@@ -497,7 +497,7 @@ namespace WebApis.BOL
             _objNestedQuery &= query;
             dynamic result;
             List<FilteredEntityData> lstsearchresults = new List<FilteredEntityData>();
-            var resultsMultiSelectData = EsClient.Search<MatchDetailMultiSelectResulttData>(s => s.Index("crickets").Query(q => _objNestedQuery)
+            var resultsMultiSelectData = EsClient.Search<MatchDetailMultiSelectResulttData>(s => s.Index("cricket").Query(q => _objNestedQuery)
             .Aggregations(a => a.Terms("agg_MultiSelect", t=>t.Field(p=>p.CompType)))
             .Size(802407));
             var response = resultsMultiSelectData.Aggregations.Terms("agg_MultiSelect");
