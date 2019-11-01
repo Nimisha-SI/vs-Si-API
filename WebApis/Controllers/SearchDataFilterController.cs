@@ -122,6 +122,7 @@ namespace WebApis.Controllers
                 //_objLstReqData.PlayerDetails = JsonConvert.DeserializeObject<List<PlayerDetail>>(jsonData);
                 if (_objLstReqData != null)
                 {
+
                     SearchRequestData _objReqDataRes = _objLstReqData.FirstOrDefault();
                     result = _sObj.GetSearchResultCount(_objReqDataRes);
                 }
