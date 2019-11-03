@@ -2407,181 +2407,182 @@ namespace WebApis.BOL
                         {
                             _objSearchResults.ResultDerivedData.MasterData = new Dictionary<string, object>();
 
-                            if (_objSearchResults.ResultData.ToList().Count > 0)
+                            //if (_objSearchResults.ResultData.ToList().Count > 0)
+                            //{
+
+                            //}
+                            ddlDropdowns = _kabaddiS2.bindS1andS2Dropdown(_objPlayerDetailskabaddi);
+
+                            if (objDropdown != null)
                             {
-                                ddlDropdowns = _kabaddiS2.bindS1andS2Dropdown(_objPlayerDetailskabaddi);
+                                string[] valuess = objDropdown.Split(",");
+                                var assistType1arr = Convert.ToString(ddlDropdowns["assistType1Id"]).Split(",");
+                                var assistType2arr = Convert.ToString(ddlDropdowns["assistType2Id"]).Split(",");
+                                var touchtypearr = Convert.ToString(ddlDropdowns["touchTypeId"]).Split(",");
+                                var tackletypearr = Convert.ToString(ddlDropdowns["tackleTypeId"]).Split(",");
+                                var eventIdarr = Convert.ToString(ddlDropdowns["eventId"]).Split(",");
+                                var noOfDefendersarr = Convert.ToString(ddlDropdowns["noOfDefenders"]).Split(",");
 
-                                if (objDropdown != null)
+                                foreach (var items in valuess)
                                 {
-                                    string[] valuess = objDropdown.Split(",");
-                                    var assistType1arr = Convert.ToString(ddlDropdowns["assistType1Id"]).Split(",");
-                                    var assistType2arr = Convert.ToString(ddlDropdowns["assistType2Id"]).Split(",");
-                                    var touchtypearr = Convert.ToString(ddlDropdowns["touchTypeId"]).Split(",");
-                                    var tackletypearr = Convert.ToString(ddlDropdowns["tackleTypeId"]).Split(",");
-                                    var eventIdarr = Convert.ToString(ddlDropdowns["eventId"]).Split(",");
-                                    var noOfDefendersarr = Convert.ToString(ddlDropdowns["noOfDefenders"]).Split(",");
-
-                                    foreach (var items in valuess)
+                                    _objNestedQuery = null;
+                                    var item = items.Split("::");
+                                    QueryContainer assistType1arrquery = new QueryContainer();
+                                    QueryContainer touchtypearrquery = new QueryContainer();
+                                    QueryContainer tackletypearrquery = new QueryContainer();
+                                    QueryContainer eventidarrquery = new QueryContainer();
+                                    QueryContainer qShould = new QueryContainer();
+                                    if (assistType1arr != null && assistType1arr.Length > 0 && assistType1arr[0] != "" && (item[0] == "touchTypeId" || item[0] == "tackleTypeId"))
                                     {
-                                        _objNestedQuery = null;
-                                        var item = items.Split("::");
-                                        QueryContainer assistType1arrquery = new QueryContainer();
-                                        QueryContainer touchtypearrquery = new QueryContainer();
-                                        QueryContainer tackletypearrquery = new QueryContainer();
-                                        QueryContainer eventidarrquery = new QueryContainer();
-                                        QueryContainer qShould = new QueryContainer();
-                                        if (assistType1arr != null && assistType1arr.Length > 0 && assistType1arr[0] != "" && (item[0] == "touchTypeId" || item[0] == "tackleTypeId"))
+                                        qShould = null;
+                                        foreach (string str in assistType1arr)
                                         {
-                                            qShould = null;
-                                            foreach (string str in assistType1arr)
-                                            {
-                                                assistType1arrquery = new TermQuery { Field = "assistType1Id", Value = str } || new TermQuery { Field = "assistType2Id", Value = str };
-                                                qShould |= assistType1arrquery;
-                                            }
-                                            //_objNestedQuery &= assistType1arrquery;
-                                            _objNestedQuery &= qShould;
+                                            assistType1arrquery = new TermQuery { Field = "assistType1Id", Value = str } || new TermQuery { Field = "assistType2Id", Value = str };
+                                            qShould |= assistType1arrquery;
                                         }
-                                        if (touchtypearr != null && touchtypearr.Length > 0 && touchtypearr[0] != "" && item[0] != "touchTypeId")
+                                        //_objNestedQuery &= assistType1arrquery;
+                                        _objNestedQuery &= qShould;
+                                    }
+                                    if (touchtypearr != null && touchtypearr.Length > 0 && touchtypearr[0] != "" && item[0] != "touchTypeId")
+                                    {
+                                        qShould = null;
+                                        foreach (string str in touchtypearr)
                                         {
-                                            qShould = null;
-                                            foreach (string str in touchtypearr)
-                                            {
-                                                touchtypearrquery = new TermQuery { Field = "touchTypeId", Value = str };
-                                                qShould |= touchtypearrquery;
-                                            }
-                                            //_objNestedQuery &= touchtypearrquery;
-                                            _objNestedQuery &= qShould;
+                                            touchtypearrquery = new TermQuery { Field = "touchTypeId", Value = str };
+                                            qShould |= touchtypearrquery;
                                         }
-                                        if (tackletypearr != null && tackletypearr.Length > 0 && tackletypearr[0] != "" && item[0] != "tackleTypeId")
+                                        //_objNestedQuery &= touchtypearrquery;
+                                        _objNestedQuery &= qShould;
+                                    }
+                                    if (tackletypearr != null && tackletypearr.Length > 0 && tackletypearr[0] != "" && item[0] != "tackleTypeId")
+                                    {
+                                        qShould = null;
+                                        foreach (string str in tackletypearr)
                                         {
-                                            qShould = null;
-                                            foreach (string str in tackletypearr)
-                                            {
-                                                tackletypearrquery = new TermQuery { Field = "tackleTypeId", Value = str };
-                                                qShould |= tackletypearrquery;
-                                            }
-                                            //_objNestedQuery &= tackletypearrquery;
-                                            _objNestedQuery &= qShould;
+                                            tackletypearrquery = new TermQuery { Field = "tackleTypeId", Value = str };
+                                            qShould |= tackletypearrquery;
                                         }
-                                        if (eventIdarr != null && eventIdarr.Length > 0 && eventIdarr[0] != "")
+                                        //_objNestedQuery &= tackletypearrquery;
+                                        _objNestedQuery &= qShould;
+                                    }
+                                    if (eventIdarr != null && eventIdarr.Length > 0 && eventIdarr[0] != "")
+                                    {
+                                        qShould = null;
+                                        foreach (string str in eventIdarr)
                                         {
-                                            qShould = null;
-                                            foreach (string str in eventIdarr)
-                                            {
-                                                eventidarrquery = new TermQuery { Field = "eventId", Value = str };
-                                                qShould |= eventidarrquery;
-                                            }
-                                            //_objNestedQuery &= eventidarrquery;
-                                            _objNestedQuery &= qShould;
+                                            eventidarrquery = new TermQuery { Field = "eventId", Value = str };
+                                            qShould |= eventidarrquery;
                                         }
-
-                                        string[] itemsArray = item;
-                                        string strValue = objCF.ConvertStringArrayToString(itemsArray);
-                                        var Type = ddlDropdowns[strValue.Split(",")[0].ToString()].ToString();
-                                        string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
-
-                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData,
-                                            EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
-
+                                        //_objNestedQuery &= eventidarrquery;
+                                        _objNestedQuery &= qShould;
                                     }
 
-                                    //foreach (var items in valuess)
-                                    //{
-                                    //    var item = items.Split("::");
+                                    string[] itemsArray = item;
+                                    string strValue = objCF.ConvertStringArrayToString(itemsArray);
+                                    var Type = ddlDropdowns[strValue.Split(",")[0].ToString()].ToString();
+                                    string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
 
-                                    //    foreach (KeyValuePair<string, object> entry in ddlDropdowns)
-                                    //    {
-                                    //        if (item.ToString().Split(",")[0] != entry.Key.ToString())
-                                    //        {
-                                    //            QueryContainer query = new TermQuery { Field = entry.Key, Value = entry.Value };
-                                    //            _objNestedDropdownQuery &= query;
-                                    //        }
+                                    _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData,
+                                        EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
 
-                                    //    }
-
-                                    //    var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
-                                    //    string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
-                                    //    _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
-                                    //}
-
-                                    //foreach (var items in valuess)
-                                    //{
-                                    //    var item = items.Split("::");
-                                    //    foreach (KeyValuePair<string, object> itemss in ddlDropdowns)
-                                    //    {
-                                    //        string strValue = objCF.ConvertStringArrayToString(item);
-                                    //        var Type = strValue.Split(",")[0].ToString().ToString();
-                                    //        if (Type != itemss.Key.ToString())
-                                    //        {
-
-                                    //            string slist = itemss.Value.ToString();
-                                    //            if (slist.Contains(","))
-                                    //            {
-                                    //                string[] strValues = slist.Split(',');
-                                    //                foreach (string str in strValues)
-                                    //                {
-                                    //                    QueryContainer query1 = new TermQuery { Field = itemss.Key, Value = str };
-                                    //                    _objNestedDropdownQuery &= query1;
-                                    //                }
-                                    //            }
-                                    //            else
-                                    //            {
-                                    //                QueryContainer query = new TermQuery { Field = itemss.Key, Value = itemss.Value };
-                                    //                _objNestedDropdownQuery &= query;
-                                    //            }
-
-                                    //        }
-                                    //        else
-                                    //        {
-                                    //            checkIfCascade = false;
-                                    //        }
-
-                                    //    }
-                                    //    if (!checkIfCascade)
-                                    //    {
-                                    //        string[] itemsArray = item;
-                                    //        string strValue = objCF.ConvertStringArrayToString(itemsArray);
-                                    //        var Type = ddlDropdowns[strValue.Split(",")[0].ToString()].ToString();
-                                    //        string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
-                                    //        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
-
-                                    //    }
-                                    //    else
-                                    //    {
-                                    //        //var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
-                                    //        //string[] _objType = new string[] { "0" };
-                                    //        string[] _objType = new string[] { "" };
-                                    //        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
-
-                                    //    }
-                                    //    checkIfCascade = true;
-                                    //}
                                 }
 
-                                /*if (objDropdown != null)
+                                //foreach (var items in valuess)
+                                //{
+                                //    var item = items.Split("::");
+
+                                //    foreach (KeyValuePair<string, object> entry in ddlDropdowns)
+                                //    {
+                                //        if (item.ToString().Split(",")[0] != entry.Key.ToString())
+                                //        {
+                                //            QueryContainer query = new TermQuery { Field = entry.Key, Value = entry.Value };
+                                //            _objNestedDropdownQuery &= query;
+                                //        }
+
+                                //    }
+
+                                //    var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
+                                //    string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
+                                //    _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType);
+                                //}
+
+                                //foreach (var items in valuess)
+                                //{
+                                //    var item = items.Split("::");
+                                //    foreach (KeyValuePair<string, object> itemss in ddlDropdowns)
+                                //    {
+                                //        string strValue = objCF.ConvertStringArrayToString(item);
+                                //        var Type = strValue.Split(",")[0].ToString().ToString();
+                                //        if (Type != itemss.Key.ToString())
+                                //        {
+
+                                //            string slist = itemss.Value.ToString();
+                                //            if (slist.Contains(","))
+                                //            {
+                                //                string[] strValues = slist.Split(',');
+                                //                foreach (string str in strValues)
+                                //                {
+                                //                    QueryContainer query1 = new TermQuery { Field = itemss.Key, Value = str };
+                                //                    _objNestedDropdownQuery &= query1;
+                                //                }
+                                //            }
+                                //            else
+                                //            {
+                                //                QueryContainer query = new TermQuery { Field = itemss.Key, Value = itemss.Value };
+                                //                _objNestedDropdownQuery &= query;
+                                //            }
+
+                                //        }
+                                //        else
+                                //        {
+                                //            checkIfCascade = false;
+                                //        }
+
+                                //    }
+                                //    if (!checkIfCascade)
+                                //    {
+                                //        string[] itemsArray = item;
+                                //        string strValue = objCF.ConvertStringArrayToString(itemsArray);
+                                //        var Type = ddlDropdowns[strValue.Split(",")[0].ToString()].ToString();
+                                //        string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
+                                //        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
+
+                                //    }
+                                //    else
+                                //    {
+                                //        //var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
+                                //        //string[] _objType = new string[] { "0" };
+                                //        string[] _objType = new string[] { "" };
+                                //        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
+
+                                //    }
+                                //    checkIfCascade = true;
+                                //}
+                            }
+
+                            /*if (objDropdown != null)
+                            {
+                                string[] valuess = objDropdown.Split(",");
+
+                                foreach (var items in valuess)
                                 {
-                                    string[] valuess = objDropdown.Split(",");
+                                    var item = items.Split("::");
 
-                                    foreach (var items in valuess)
+                                    foreach (KeyValuePair<string, object> entry in ddlDropdowns)
                                     {
-                                        var item = items.Split("::");
-
-                                        foreach (KeyValuePair<string, object> entry in ddlDropdowns)
+                                        if (item.ToString().Split(",")[0] != entry.Key.ToString())
                                         {
-                                            if (item.ToString().Split(",")[0] != entry.Key.ToString())
-                                            {
-                                                QueryContainer query = new TermQuery { Field = entry.Key, Value = entry.Value };
-                                                _objNestedDropdownQuery &= query;
-                                            }
-
+                                            QueryContainer query = new TermQuery { Field = entry.Key, Value = entry.Value };
+                                            _objNestedDropdownQuery &= query;
                                         }
 
-                                        var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
-                                        string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
-                                        _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
                                     }
-                                }*/
-                            }
+
+                                    var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
+                                    string[] _objType = Type.Contains(",") ? _objType = Type.Split(",") : _objType = new string[] { Type };
+                                    _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "kabaddi", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
+                                }
+                            }*/
                         }
                     }
                     else if (_objPlayerDetailskabaddi != null && !_objPlayerDetailskabaddi.IsDefault)

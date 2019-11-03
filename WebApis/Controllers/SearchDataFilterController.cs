@@ -20,8 +20,9 @@ namespace WebApis.Controllers
         //private ExtendedSearchResultFilterData _objSearchResults2;
         //private ExtendedSearchResultFilterData _objResult;
         private MatchDetail _objMatchDetail = new MatchDetail();
-        public SearchDataFilterController(ISearchDataFilter sObj) {
-                _sObj = sObj;
+        public SearchDataFilterController(ISearchDataFilter sObj)
+        {
+            _sObj = sObj;
         }
         [System.Web.Http.HttpPost]
         [Route("api/GetSearchResultForFilters")]
@@ -30,7 +31,8 @@ namespace WebApis.Controllers
             string _objResult = "";
             try
             {
-                if (_objReqData != null) {
+                if (_objReqData != null)
+                {
                     _objResult = _sObj.GetSearchResultsFilter(_objReqData);
                 }
                 return Ok(new { responseText = _objResult });
@@ -48,7 +50,7 @@ namespace WebApis.Controllers
             try
             {
                 CommonFunction objCF = new CommonFunction();
-             
+
                 string SportName = objCF.getType(_objReqData.MatchDetails.SportID);
                 if (_objReqData != null)
                 {
@@ -79,11 +81,10 @@ namespace WebApis.Controllers
             }
         }
 
-
-
         [System.Web.Http.HttpPost]
         [Route("api/GetSearchedFilters")]
-        public IActionResult GetSearchedFilters(SaveSearchesRequestData _objReqData) {
+        public IActionResult GetSearchedFilters(SaveSearchesRequestData _objReqData)
+        {
             try
             {
                 string response = string.Empty;
@@ -97,17 +98,19 @@ namespace WebApis.Controllers
                 return Ok(new { responseText = response });
                 //return Ok();
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message.ToString());
             }
-            
-          
+
+
         }
 
         [System.Web.Http.HttpPost]
         [Route("api/GetSearchResultCount")]
         //public IActionResult GetSearchResultCount(IEnumerable<SearchRequestData> _objReqData) {
-        public IActionResult GetSearchResultCount(dynamic _objReqData) {
+        public IActionResult GetSearchResultCount(dynamic _objReqData)
+        {
             try
             {
                 string result = string.Empty;
@@ -135,42 +138,6 @@ namespace WebApis.Controllers
                             result = _sObj.GetSearchResultCountForKabaddi(_objLstReqDatakabaddi.FirstOrDefault());
                             break;
                     }
-                    
-                }
-                //string jsonString = JsonConvert.SerializeObject(result);
-                return Ok( new { result });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message.ToString());
-            }
-
-        }
-
-        [System.Web.Http.HttpPost]
-        [Route("api/GetSearchResults")]
-        //public IActionResult GetSearchResultCount(IEnumerable<SearchRequestData> _objReqData) {
-        public IActionResult GetSearchResultsForKabaddi(dynamic _objReqData)
-        {
-            try
-            {
-                string result = string.Empty;
-                string jsonData = JsonConvert.SerializeObject(_objReqData);
-                List<SearchRequestData> _objLstReqData = new List<SearchRequestData>();
-                _objLstReqData = JsonConvert.DeserializeObject<List<SearchRequestData>>(jsonData);
-                if (_objLstReqData != null)
-                {
-                    SearchRequestData _objReqDataRes = _objLstReqData.FirstOrDefault();
-                    switch (_objReqDataRes.MatchDetails.FirstOrDefault().SportID)
-                    {
-                        case 1:
-                            result = _sObj.GetSearchResultCount(_objReqDataRes);
-                            break;
-                        case 3:
-                            var _objLstReqDatakabaddi = JsonConvert.DeserializeObject<List<KabaddiRequestData>>(jsonData);
-                            result = _sObj.GetSearchResultsForKabaddi(_objLstReqDatakabaddi.FirstOrDefault());
-                            break;
-                    }
 
                 }
                 //string jsonString = JsonConvert.SerializeObject(result);
@@ -183,6 +150,41 @@ namespace WebApis.Controllers
 
         }
 
+        //[System.Web.Http.HttpPost]
+        //[Route("api/GetSearchResults")]
+        ////public IActionResult GetSearchResultCount(IEnumerable<SearchRequestData> _objReqData) {
+        //public IActionResult GetSearchResultsForKabaddi(dynamic _objReqData)
+        //{
+        //    try
+        //    {
+        //        string result = string.Empty;
+        //        string jsonData = JsonConvert.SerializeObject(_objReqData);
+        //        List<SearchRequestData> _objLstReqData = new List<SearchRequestData>();
+        //        _objLstReqData = JsonConvert.DeserializeObject<List<SearchRequestData>>(jsonData);
+        //        if (_objLstReqData != null)
+        //        {
+        //            SearchRequestData _objReqDataRes = _objLstReqData.FirstOrDefault();
+        //            switch (_objReqDataRes.MatchDetails.FirstOrDefault().SportID)
+        //            {
+        //                case 1:
+        //                    result = _sObj.GetSearchResultCount(_objReqDataRes);
+        //                    break;
+        //                case 3:
+        //                    var _objLstReqDatakabaddi = JsonConvert.DeserializeObject<List<KabaddiRequestData>>(jsonData);
+        //                    result = _sObj.GetSearchResultsForKabaddi(_objLstReqDatakabaddi.FirstOrDefault());
+        //                    break;
+        //            }
+
+        //        }
+        //        //string jsonString = JsonConvert.SerializeObject(result);
+        //        return Ok(new { result });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message.ToString());
+        //    }
+
+        //}
 
         [System.Web.Http.HttpPost]
         [Route("api/GetAllS2MastersBySport")]
@@ -209,9 +211,6 @@ namespace WebApis.Controllers
 
         }
 
-
-
-
         [System.Web.Http.HttpPost]
         [Route("api/GetMultiSelectForMatchDetail")]
         public IActionResult GetMultiSelectForMatchDetail(IEnumerable<MatchDetailMultiSelectRequestData> _objReqData)
@@ -237,51 +236,52 @@ namespace WebApis.Controllers
 
         }
 
-
         [System.Web.Http.HttpPost]
         [Route("api/GetS2SearchResultCount")]
-        public IActionResult GetS2SearchResultCount(IEnumerable<SearchS2RequestData> _objReqData) {
+        public IActionResult GetS2SearchResultCount(IEnumerable<SearchS2RequestData> _objReqData)
+        {
             string result = string.Empty;
             try
             {
-              
+
                 List<SearchS2RequestData> _objLstReqData = new List<SearchS2RequestData>();
                 string jsonData = JsonConvert.SerializeObject(_objReqData);
                 _objLstReqData = JsonConvert.DeserializeObject<List<SearchS2RequestData>>(jsonData);
-                if (_objLstReqData != null) {
+                if (_objLstReqData != null)
+                {
                     SearchS2RequestData _objReqsearchS2 = _objLstReqData.FirstOrDefault();
                     result = _sObj.GetS2SearchResultCount(_objReqsearchS2);
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message.ToString());
             }
             return Ok(new { Response = result });
         }
 
-
         [System.Web.Http.HttpPost]
         [Route("api/GetMediaSearchResultsAutoComplete")]
-        public IActionResult GetMediaSearchResultsAutoComplete(string sportid, string searchtext = "", string assettype = "") {
+        public IActionResult GetMediaSearchResultsAutoComplete(string sportid, string searchtext = "", string assettype = "")
+        {
             string result = string.Empty;
             IEnumerable<SearchResultFilterData> searchResults = new List<SearchResultFilterData>();
             try
             {
-             
+
                 SearchRequestMediaData _objReqData = new SearchRequestMediaData();
                 _objReqData.SportId = Convert.ToInt32(sportid);
                 _objReqData.SearchText = searchtext;
                 _objReqData.AssetTypeId = assettype;
-           
-                searchResults = _sObj.GetMediaSearchResult(_objReqData,1);
+
+                searchResults = _sObj.GetMediaSearchResult(_objReqData, 1);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
             }
             return Ok(new { Response = searchResults });
         }
-
-
 
         [System.Web.Http.HttpPost]
         [Route("api/GetAutoCompleteData")] //pending
@@ -338,9 +338,7 @@ namespace WebApis.Controllers
 
         }
 
-  
-
-    [System.Web.Http.HttpPost]
+        [System.Web.Http.HttpPost]
         [Route("api/GetFilteredEntityBySportForS2")]
         public IActionResult GetFilteredEntityBySportForS2(IEnumerable<SearchS2RequestData> _objReqData)
         {
@@ -350,10 +348,11 @@ namespace WebApis.Controllers
                 QueryContainer _objNestedquery = new QueryContainer();
                 MatchDetail _objMatchDetail = null;
                 List<SearchS2RequestData> _objReqSearchS2Data = new List<SearchS2RequestData>();
-           
-                 string jsonData = JsonConvert.SerializeObject(_objReqData);
+
+                string jsonData = JsonConvert.SerializeObject(_objReqData);
                 _objReqSearchS2Data = JsonConvert.DeserializeObject<List<SearchS2RequestData>>(jsonData);
-                if (_objReqData != null) {
+                if (_objReqData != null)
+                {
                     SearchS2RequestData _objReqEntityS2 = _objReqData.FirstOrDefault();
                     result = _sObj.GetFilteredEntityBySportForS2(_objReqEntityS2);
                 }
@@ -366,28 +365,28 @@ namespace WebApis.Controllers
             return Ok(new { Response = result });
         }
 
-
-
         [System.Web.Http.HttpPost]
         [Route("api/AddUpdateLuceneForSearch")]
         public IActionResult AddUpdateForSearch(Stream data)
         {
             bool isSuccess = false;
             string RequestData = string.Empty;
-            try {
+            try
+            {
                 using (StreamReader reader = new StreamReader(data))
                 {
                     RequestData = reader.ReadToEnd();
                     reader.Close();
                     reader.Dispose();
                 }
-                if (!string.IsNullOrEmpty(RequestData)) {
-                    isSuccess = _sObj.AddUpdateForSearch(RequestData,1, false);
+                if (!string.IsNullOrEmpty(RequestData))
+                {
+                    isSuccess = _sObj.AddUpdateForSearch(RequestData, 1, false);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-            return BadRequest(ex.Message.ToString());
+                return BadRequest(ex.Message.ToString());
             }
 
             return Ok(new { Response = isSuccess });
@@ -409,7 +408,7 @@ namespace WebApis.Controllers
                 }
                 if (!string.IsNullOrEmpty(RequestData))
                 {
-                    isSuccess = _sObj.AddUpdateForSearch(RequestData,3,false);
+                    isSuccess = _sObj.AddUpdateForSearch(RequestData, 3, false);
                 }
             }
             catch (Exception ex)
@@ -419,9 +418,6 @@ namespace WebApis.Controllers
 
             return Ok(new { Response = isSuccess });
         }
-
-
-
 
         [System.Web.Http.HttpPost]
         [Route("api/AddUpdateS2LuceneForSearch")]
@@ -450,5 +446,59 @@ namespace WebApis.Controllers
             return Ok(new { Response = isSuccess });
         }
 
+        [System.Web.Http.HttpPost]
+        [Route("api/GetSearchResultCountForKabaddi")]
+        public IActionResult GetSearchResultCountForKabaddi(dynamic _objReqData)
+        {
+            try
+            {
+                string result = string.Empty;
+                string jsonData = JsonConvert.SerializeObject(_objReqData);
+                var _objLstReqDatakabaddi = JsonConvert.DeserializeObject<List<KabaddiRequestData>>(jsonData);
+                result = _sObj.GetSearchResultCountForKabaddi(_objLstReqDatakabaddi.FirstOrDefault());
+
+                //List<SearchRequestData> _objLstReqData = new List<SearchRequestData>();
+                //_objLstReqData = JsonConvert.DeserializeObject<List<SearchRequestData>>(jsonData);
+                //if (_objLstReqData != null)
+                //{
+
+                //    SearchRequestData _objReqDataRes = _objLstReqData.FirstOrDefault();
+                //    switch (_objReqDataRes.MatchDetails.FirstOrDefault().SportID)
+                //    {
+                //        case 1:
+                //            result = _sObj.GetSearchResultCount(_objReqDataRes);
+                //            break;
+                //        case 3:
+                //            var _objLstReqDatakabaddi = JsonConvert.DeserializeObject<List<KabaddiRequestData>>(jsonData);
+                //            result = _sObj.GetSearchResultCountForKabaddi(_objLstReqDatakabaddi.FirstOrDefault());
+                //            break;
+                //    }
+
+                //}
+                return Ok(new { result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+        }
+
+        [System.Web.Http.HttpPost]
+        [Route("api/GetSearchResultsForKabaddi")]
+        public IActionResult GetSearchResultsForKabaddi(dynamic _objReqData)
+        {
+            try
+            {
+                string result = string.Empty;
+                string jsonData = JsonConvert.SerializeObject(_objReqData);
+                var _objLstReqDatakabaddi = JsonConvert.DeserializeObject<List<KabaddiRequestData>>(jsonData);
+                result = _sObj.GetSearchResultsForKabaddi(_objLstReqDatakabaddi.FirstOrDefault());
+                return Ok(new { result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+        }
     }
 }
