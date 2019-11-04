@@ -69,7 +69,37 @@ namespace WebApis.BOL
 
         public override dynamic getFinalResult(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, ElasticClient EsClient, string sportid = "1")
         {
-            throw new NotImplementedException();
+            string input = Convert.ToInt32(Convert.ToBoolean(_objMatchDetail.IsAsset)).ToString();
+            QueryContainer query = new TermQuery { Field = "isAsset", Value = input };
+            _objNestedQuery &= query;
+            dynamic result;
+            List<S2MasterData> lstsearchresults = new List<S2MasterData>();
+            var results2MasterData = EsClient.Search<S2MasterData>(s => s.Index("kabaddis2data").Query(q => _objNestedQuery)
+            .Aggregations(a => a.Terms("agg_E1", st => st.Script(p => p.Source("doc['attribute_Id_Level1.keyword'].value + '|' + doc['attribute_Name_Level1.keyword'].value + '|' + doc['attribute_Id_Level2.keyword'].value + '|' + doc['attribute_Name_Level2.keyword'].value + '|' + doc['attribute_Id_Level3.keyword'].value + '|' + doc['attribute_Name_Level3.keyword'].value + '|' + doc['attribute_Id_Level4.keyword'].value + '|' + doc['attribute_Name_Level4.keyword'].value + '|' + doc['emotionId.keyword'].value  + '|' + doc['emotionName.keyword'].value"))
+            .Size(409846))));
+
+            var response = results2MasterData.Aggregations.Terms("agg_E1");
+            //var response2 = results2MasterData2.Aggregations.Terms("agg_E2").Buckets.ToList();
+            //var resultss = response.Union(response2);
+
+            foreach (var items in response.Buckets)
+            {
+                lstsearchresults.Add(new S2MasterData
+                {
+                    Attribute_Id_Level1 = items.Key.ToString().Split("|")[0],
+                    Attribute_Name_Level1 = items.Key.ToString().Split("|")[1],
+                    Attribute_Id_Level2 = items.Key.ToString().Split("|")[2],
+                    Attribute_Name_Level2 = items.Key.ToString().Split("|")[3],
+                    Attribute_Id_Level3 = items.Key.ToString().Split("|")[4],
+                    Attribute_Name_Level3 = items.Key.ToString().Split("|")[5],
+                    Attribute_Id_Level4 = items.Key.ToString().Split("|")[6],
+                    Attribute_Name_Level4 = items.Key.ToString().Split("|")[7],
+                    EmotionId = items.Key.ToString().Split("|")[8],
+                    EmotionName = items.Key.ToString().Split("|")[9],
+                });
+            }
+            //result = resultss;
+            return lstsearchresults;
         }
 
         public int getMatchCount(QueryContainer _objNestedQuery, ElasticClient EsClient, string sType)
@@ -495,17 +525,224 @@ namespace WebApis.BOL
 
         public QueryContainer GetS2ActionQueryResult(S2ActionData _objActionData, QueryContainer _objNestedQuery, bool isMasterData = false)
         {
-            throw new NotImplementedException();
+            QueryContainer qShould = new QueryContainer();
+            if (!string.IsNullOrEmpty(_objActionData.AttributeId_Level1))
+            {
+                QueryContainer bq = new QueryContainer();
+                string SearchText = Convert.ToString(_objActionData.AttributeId_Level1);
+                string[] Dlist = SearchText.Split(',').ToArray();
+                foreach (string str in Dlist)
+                {
+                    QueryContainer q1 = new TermQuery { Field = "attribute_Id_Level1", Value = str };
+                    qShould |= q1;
+                }
+            }
+            if (!string.IsNullOrEmpty(_objActionData.AttributeId_Level2))
+            {
+                string SearchText = Convert.ToString(_objActionData.AttributeId_Level2);
+                string[] Dlist = SearchText.Split(',').ToArray();
+                foreach (string str in Dlist)
+                {
+
+                    QueryContainer q2 = new TermQuery { Field = "attribute_Id_Level2", Value = str };
+                    qShould |= q2;
+                }
+            }
+            if (!string.IsNullOrEmpty(_objActionData.AttributeId_Level3))
+            {
+                string SearchText = Convert.ToString(_objActionData.AttributeId_Level3);
+                string[] Dlist = SearchText.Split(',').ToArray();
+                foreach (string str in Dlist)
+                {
+                    QueryContainer q3 = new TermQuery { Field = "attribute_Id_Level3", Value = str };
+                    qShould |= q3;
+                }
+            }
+            if (!string.IsNullOrEmpty(_objActionData.AttributeId_Level4))
+            {
+                string SearchText = Convert.ToString(_objActionData.AttributeId_Level4);
+                string[] Dlist = SearchText.Split(',').ToArray();
+                foreach (string str in Dlist)
+                {
+                    QueryContainer q4 = new TermQuery { Field = "attribute_Id_Level4", Value = str };
+                    qShould |= q4;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(_objActionData.Emotion))
+            {
+                string SearchText = Convert.ToString(_objActionData.Emotion);
+                string[] Dlist = SearchText.Split(',').ToArray();
+                foreach (string str in Dlist)
+                {
+                    QueryContainer q5 = new TermQuery { Field = "emotionId", Value = str };
+                    qShould |= q5;
+                }
+            }
+            if (!string.IsNullOrEmpty(_objActionData.Entities))
+            {
+
+                if (_objActionData.Entities.Contains(","))
+                {
+                    string[] arrEntities = _objActionData.Entities.Split(',');
+                    for (int iEntCtr = 0; iEntCtr < arrEntities.Length; iEntCtr++)
+                    {
+                        if (!string.IsNullOrEmpty(arrEntities[iEntCtr]))
+                        {
+                            QueryContainer q6 = new TermQuery { Field = "entityId_1", Value = arrEntities[iEntCtr] };
+                            qShould |= q6;
+
+                            QueryContainer q7 = new TermQuery { Field = "entityId_2", Value = arrEntities[iEntCtr] };
+                            qShould |= q7;
+
+                            QueryContainer q8 = new TermQuery { Field = "entityId_3", Value = arrEntities[iEntCtr] };
+                            qShould |= q8;
+                        }
+                    }
+                }
+                else
+                {
+                    QueryContainer q9 = new TermQuery { Field = "entityId_1", Value = _objActionData.Entities };
+                    _objNestedQuery &= q9;
+                }
+            }
+            _objNestedQuery &= qShould;
+            return _objNestedQuery;
         }
 
         public QueryContainer GetS2MomentQueryResult(Moments _objMomentData, QueryContainer _objNestedQuery, bool isMasterData = false)
         {
-            throw new NotImplementedException();
+            QueryContainer qShould = new QueryContainer();
+            if (!string.IsNullOrEmpty(_objMomentData.Entities))
+            {
+
+                if (_objMomentData.Entities.Contains(","))
+                {
+                    string[] arrEntities = _objMomentData.Entities.Split(',');
+                    for (int iEntCtr = 0; iEntCtr < arrEntities.Length; iEntCtr++)
+                    {
+
+                        if (!string.IsNullOrEmpty(arrEntities[iEntCtr]))
+                        {
+                            QueryContainer q1 = new TermQuery { Field = "entityId_1", Value = arrEntities[iEntCtr] };
+                            qShould |= q1;
+                            QueryContainer q2 = new TermQuery { Field = "entityId_2", Value = arrEntities[iEntCtr] };
+                            qShould |= q2;
+                            QueryContainer q3 = new TermQuery { Field = "entityId_3", Value = arrEntities[iEntCtr] };
+                            qShould |= q3;
+                        }
+                    }
+                }
+                else
+                {
+                    QueryContainer q1 = new TermQuery { Field = "entityId_1", Value = _objMomentData.Entities };
+                    _objNestedQuery &= q1;
+
+                }
+            }
+            if (_objMomentData.IsMoments)
+            {
+                if (_objMomentData.IsBigMoment || _objMomentData.IsFunnyMoment || _objMomentData.IsAudioPiece)
+                {
+
+                    if (_objMomentData.IsBigMoment)
+                    {
+                        QueryContainer q4 = new TermQuery { Field = "isBigMoment", Value = "1" };
+                        qShould |= q4;
+                    }
+                    if (_objMomentData.IsFunnyMoment)
+                    {
+                        QueryContainer q5 = new TermQuery { Field = "isFunnyMoment", Value = "1" };
+                        qShould |= q5;
+                    }
+                    if (_objMomentData.IsAudioPiece)
+                    {
+                        QueryContainer q6 = new TermQuery { Field = "isAudioPiece", Value = "1" };
+                        qShould |= q6;
+                    }
+                }
+                else
+                {
+                    QueryContainer q7 = new TermQuery { Field = "isBigMoment", Value = "1" };
+                    qShould |= q7;
+                    QueryContainer q8 = new TermQuery { Field = "isFunnyMoment", Value = "1" };
+                    qShould |= q8;
+                    QueryContainer q9 = new TermQuery { Field = "isAudioPiece", Value = "1" };
+                    qShould |= q9;
+                }
+            }
+            _objNestedQuery &= qShould;
+            return _objNestedQuery;
         }
 
         public QueryContainer GetS2SearchResults(SearchS2RequestData _objReqData, QueryContainer _objNestedQuery)
         {
-            throw new NotImplementedException();
+            // QueryContainer _objNestedQuery = new QueryContainer();
+            string result = string.Empty;
+            try
+            {
+                IEnumerable<SearchS2ResultData> searchResults = new List<SearchS2ResultData>();
+                List<SearchQueryModel> _objLstSearchQuery = new List<SearchQueryModel>();
+
+                if (_objReqData != null)
+                {
+                    MatchDetail _objMatchDetail = _objReqData.MatchDetails.FirstOrDefault();
+                    S2ActionData _objActionData = _objReqData.ActionData.FirstOrDefault();
+                    Moments _objMomentData = _objReqData.Moments.FirstOrDefault();
+                    int sportid = _objMatchDetail.SportID;
+
+                    if (_objMatchDetail != null)
+                    {
+                        _objNestedQuery = GetMatchDetailQuery(_objNestedQuery, _objMatchDetail);
+                    }
+
+                    if (_objActionData != null)
+                    {
+                        _objNestedQuery = GetS2ActionQueryResult(_objActionData, _objNestedQuery);
+                    }
+                    if (_objMomentData != null)
+                    {
+                        _objNestedQuery = GetS2MomentQueryResult(_objMomentData, _objNestedQuery);
+
+                    }
+                    if (!string.IsNullOrEmpty(_objMatchDetail.LanguageId) && _objMatchDetail.LanguageId != "0" && !_objMatchDetail.IsAsset)
+                    {
+                        string[] Id = _objMatchDetail.LanguageId.Split(',');
+                        QueryContainer qShould = new QueryContainer();
+                        foreach (string str in Id)
+                        {
+
+                            QueryContainer query = new TermQuery { Field = "languageId", Value = str };
+                            qShould |= query;
+                        }
+                        _objNestedQuery &= qShould;
+                    }
+                    if (!string.IsNullOrEmpty(_objMatchDetail.MatchDate))
+                    {
+                        string dlist = _objMatchDetail.MatchDate;
+                        if (dlist.Contains("-"))
+                        {
+                            string[] strNumbers = dlist.Split('-');
+
+                            int start = int.Parse(DateTime.ParseExact(strNumbers[0], "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("yyyyMMdd"));
+                            int End = int.Parse(DateTime.ParseExact(strNumbers[1], "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("yyyyMMdd"));
+                            QueryContainer qMust = new TermRangeQuery { Field = "matchDate", GreaterThanOrEqualTo = start.ToString(), LessThanOrEqualTo = End.ToString() };
+                            _objNestedQuery &= qMust;
+                        }
+                        else
+                        {
+                            int date = int.Parse(DateTime.ParseExact(_objMatchDetail.MatchDate, "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("yyyyMMdd"));
+                            QueryContainer qMust = new TermRangeQuery { Field = "matchDate", GreaterThanOrEqualTo = date.ToString() };
+                            _objNestedQuery &= qMust;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = ex.Message.ToString();
+            }
+            return _objNestedQuery;
         }
 
         public List<KabaddiResultData> MapkabaddiS1data(List<KabaddiResultDataTempdata> _objs1Data, string cases)
@@ -1029,9 +1266,73 @@ namespace WebApis.BOL
             return Final_result;
         }
 
-        public dynamic MapS2Resuldata(QueryContainer _objNested, string Search)
+        public dynamic MapS2Resuldata(QueryContainer _objNestedquery, string Search, ElasticClient EsClient)
         {
-            throw new NotImplementedException();
+            dynamic S2Result = null;
+
+            try
+            {
+                KeyValuePair<string, string> KeyValue_E1 = objCf.GetColumnForEntity(Convert.ToInt32(40)).FirstOrDefault();
+                KeyValuePair<string, string> KeyValueS_E2 = objCf.GetColumnForEntity(Convert.ToInt32(41)).FirstOrDefault();
+                KeyValuePair<string, string> KeyValueS_E3 = objCf.GetColumnForEntity(Convert.ToInt32(42)).FirstOrDefault();
+                List<S2FilteredEntity> obj = new List<S2FilteredEntity>();
+
+                if (!string.IsNullOrEmpty(Search))
+                {
+
+                    List<S2FilteredEntity> _objFilterentityt = new List<S2FilteredEntity>();
+                    var result_E1 = EsClient.Search<S2FilteredEntity>(s => s.Index("kabaddis2data").Query(q => _objNestedquery)
+                    .Aggregations(a => a.Terms("agg_E1", st => st.Script(p => p.Source("doc['" + KeyValue_E1.Key + ".keyword'].value + '|' + doc['" + KeyValue_E1.Value + ".keyword'].value + '|' + doc['entityId_3.keyword'].value"))
+                    .Size(409846))));
+
+                    var result_E2 = EsClient.Search<S2FilteredEntity>(s => s.Index("kabaddis2data").Query(q => _objNestedquery)
+                    .Aggregations(a => a.Terms("agg_E2", st => st.Script(p => p.Source("doc['" + KeyValueS_E2.Key + ".keyword'].value + '|' + doc['" + KeyValueS_E2.Value + ".keyword'].value + '|' + doc['entityId_3.keyword'].value"))
+                    .Size(409846))));
+
+                    var result_E3 = EsClient.Search<S2FilteredEntity>(s => s.Index("kabaddis2data").Query(q => _objNestedquery)
+                    .Aggregations(a => a.Terms("agg_E3", st => st.Script(p => p.Source("doc['" + KeyValueS_E3.Key + ".keyword'].value + '|' + doc['" + KeyValueS_E3.Value + ".keyword'].value + '|' + doc['entityId_3.keyword'].value"))
+                    .Size(409846))));
+
+                    var agg1 = result_E1.Aggregations.Terms("agg_E1").Buckets;
+                    var agg2 = result_E2.Aggregations.Terms("agg_E2").Buckets;
+                    var agg3 = result_E3.Aggregations.Terms("agg_E3").Buckets;
+
+                    foreach (var items in agg1)
+                    {
+                        obj.Add(new S2FilteredEntity
+                        {
+                            EntityId_1 = items.Key.ToString().Split("|")[1],
+                            EntityName_1 = items.Key.ToString().Split("|")[0],
+
+                        });
+                    }
+                    foreach (var items in agg2)
+                    {
+                        obj.Add(new S2FilteredEntity
+                        {
+                            EntityId_2 = items.Key.ToString().Split("|")[1],
+                            EntityName_2 = items.Key.ToString().Split("|")[0],
+
+                        });
+                    }
+                    foreach (var items in agg3)
+                    {
+                        obj.Add(new S2FilteredEntity
+                        {
+                            EntityId_3 = items.Key.ToString().Split("|")[1],
+                            EntityName_3 = items.Key.ToString().Split("|")[0],
+
+                        });
+                    }
+                    _objFilterentityt = obj;
+                    S2Result = _objFilterentityt;
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return S2Result;
         }
 
         public override IEnumerable<SearchResultFilterData> returnSportResult(ElasticClient EsClient, QueryContainer _objNestedQuery, string IndexName)
@@ -1111,9 +1412,34 @@ namespace WebApis.BOL
             throw new NotImplementedException();
         }
 
-        public override dynamic SearchS2(QueryContainer Bq, MatchDetail _objmatch, int Sportid = 6, string search = "")
+        public override dynamic SearchS2(QueryContainer _objNestedquery, MatchDetail _objmatch, int Sportid = 6, string search = "")
         {
-            throw new NotImplementedException();
+            string[] EntityName = new string[] { "EntityName_1", "EntityName_2", "EntityName_3", "EntityName_4", "EntityName_5" };
+            dynamic SearchS2ResultData = null;
+            string input = Convert.ToInt32(Convert.ToBoolean(_objmatch.IsAsset)).ToString();
+            try
+            {
+                if (search != "")
+                {
+
+                    QueryContainer qShould = new QueryContainer();
+                    foreach (var Entityname in EntityName)
+                    {
+                        QueryContainer q = new WildcardQuery { Field = Entityname, Value = (search.Trim() + "*") };
+                        qShould |= q;
+                    }
+                    _objNestedquery &= qShould;
+                    input = input.Trim();
+                    QueryContainer query = new TermQuery { Field = "isAsset", Value = input };
+                    _objNestedquery &= query;
+                    SearchS2ResultData = MapS2Resuldata(_objNestedquery, search, _oLayer.CreateConnection());
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return SearchS2ResultData;
         }
     }
 }

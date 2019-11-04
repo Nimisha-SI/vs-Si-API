@@ -213,19 +213,24 @@ namespace WebApis.Controllers
 
         [System.Web.Http.HttpPost]
         [Route("api/GetMultiSelectForMatchDetail")]
-        public IActionResult GetMultiSelectForMatchDetail(IEnumerable<MatchDetailMultiSelectRequestData> _objReqData)
+        //public IActionResult GetMultiSelectForMatchDetail(IEnumerable<MatchDetailMultiSelectRequestData> _objReqData)
+        public IActionResult GetMultiSelectForMatchDetail(dynamic _objReqData)
         {
             try
             {
                 string result = string.Empty;
                 List<MatchDetailMultiSelectRequestData> _objLstReqData = new List<MatchDetailMultiSelectRequestData>();
-                string jsonData = JsonConvert.SerializeObject(_objReqData);
-                _objLstReqData = JsonConvert.DeserializeObject<List<MatchDetailMultiSelectRequestData>>(jsonData);
+
+                string jsonData1 = JsonConvert.SerializeObject(_objReqData);
+                var _objReqDatakabaddi = JsonConvert.DeserializeObject<MatchDetailMultiSelectRequestData>(jsonData1);
+
+                //string jsonData = JsonConvert.SerializeObject(_objReqData);
+                //_objLstReqData = JsonConvert.DeserializeObject<List<MatchDetailMultiSelectRequestData>>(jsonData);
 
                 if (_objLstReqData != null)
                 {
-                    MatchDetailMultiSelectRequestData _objReqDataRes = _objLstReqData.FirstOrDefault();
-                    result = _sObj.GetMultiSelectForMatchDetail(_objReqDataRes);
+                    //MatchDetailMultiSelectRequestData _objReqDataRes = _objLstReqData.FirstOrDefault();
+                    result = _sObj.GetMultiSelectForMatchDetail(_objReqDatakabaddi);
                 }
                 return Ok(new { Response = result });
             }
