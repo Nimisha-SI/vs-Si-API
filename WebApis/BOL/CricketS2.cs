@@ -1516,6 +1516,7 @@ namespace WebApis.BOL
                 )));
                 var agg = response.Aggregations.Terms("commit_count");
                 Count = agg.Buckets.Count;
+                //DistinctCountDetector distinctCountDetector = new dis
             }
             else if (sType == "Videos")
             {

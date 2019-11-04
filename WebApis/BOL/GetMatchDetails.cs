@@ -370,13 +370,13 @@ namespace WebApis.BOL
                                                     foreach (string str in strValues)
                                                     {
                                                         QueryContainer query1 = new TermQuery { Field = itemss.Key, Value = str };
-                                                        _objNestedDropdownQuery &= query1;
+                                                        _objNestedDropdownQuery |= query1;
                                                     }
                                                 }
                                                 else
                                                 {
                                                     QueryContainer query = new TermQuery { Field = itemss.Key, Value = itemss.Value };
-                                                    _objNestedDropdownQuery &= query;
+                                                    _objNestedDropdownQuery |= query;
                                                 }
 
                                             }
@@ -399,6 +399,7 @@ namespace WebApis.BOL
                                         {
                                             //var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
                                             //string[] _objType = new string[] { "0" };
+                                            _objNestedQuery &= _objNestedDropdownQuery;
                                             string[] _objType = new string[] { "" };
                                             _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
 
@@ -450,14 +451,16 @@ namespace WebApis.BOL
                                                 {
                                                     QueryContainer query1 = new TermQuery { Field = itemss.Key, Value = str };
                                                     // _objNestedDropdownQuery &= query1;
-                                                    _objNestedQuery &= query1;
+                                                    //_objNestedQuery &= query1;
+                                                    _objNestedDropdownQuery |= query1;
                                                 }
                                             }
                                             else
                                             {
                                                 QueryContainer query = new TermQuery { Field = itemss.Key, Value = itemss.Value };
                                                 //_objNestedDropdownQuery &= query;
-                                                _objNestedQuery &= query;
+                                                //_objNestedQuery &= query;
+                                                _objNestedDropdownQuery |= query;
                                             }
 
                                         }
@@ -482,7 +485,7 @@ namespace WebApis.BOL
                                     {
                                         //var Type = ddlDropdowns[item.ToString().Split(",")[0]].ToString();
                                         //string[] _objType = new string[] { "0" };
-
+                                        _objNestedQuery &= _objNestedDropdownQuery;
                                         string[] _objType = new string[] { "" };
                                         _objSearchResults.ResultDerivedData.MasterData = objCF.GetDropdowns(_objNestedQuery, _objSearchResults.ResultDerivedData.MasterData, EsClient_obj, "cricket", objCF.GetColumnForEntity(Convert.ToInt16(item[1])), _objType, _objMatchDetail.SportID);
 
