@@ -665,7 +665,8 @@ namespace WebApis.BOL
             return result;
             }
 
-        public IEnumerable<SearchResultFilterData> GetMediaSearchResult(SearchRequestMediaData _objReqData, int type) {
+        public IEnumerable<SearchResultFilterData> GetMediaSearchResult(SearchRequestMediaData _objReqData, int type)
+        {
             IEnumerable<SearchResultFilterData> searchResults = new List<SearchResultFilterData>();
             List<SearchQueryModel> _objLstSearchQuery = new List<SearchQueryModel>();
             try
@@ -682,7 +683,7 @@ namespace WebApis.BOL
                     
                     if (!string.IsNullOrEmpty(_objReqData.AssetTypeId))
                     {
-                        QueryContainer q2 = new TermQuery { Field = "AssetTypeId", Value = _objReqData.AssetTypeId };
+                        QueryContainer q2 = new TermQuery { Field = "assetTypeId", Value = _objReqData.AssetTypeId };
                         _objNestedQuery &= q2;
                     }
                     if (type == 2)
@@ -732,11 +733,28 @@ namespace WebApis.BOL
 
         public dynamic getFinalResult(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, ElasticClient EsClient, string sportid = "1") {
             dynamic result;
-            var resultMediaSearch = EsClient.Search<MatchDetailMultiSelectResulttData>(s => s.Index("crickets").Query(q => _objNestedQuery)
-          .Aggregations(a => a.Terms("agg_MediaSearch", t => t.Field(p => p.CompType)))
-          .Size(409846));
-            var response = resultMediaSearch.Aggregations.Terms("agg_MediaSearch");
-            return result= response;
+            switch (sportid)
+            {
+                case "1":
+                    var resultMediaSearch = EsClient.Search<MatchDetailMultiSelectResulttData>(s => s.Index("cricket").Query(q => _objNestedQuery)
+                    .Aggregations(a => a.Terms("agg_MediaSearch", t => t.Field(p => p.CompType)))
+                    .Size(409846));
+                    var response = resultMediaSearch.Aggregations.Terms("agg_MediaSearch");
+                    result = response;
+                    return result;
+                    break;
+                case "3":
+                    var resultMediaSearchkabaddi = EsClient.Search<MatchDetailMultiSelectResulttData>(s => s.Index("kabaddi").Query(q => _objNestedQuery)
+                    .Aggregations(a => a.Terms("agg_MediaSearch", t => t.Field(p => p.CompType)))
+                    .Size(409846));
+                    var responsekabaddi = resultMediaSearchkabaddi.Aggregations.Terms("agg_MediaSearch");
+                    result = responsekabaddi;
+                    return result;
+                    break;
+                default:
+                    return null;
+                    break;
+            }
         }
 
         public string GetFilteredEntityBySportForS2(SearchS2RequestData _ObjreqData) {
