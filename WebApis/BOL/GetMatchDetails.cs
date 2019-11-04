@@ -757,9 +757,11 @@ namespace WebApis.BOL
             }
         }
 
-        public string GetFilteredEntityBySportForS2(SearchS2RequestData _ObjreqData) {
+        public string GetFilteredEntityBySportForS2(SearchS2RequestData _ObjreqData)
+        {
             string result = string.Empty;
-            try {
+            try
+            {
                 QueryContainer _objNestedQuery = new QueryContainer();
                 S2ActionData _objActionData = _ObjreqData.ActionData.FirstOrDefault();
                 Moments _objMomentData = _ObjreqData.Moments.FirstOrDefault();
@@ -767,23 +769,39 @@ namespace WebApis.BOL
                 {
                     _objMatchDetail = _ObjreqData.MatchDetails.FirstOrDefault();
                     _objMatchDetail.IsAsset = false;
-                    _objNestedQuery = _cricketS2.GetMatchDetailQuery(_objNestedQuery, _objMatchDetail);
-                    if (_objActionData != null)
+                    switch (_objMatchDetail.SportID)
                     {
-
-                        _objNestedQuery = _cricketS2.GetS2ActionQueryResult(_objActionData, _objNestedQuery);
-
+                        case 1:
+                            _objNestedQuery = _cricketS2.GetMatchDetailQuery(_objNestedQuery, _objMatchDetail);
+                            if (_objActionData != null)
+                            {
+                                _objNestedQuery = _cricketS2.GetS2ActionQueryResult(_objActionData, _objNestedQuery);
+                            }
+                            if (_objMomentData != null)
+                            {
+                                _objNestedQuery = _cricketS2.GetS2MomentQueryResult(_objMomentData, _objNestedQuery);
+                            }
+                            IEnumerable<S2FilteredEntity> Search = _cricketS2.SearchS2(_objNestedQuery, _objMatchDetail, _objMatchDetail.SportID, _ObjreqData.EntityText);
+                            result = JsonConvert.SerializeObject(Search);
+                            break;
+                        case 3:
+                            _objNestedQuery = _kabaddiS2.GetMatchDetailQuery(_objNestedQuery, _objMatchDetail);
+                            if (_objActionData != null)
+                            {
+                                _objNestedQuery = _kabaddiS2.GetS2ActionQueryResult(_objActionData, _objNestedQuery);
+                            }
+                            if (_objMomentData != null)
+                            {
+                                _objNestedQuery = _kabaddiS2.GetS2MomentQueryResult(_objMomentData, _objNestedQuery);
+                            }
+                            IEnumerable<S2FilteredEntity> Searchkabaddi = _kabaddiS2.SearchS2(_objNestedQuery, _objMatchDetail, _objMatchDetail.SportID, _ObjreqData.EntityText);
+                            result = JsonConvert.SerializeObject(Searchkabaddi);
+                            break;
                     }
-                    if (_objMomentData != null)
-                    {
-
-                        _objNestedQuery = _cricketS2.GetS2MomentQueryResult(_objMomentData, _objNestedQuery);
-                    }
-                    IEnumerable<S2FilteredEntity> Search = _cricketS2.SearchS2(_objNestedQuery, _objMatchDetail, _objMatchDetail.SportID, _ObjreqData.EntityText);
-
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
             }
             return result;
         }
