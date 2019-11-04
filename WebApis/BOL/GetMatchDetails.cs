@@ -529,20 +529,42 @@ namespace WebApis.BOL
                 if (_objS2ReqData != null) {
                     _objMatchDetail = _objS2ReqData.MatchDetails.FirstOrDefault();
                     _objMatchDetail.IsAsset = false;
-                    _objNestedQuery = _cricketS2.GetMatchDetailQuery(_objNestedQuery,_objMatchDetail);
                     S2ActionData _objActionData = _objS2ReqData.ActionData.FirstOrDefault();
                     Moments _objMomentData = _objS2ReqData.Moments.FirstOrDefault();
-                    if (_objActionData != null)
+                    switch (_objMatchDetail.SportID)
                     {
-                        _objNestedQuery = _cricketS2.GetS2ActionQueryResult(_objActionData, _objNestedQuery);
+                        case 1:
+                            _objNestedQuery = _cricketS2.GetMatchDetailQuery(_objNestedQuery, _objMatchDetail);
+                            //S2ActionData _objActionData = _objS2ReqData.ActionData.FirstOrDefault();
+                            //Moments _objMomentData = _objS2ReqData.Moments.FirstOrDefault();
+                            if (_objActionData != null)
+                            {
+                                _objNestedQuery = _cricketS2.GetS2ActionQueryResult(_objActionData, _objNestedQuery);
 
-                    }
-                    if (_objMomentData != null)
-                    {
+                            }
+                            if (_objMomentData != null)
+                            {
 
-                        _objNestedQuery = _cricketS2.GetS2MomentQueryResult(_objMomentData, _objNestedQuery);
+                                _objNestedQuery = _cricketS2.GetS2MomentQueryResult(_objMomentData, _objNestedQuery);
+                            }
+                            _objLstS2MasterData = _cricketS2.getFinalResult(_objNestedQuery, _objMatchDetail, _oLayer.CreateConnection(), "1");
+                            break;
+                        case 3:
+                            _objNestedQuery = _kabaddiS2.GetMatchDetailQuery(_objNestedQuery, _objMatchDetail);
+                            
+                            if (_objActionData != null)
+                            {
+                                _objNestedQuery = _kabaddiS2.GetS2ActionQueryResult(_objActionData, _objNestedQuery);
+
+                            }
+                            if (_objMomentData != null)
+                            {
+                                _objNestedQuery = _kabaddiS2.GetS2MomentQueryResult(_objMomentData, _objNestedQuery);
+                            }
+                            _objLstS2MasterData = _kabaddiS2.getFinalResult(_objNestedQuery, _objMatchDetail, _oLayer.CreateConnection(), "3");
+                            break;
                     }
-                    _objLstS2MasterData = _cricketS2.getFinalResult(_objNestedQuery, _objMatchDetail, _oLayer.CreateConnection(),  "1");
+
                     string JsonString = JsonConvert.SerializeObject(_objLstS2MasterData);
                     response=JsonString;
                 }
@@ -609,14 +631,30 @@ namespace WebApis.BOL
                 {
                     MatchDetail _objMatchDetail = _objS2RequestData.MatchDetails.FirstOrDefault();
                     IEnumerable<SearchS2ResultData> searchResults = new List<SearchS2ResultData>();
-                    _objNestedQuery = _cricketS2.GetS2SearchResults(_objS2RequestData, _objNestedQuery);
                     string S2DataObj1 = _con.GetKeyValueAppSetting(objCF.getType(_objMatchDetail.SportID).ToLower(), "S2DataCount");
                     string[] arrayS2Count = S2DataObj1.Split(",");
-                    foreach (var items in arrayS2Count)
+
+                    switch (_objMatchDetail.SportID)
                     {
-                        _objDicSearchResultCount.Add(items, _cricketS2.getMatchCount(_objNestedQuery, _oLayer.CreateConnection(), items));
+                        case 1:
+                            _objNestedQuery = _cricketS2.GetS2SearchResults(_objS2RequestData, _objNestedQuery);
+                            foreach (var items in arrayS2Count)
+                            {
+                                _objDicSearchResultCount.Add(items, _cricketS2.getMatchCount(_objNestedQuery, _oLayer.CreateConnection(), items));
+                            }
+                            _objDicSearchResultCount.Add("RequestCount", _objS2RequestData.MatchDetails[0].RequestCount);
+                            break;
+                        case 3:
+                            _objNestedQuery = _kabaddiS2.GetS2SearchResults(_objS2RequestData, _objNestedQuery);
+                            foreach (var items in arrayS2Count)
+                            {
+                                _objDicSearchResultCount.Add(items, _kabaddiS2.getMatchCount(_objNestedQuery, _oLayer.CreateConnection(), items));
+                            }
+                            _objDicSearchResultCount.Add("RequestCount", _objS2RequestData.MatchDetails[0].RequestCount);
+                            break;
                     }
-                    _objDicSearchResultCount.Add("RequestCount", _objS2RequestData.MatchDetails[0].RequestCount);
+
+                    
                     string JsonString = JsonConvert.SerializeObject(_objDicSearchResultCount);
                     result = JsonString;
                 }

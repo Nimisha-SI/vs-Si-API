@@ -34,7 +34,7 @@ namespace WebApis.BOL
 
         QueryContainer GetS2SearchResults(SearchS2RequestData _objReqData, QueryContainer _objNestedQuery);
 
-        dynamic MapS2Resuldata(QueryContainer _objNested, string Search);
+        dynamic MapS2Resuldata(QueryContainer _objNested, string Search, ElasticClient EsClient);
 
         dynamic SearchS2(QueryContainer _objNestedquery, MatchDetail _objmatch, int Sportid = 6, string search = "");
 

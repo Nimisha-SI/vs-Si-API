@@ -139,5 +139,39 @@ namespace WebApis.Controllers
                 // return request.CreateResponse(HttpStatusCode.BadRequest, "Invalid operation!");
             }
         }
+
+        [System.Web.Http.HttpPost]
+        [Route("api/KabaddiS2DataIndex")]
+        public IActionResult KabaddiS2DataIndex()
+        {
+            EsClient_obj = _oLayer.CreateConnection();
+            List<SearchS2Data> obj2 = new List<SearchS2Data>();
+            List<SearchS2Data> obj3 = new List<SearchS2Data>();
+            string connection = _con.GetKeyValueAppSetting("ConnectionStrings", "DefaultConnection");
+            Dictionary<string, object> column = new Dictionary<string, object>();
+            obj2 = objCricket.GetAllSearchS2Data(connection, 3, true);
+            obj3 = obj2.ToList();
+            try
+            {
+                for (int i = 1; i <= 45; i++)
+                {
+                    obj3 = obj3.Take(20000).ToList();
+                    if (obj3.Count > 0)
+                    {
+                        _oLayer.BulkInsert<SearchS2Data>(EsClient_obj, obj3, "kabaddis2data");
+                    }
+                    if (obj3.Count > 20000)
+                    {
+                        obj3.RemoveRange(1, 20000);
+                    }
+                }
+                return Ok(new { Result = obj2 });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message.ToString());
+            }
+        }
     }
 }
