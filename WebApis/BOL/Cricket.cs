@@ -434,39 +434,72 @@ namespace WebApis.BOL
                 if (searchText != "")
                 {
 
-                    if (EntityName == "bowler")
-                    {
-                        var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
-                Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.Bowler).Value(searchText)))
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
-                        var agg = response.Aggregations.Terms("my_agg").Buckets;
-                        foreach (var hits in agg)
-                        {
-                            obj.Add(new FilteredEntityForCricket
-                            {
-                                EntitTypeName = EntityName,
-                                EntityName = hits.Key.ToString().Split("|")[0],
-                                EntityId = hits.Key.ToString().Split("|")[1],
-                            });
-                        }
-                    }
-                    if (eName == "batsman")
-                    {
-                        var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
-                Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.Batsman).Value(searchText)))
-                .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
-                        var agg = response.Aggregations.Terms("my_agg").Buckets;
-                        foreach (var hits in agg)
-                        {
-                            obj.Add(new FilteredEntityForCricket
-                            {
-                                EntitTypeName = EntityName,
-                                EntityName = hits.Key.ToString().Split("|")[0],
-                                EntityId = hits.Key.ToString().Split("|")[1],
-                            });
-                        }
-                    }
+                //    if (EntityName == "bowler")
+                //    {
+                //        var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
+                //Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.Bowler).Value(searchText)))
+                //.Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
+                //        var agg = response.Aggregations.Terms("my_agg").Buckets;
+                //        foreach (var hits in agg)
+                //        {
+                //            obj.Add(new FilteredEntityForCricket
+                //            {
+                //                EntitTypeName = EntityName,
+                //                EntityName = hits.Key.ToString().Split("|")[0],
+                //                EntityId = hits.Key.ToString().Split("|")[1],
+                //            });
+                //        }
+                //    }
+                //    if (eName == "batsman")
+                //    {
+                //        var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
+                //Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.Batsman).Value(searchText)))
+                //.Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
+                //        var agg = response.Aggregations.Terms("my_agg").Buckets;
+                //        foreach (var hits in agg)
+                //        {
+                //            obj.Add(new FilteredEntityForCricket
+                //            {
+                //                EntitTypeName = EntityName,
+                //                EntityName = hits.Key.ToString().Split("|")[0],
+                //                EntityId = hits.Key.ToString().Split("|")[1],
+                //            });
+                //        }
+                //    }
+                   // else if(EntityName == "parentSeriesName") {
 
+                        QueryContainer qcWildCard = new WildcardQuery { Field = EntityName, Value = searchText };
+
+                        var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
+                        Query(q => qc && qcWildCard)
+                        .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
+                        var agg = response.Aggregations.Terms("my_agg").Buckets;
+                        foreach (var hits in agg)
+                        {
+                            obj.Add(new FilteredEntityForCricket
+                            {
+                                EntitTypeName = EntityName,
+                                EntityName = hits.Key.ToString().Split("|")[0],
+                                EntityId = hits.Key.ToString().Split("|")[1],
+                            });
+                        }
+                   // }
+            //        else if (EntityName == "series")
+            //        {
+            //            var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
+            //Query(q => qc && q.Wildcard(c => c.Name("named_query").Field(f => f.Series).Value(searchText)))
+            //.Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityName + ".keyword'].value + '|' + doc['" + EntityId + ".keyword'].value")).Size(802407))));
+            //            var agg = response.Aggregations.Terms("my_agg").Buckets;
+            //            foreach (var hits in agg)
+            //            {
+            //                obj.Add(new FilteredEntityForCricket
+            //                {
+            //                    EntitTypeName = EntityName,
+            //                    EntityName = hits.Key.ToString().Split("|")[0],
+            //                    EntityId = hits.Key.ToString().Split("|")[1],
+            //                });
+            //            }
+            //        }
                 }
                 else
                 {

@@ -46,12 +46,18 @@ namespace WebApis.Controllers
         [System.Web.Http.HttpPost]
         [Route("api/GetFilterBySport")]
         public IActionResult GetFilteredEntitiesBySport(SearchEntityRequestData _objReqData)
+        //public IActionResult GetFilteredEntitiesBySport(dynamic _objReqData)
         {
             try
             {
                 CommonFunction objCF = new CommonFunction();
 
-                string SportName = objCF.getType(_objReqData.MatchDetails.SportID);
+
+               // string jsonData = JsonConvert.SerializeObject(_objReqData);
+                //List<SearchEntityRequestData> _objLstReqData = new List<SearchEntityRequestData>();
+                //_objLstReqData = JsonConvert.DeserializeObject<List<SearchEntityRequestData>>(jsonData);
+
+                //string SportName = objCF.getType(_objReqData.MatchDetails.SportID);
                 if (_objReqData != null)
                 {
                     //if (SportName == "Cricket") {
@@ -188,7 +194,8 @@ namespace WebApis.Controllers
 
         [System.Web.Http.HttpPost]
         [Route("api/GetAllS2MastersBySport")]
-        public IActionResult GetAllS2MastersBySport(IEnumerable<SearchS2RequestData> _objReqData)
+        //  public IActionResult GetAllS2MastersBySport(IEnumerable<SearchS2RequestData> _objReqData)
+        public IActionResult GetAllS2MastersBySport(dynamic _objReqData)
         {
             try
             {
@@ -372,21 +379,20 @@ namespace WebApis.Controllers
 
         [System.Web.Http.HttpPost]
         [Route("api/AddUpdateLuceneForSearch")]
-        public IActionResult AddUpdateForSearch(Stream data)
+        // public IActionResult AddUpdateForSearch(Stream data)
+        public IActionResult AddUpdateForSearch(IEnumerable<SearchCricketData> data)
         {
             bool isSuccess = false;
             string RequestData = string.Empty;
+            List<SearchCricketData> _objReqSearchS2Data = new List<SearchCricketData>();
+            string jsonData = JsonConvert.SerializeObject(data);
+            _objReqSearchS2Data = JsonConvert.DeserializeObject<List<SearchCricketData>>(jsonData);
             try
             {
-                using (StreamReader reader = new StreamReader(data))
+                
+                if (!string.IsNullOrEmpty(jsonData))
                 {
-                    RequestData = reader.ReadToEnd();
-                    reader.Close();
-                    reader.Dispose();
-                }
-                if (!string.IsNullOrEmpty(RequestData))
-                {
-                    isSuccess = _sObj.AddUpdateForSearch(RequestData, 1, false);
+                    isSuccess = _sObj.AddUpdateForSearch(jsonData, 1, false);
                 }
             }
             catch (Exception ex)
@@ -399,21 +405,23 @@ namespace WebApis.Controllers
 
         [System.Web.Http.HttpPost]
         [Route("api/AddUpdateLuceneForKabaddiSearch")]
-        public IActionResult AddUpdateAddUpdateElasticForKabaddi(Stream data)
+        public IActionResult AddUpdateAddUpdateElasticForKabaddi(IEnumerable<KabaddiS1Data> data)
         {
             bool isSuccess = false;
             string RequestData = string.Empty;
             try
             {
-                using (StreamReader reader = new StreamReader(data))
+                
+                string jsonData = JsonConvert.SerializeObject(data);
+                //using (StreamReader reader = new StreamReader(data))
+                //{
+                //    RequestData = reader.ReadToEnd();
+                //    reader.Close();
+                //    reader.Dispose();
+                //}KabaddiS1Data
+                if (!string.IsNullOrEmpty(jsonData))
                 {
-                    RequestData = reader.ReadToEnd();
-                    reader.Close();
-                    reader.Dispose();
-                }
-                if (!string.IsNullOrEmpty(RequestData))
-                {
-                    isSuccess = _sObj.AddUpdateForSearch(RequestData, 3, false);
+                    isSuccess = _sObj.AddUpdateForSearch(jsonData, 3, false);
                 }
             }
             catch (Exception ex)
@@ -426,21 +434,22 @@ namespace WebApis.Controllers
 
         [System.Web.Http.HttpPost]
         [Route("api/AddUpdateS2LuceneForSearch")]
-        public IActionResult AddUpdateS2ElasticForSearch(Stream data)
+        public IActionResult AddUpdateS2ElasticForSearch(IEnumerable<SearchS2Data> data)
         {
             bool isSuccess = false;
             string RequestData = string.Empty;
             try
             {
-                using (StreamReader reader = new StreamReader(data))
+                string jsonData = JsonConvert.SerializeObject(data);
+                //using (StreamReader reader = new StreamReader(data))
+                //{
+                //    RequestData = reader.ReadToEnd();
+                //    reader.Close();
+                //    reader.Dispose();
+                //}
+                if (!string.IsNullOrEmpty(jsonData))
                 {
-                    RequestData = reader.ReadToEnd();
-                    reader.Close();
-                    reader.Dispose();
-                }
-                if (!string.IsNullOrEmpty(RequestData))
-                {
-                    isSuccess = _sObj.AddUpdateForSearch(RequestData, 1, true);
+                    isSuccess = _sObj.AddUpdateForSearch(jsonData, 1, true);
                 }
             }
             catch (Exception ex)
