@@ -238,6 +238,33 @@ namespace WebApis.BOL
             return Column;
         }
 
+
+        public string getIndexCount(string indexName, ElasticClient EsClient, int sportId, string sportType="") {
+            string count="";
+            if (sportId == 1)
+            {
+                if (sportType == "s2")
+                {
+                    var resp = EsClient.Count<SearchS2Data>(c => c.Index(indexName)).Count;
+                    count = resp.ToString();
+                    
+                }
+                else
+                {
+                    var resp = EsClient.Count<SearchCricketData>(c => c.Index(indexName)).Count;
+                    count = resp.ToString();
+                }
+            }
+            else if (sportId == 3) {
+                var resp = EsClient.Count<KabaddiS1Data>(c => c.Index(indexName)).Count;
+                count = resp.ToString();
+            }
+           
+            return count;
+        }
+
+
+
         public Dictionary<string, object> GetDropdowns(QueryContainer _objNestedQuery, Dictionary<string, object> ObjectArray, ElasticClient EsClient, string IndexName, Dictionary<string, string> _columns, string[] sFilterArray, int sportid)
         {
             IEnumerable<SearchResultFilterData> _objSearchResultsFilterData = new List<SearchResultFilterData>();
@@ -259,8 +286,9 @@ namespace WebApis.BOL
                 {
                     case 1:
                         {
+                            int Count = Convert.ToInt32(getIndexCount("cricket", EsClient, 1, ""));
                             var result = EsClient.Search<SearchCricketData>(a => a.Index(IndexName).Size(0).Query(s => _objNestedQuery)
-          .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(802407)) //crickets2-802407
+          .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(Count)) //crickets2-802407
           )
          );
                             var agg = result.Aggregations.Terms("terms_agg").Buckets;
@@ -285,8 +313,9 @@ namespace WebApis.BOL
                         break;
                     case 3:
                         {
+                            int Count = Convert.ToInt32(getIndexCount("cricket", EsClient, 3, ""));
                             var result = EsClient.Search<SearchKabaddiData>(a => a.Index(IndexName).Size(0).Query(s => _objNestedQuery)
-          .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(65243)) //crickets2-802407
+          .Aggregations(a1 => a1.Terms("terms_agg", t => t.Script(t1 => t1.Source("doc['" + EntityNames.ElementAt(0) + ".keyword'].value + '|' + doc['" + EntityIds.ElementAt(0) + ".keyword'].value")).Size(Count)) //crickets2-802407
           )
          );
                             var agg = result.Aggregations.Terms("terms_agg").Buckets;

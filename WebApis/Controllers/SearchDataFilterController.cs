@@ -302,14 +302,9 @@ namespace WebApis.Controllers
             string result = string.Empty;
             try
             {
-                List<SearchQueryModel> _objLstSearchQuery = new List<SearchQueryModel>();
-                SearchQueryModel _objSqModel = new SearchQueryModel();
-                //List<FTData> _objFTData = LuceneService.GetFTData(term);
+                if (!string.IsNullOrEmpty(term)) {
 
-                ResultFTData _objResultFTData = new ResultFTData();
-                List<string> _objLstSkill = new List<string>();
-                List<FTData> _objFTData = new List<FTData>();
-                List<KTData> _objKTdata = new List<KTData>();
+                }
             }
             catch (Exception ex)
             {
@@ -368,6 +363,24 @@ namespace WebApis.Controllers
                     SearchS2RequestData _objReqEntityS2 = _objReqData.FirstOrDefault();
                     result = _sObj.GetFilteredEntityBySportForS2(_objReqEntityS2);
                 }
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+            return Ok(new { Response = result });
+        }
+
+
+        [System.Web.Http.HttpPost]
+        [Route("api/GetAutoCompleteData")]
+        public IActionResult GetAutoCompleteData(string sportid, string stype, string term = "")
+        {
+            string result = string.Empty;
+            try
+            {
+              
 
             }
             catch (Exception ex)

@@ -588,8 +588,26 @@ namespace WebApis.Model
             public string CurrentSelector { get; set; }
         }
 
+        public class ElasticQueryType
+        {
+            public const string FieldType_Text = "text";
+            public const string FieldType_TextMultiple = "textmultiple";
+            public const string FieldType_Number = "number";
+            public const string FieldType_Range = "range";
+            public const string FieldType_DateRange = "daterange";
+            public const string FieldType_Nested = "nested";
+            public const string FieldType_NestedTextMultiple = "nestedtextmultiple";
+            public const string FieldType_TextWithWildCard = "wildcardtext";
+            public const string FieldType_NestedTextWithWildcard = "nestedwildcardtext";
+            public const string FieldType_Date = "date";
+            public const string FieldType_DateString = "datestring";
+            public const string FieldType_MultipleText = "multipletext";
+            public const string Field_Operator_AND = "AND";
+            public const string Field_Operator_OR = "OR";
+        }
 
-    }
+
+        }
 
 }
 

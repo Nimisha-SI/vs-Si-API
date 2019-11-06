@@ -413,6 +413,7 @@ namespace WebApis.BOL
 
             if (sDate != 0 && Edate != 0)
             {
+               
                 var response = EsClient.Search<SearchCricketData>(s => s.Index("cricket").Size(0).
                 Query(q => qc && q.Range(v => v.Field(p => p.MatchDate).GreaterThanOrEquals(sDate).LessThanOrEquals(Edate)))
                 .Aggregations(a => a.Terms("my_agg", st => st.Script(p => p.Source("doc['" + EntityId + ".keyword'].value + '|' + doc['" + EntityName + ".keyword'].value")).Size(802407))));

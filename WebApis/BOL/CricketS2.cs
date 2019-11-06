@@ -1338,6 +1338,7 @@ namespace WebApis.BOL
 
         public override dynamic getFinalResult(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, ElasticClient EsClient, string sportid = "1") {
 
+            int Count = Convert.ToInt32(objCf.getIndexCount("crickets2data", EsClient, 1, "s2"));
             string input = Convert.ToInt32(Convert.ToBoolean(_objMatchDetail.IsAsset)).ToString();
             QueryContainer query = new TermQuery { Field = "isAsset", Value = input };
             _objNestedQuery &= query;
@@ -1345,7 +1346,7 @@ namespace WebApis.BOL
             List<S2MasterData> lstsearchresults = new List<S2MasterData>();
             var results2MasterData = EsClient.Search<S2MasterData>(s => s.Index("crickets2data").Query(q => _objNestedQuery)
             .Aggregations(a => a.Terms("agg_E1", st => st.Script(p => p.Source("doc['attribute_Id_Level1.keyword'].value + '|' + doc['attribute_Name_Level1.keyword'].value + '|' + doc['attribute_Id_Level2.keyword'].value + '|' + doc['attribute_Name_Level2.keyword'].value + '|' + doc['attribute_Id_Level3.keyword'].value + '|' + doc['attribute_Name_Level3.keyword'].value + '|' + doc['attribute_Id_Level4.keyword'].value + '|' + doc['attribute_Name_Level4.keyword'].value + '|' + doc['emotionId.keyword'].value  + '|' + doc['emotionName.keyword'].value"))
-            .Size(409846))));
+            .Size(Count))));
 
             //var results2MasterData1 = EsClient.Search<S2MasterData>(s => s.Index("crickets2data").Query(q => _objNestedQuery)
             //.Aggregations(a => a.Terms("agg_E1", st => st.Script(p => p.Source("doc['attribute_Id_Level1.keyword'].value + '|' + doc['attribute_Name_Level1.keyword'].value"))
@@ -1395,13 +1396,15 @@ namespace WebApis.BOL
         public int GetPlayerMatchDetailsMaxCount(QueryContainer _objNestedQuery, ElasticClient EsClient, string sType)
         {
             int count = 0;
+            int Count = Convert.ToInt32(objCf.getIndexCount("cricket", EsClient, 1));
             //var response = ISearchResponse<SearchCricketData>();
             switch (sType)
             {
+
                 case "MaxBatsmanScore":
                     var resRuns = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
                      Query(q => _objNestedQuery)
-                    .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BatsmanRuns.Suffix("keyword")).Size(802407)
+                    .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BatsmanRuns.Suffix("keyword")).Size(Count)
                     )));
                     var aggRuns = resRuns.Aggregations.Terms("commit_count");
                     count = aggRuns.Buckets.Count;
@@ -1409,7 +1412,7 @@ namespace WebApis.BOL
                 case "MaxBatsmanBalls":
                     var resFaced = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
                          Query(q => _objNestedQuery)
-                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BatsmanBallsFaced.Suffix("keyword")).Size(802407)
+                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BatsmanBallsFaced.Suffix("keyword")).Size(Count)
                         )));
                     var aggFaced = resFaced.Aggregations.Terms("commit_count");
                     count = aggFaced.Buckets.Count;
@@ -1418,7 +1421,7 @@ namespace WebApis.BOL
                 case "MaxBowlerWickets":
                     var resWicket = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
                          Query(q => _objNestedQuery)
-                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BowlerWickets.Suffix("keyword")).Size(802407)
+                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BowlerWickets.Suffix("keyword")).Size(Count)
                         )));
                     var aggWicket = resWicket.Aggregations.Terms("commit_count");
                     count = aggWicket.Buckets.Count;
@@ -1426,7 +1429,7 @@ namespace WebApis.BOL
                 case "MaxBowlerBalls":
                     var resBowled = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
                          Query(q => _objNestedQuery)
-                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BowlerBallsBowled.Suffix("keyword")).Size(802407)
+                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BowlerBallsBowled.Suffix("keyword")).Size(Count)
                         )));
                     var aggBowled = resBowled.Aggregations.Terms("commit_count");
                     count = aggBowled.Buckets.Count;
@@ -1434,7 +1437,7 @@ namespace WebApis.BOL
                 case "MaxBowlerRuns":
                     var resConceeded = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
                          Query(q => _objNestedQuery)
-                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BowlerRunsConceeded.Suffix("keyword")).Size(802407)
+                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BowlerRunsConceeded.Suffix("keyword")).Size(Count)
                         )));
                     var aggConceeded = resConceeded.Aggregations.Terms("commit_count");
                     count = aggConceeded.Buckets.Count;
@@ -1442,7 +1445,7 @@ namespace WebApis.BOL
                 case "MaxTeamScore":
                     var resTeamScore = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
                          Query(q => _objNestedQuery)
-                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.TeamScore.Suffix("keyword")).Size(802407)
+                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.TeamScore.Suffix("keyword")).Size(Count)
                         )));
                     var aggTeamScore = resTeamScore.Aggregations.Terms("commit_count");
                     count = aggTeamScore.Buckets.Count;
@@ -1450,7 +1453,7 @@ namespace WebApis.BOL
                 case "MaxTeamOver":
                     var resOver = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
                          Query(q => _objNestedQuery)
-                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BatsmanBallsFaced.Suffix("keyword")).Size(802407)
+                        .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.BatsmanBallsFaced.Suffix("keyword")).Size(Count)
                         )));
                     var aggOver = resOver.Aggregations.Terms("commit_count");
                     count = aggOver.Buckets.Count;
@@ -1510,9 +1513,10 @@ namespace WebApis.BOL
             int Count = 0;
             if (sType == "Matches")
             {
+                int CountIndex = Convert.ToInt32(objCf.getIndexCount("cricket", EsClient, 1));
                 var response = EsClient.Search<SearchCricketData>(a => a.Index("cricket").Size(0).
                 Query(q => _objNestedQuery)
-                .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.MatchId.Suffix("keyword")).Size(802407)//409846 802407
+                .Aggregations(a1 => a1.Terms("commit_count", t => t.Field(p => p.MatchId.Suffix("keyword")).Size(CountIndex)//409846 802407
                 )));
                 var agg = response.Aggregations.Terms("commit_count");
                 Count = agg.Buckets.Count;
@@ -1982,19 +1986,20 @@ namespace WebApis.BOL
 
                 if (!string.IsNullOrEmpty(Search))
                 {
-                  
+                    int Count = Convert.ToInt32(objCf.getIndexCount("crickets2data", EsClient, 1, "s2"));
+
                     List<S2FilteredEntity> _objFilterentityt = new List<S2FilteredEntity>();
                     var result_E1 = EsClient.Search<S2FilteredEntity>(s => s.Index("crickets2data").Query(q => _objNestedquery)
                     .Aggregations(a => a.Terms("agg_E1", st => st.Script(p => p.Source("doc['"+ KeyValue_E1.Key + ".keyword'].value + '|' + doc['"+ KeyValue_E1.Value + ".keyword'].value + '|' + doc['entityId_3.keyword'].value"))
-                    .Size(409846))));
+                    .Size(Count))));
 
                     var result_E2 = EsClient.Search<S2FilteredEntity>(s => s.Index("crickets2data").Query(q => _objNestedquery)
                     .Aggregations(a => a.Terms("agg_E2", st => st.Script(p => p.Source("doc['" + KeyValueS_E2.Key + ".keyword'].value + '|' + doc['" + KeyValueS_E2.Value + ".keyword'].value + '|' + doc['entityId_3.keyword'].value"))
-                    .Size(409846))));
+                    .Size(Count))));
 
                     var result_E3 = EsClient.Search<S2FilteredEntity>(s => s.Index("crickets2data").Query(q => _objNestedquery)
                     .Aggregations(a => a.Terms("agg_E3", st => st.Script(p => p.Source("doc['" + KeyValueS_E3.Key + ".keyword'].value + '|' + doc['" + KeyValueS_E3.Value + ".keyword'].value + '|' + doc['entityId_3.keyword'].value"))
-                    .Size(409846))));
+                    .Size(Count))));
 
                     var agg1 = result_E1.Aggregations.Terms("agg_E1").Buckets;
                     var agg2 = result_E2.Aggregations.Terms("agg_E2").Buckets;

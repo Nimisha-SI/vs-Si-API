@@ -1428,511 +1428,667 @@ namespace WebApis.BOL
 
         public string GetAutoCompleteData(string sportid, string stype, string term = "")
         {
-            throw new NotImplementedException();
+            string response = string.Empty;
+
+            List<SearchQueryModel> _objLstSearchQuery = new List<SearchQueryModel>();
+            SearchQueryModel _objSqModel = new SearchQueryModel();
+            //List<FTData> _objFTData = LuceneService.GetFTData(term);
+
+            ResultFTData _objResultFTData = new ResultFTData();
+            List<string> _objLstSkill = new List<string>();
+            List<FTData> _objFTData = new List<FTData>();
+            List<KTData> _objKTdata = new List<KTData>();
+            try
+            {
+                _objSqModel = new SearchQueryModel();
+                _objSqModel.FieldName = "KeyTags";
+                _objSqModel.FieldType = ElasticQueryType.FieldType_Text;
+                _objSqModel.SearchText = term;
+                _objSqModel.Operator = ElasticQueryType.Field_Operator_AND;
+                _objLstSearchQuery.Add(_objSqModel);
+                _objKTdata = GetSelectedFTData(_objLstSearchQuery, Convert.ToInt32(sportid), 1, true);
+                _objResultFTData.FilterData = _objLstSkill;
+            }
+            catch (Exception ex) {
+                response = ex.Message.ToString();
+            }
+
+            return response;
+        }
+        public List<KTData> GetSelectedFTData(List<SearchQueryModel> objlstSearchQueryModel, int sportid = 1, int stype = 1, bool isAutoComplete = true)
+        {
+            string _response = string.Empty;
+            List<FTData> _objFTData = new List<FTData>();
+            List<KTData> _objktdata = new List<KTData>();
+            try
+            {
+                QueryContainer qc = new QueryContainer();
+                foreach (SearchQueryModel objSearchQueryModel in objlstSearchQueryModel)
+                {
+                   
+                    if (objSearchQueryModel.FieldType == ElasticQueryType.FieldType_Text)
+                    {
+                        QueryContainer query = new WildcardQuery { Field= objSearchQueryModel.FieldName, Value= objSearchQueryModel.SearchText.Trim() + "*" };
+                        qc &= query;
+
+                    }
+                    else if (objSearchQueryModel.FieldType == ElasticQueryType.FieldType_Number)
+                    {
+                        QueryContainer query = new TermQuery { Field = objSearchQueryModel.FieldName, Value = objSearchQueryModel.SearchText.Trim()  };
+
+                        if (objSearchQueryModel.Operator == ElasticQueryType.Field_Operator_AND)
+                        {
+                            qc &= query;
+                        }
+                    }
+
+                    else if (objSearchQueryModel.FieldType == ElasticQueryType.FieldType_TextMultiple)
+                    {
+                        if (objSearchQueryModel.SearchText.Contains(","))
+                        {
+                            string[] ArrSearchText = objSearchQueryModel.SearchText.Split(',').ToArray();
+                            if (ArrSearchText.Length > 0)
+                            {
+                                List<string> _objLstItems = ArrSearchText.Distinct().ToList();
+                                QueryContainer _objNestedBoolQuery = new QueryContainer();
+                                foreach (string listitem in _objLstItems)
+                                {
+                                    if (listitem != string.Empty)
+                                    {
+                                        QueryContainer query = new TermQuery { Field = objSearchQueryModel.FieldName, Value = listitem };
+                                        _objNestedBoolQuery |= query;
+                                    }
+                                }
+                                if (objSearchQueryModel.Operator == ElasticQueryType.Field_Operator_AND)
+                                {
+                                    qc &= _objNestedBoolQuery ;
+                                }
+                                else if (objSearchQueryModel.Operator == ElasticQueryType.Field_Operator_OR)
+                                {
+                                    qc |= _objNestedBoolQuery;
+                                }
+                            }
+                        }
+                        else
+                        {
+                           
+                            QueryContainer query = new TermQuery { Field = objSearchQueryModel.FieldName, Value = objSearchQueryModel.SearchText };
+                            qc &= query;
+                        }
+                    }
+                    else if (objSearchQueryModel.FieldType == ElasticQueryType.FieldType_Nested)
+                    {
+                        Dictionary<string, string> _objNestedFields = objSearchQueryModel.NestedFields;
+                        if (_objNestedFields.Count > 0)
+                        {
+                            QueryContainer _objNestedBoolQuery = new QueryContainer();
+                            foreach (var item in _objNestedFields)
+                            {
+                                QueryContainer query = new TermQuery { Field = objSearchQueryModel.FieldName, Value = item.Value };
+                                
+                                if (objSearchQueryModel.Operator == ElasticQueryType.Field_Operator_OR)
+                                {
+                                    _objNestedBoolQuery |= query;
+                                }
+                                else if (objSearchQueryModel.Operator == ElasticQueryType.Field_Operator_AND)
+                                {
+                                    _objNestedBoolQuery &= query;
+                                }
+                            }
+                            qc &= _objNestedBoolQuery;
+                           }
+                    }
+                    else if (objSearchQueryModel.FieldType == ElasticQueryType.FieldType_TextWithWildCard)
+                    {
+                        //Term term = new Term(sqitem.FieldName, sqitem.SearchText);
+                        QueryContainer query = new WildcardQuery { Field = objSearchQueryModel.FieldName, Value = objSearchQueryModel.SearchText.Trim() + "*" };
+                        qc &= query;
+                    }
+                    else if (objSearchQueryModel.FieldType == ElasticQueryType.FieldType_NestedTextWithWildcard)
+                    {
+                        Dictionary<string, string> _objNestedFields = objSearchQueryModel.NestedFields;
+                        if (_objNestedFields.Count > 0)
+                        {
+                            QueryContainer _objNestedBoolQuery = new QueryContainer();
+                            foreach (var item in _objNestedFields)
+                            {
+                                QueryContainer _objNestedquery = new TermQuery { Field= item.Key, Value= item.Value.Trim() };
+                             
+                                if (objSearchQueryModel.Operator == ElasticQueryType.Field_Operator_OR)
+                                {
+
+                                    _objNestedBoolQuery |= _objNestedquery;
+                                }
+                                else if (objSearchQueryModel.Operator == ElasticQueryType.Field_Operator_AND)
+                                {
+                                    _objNestedBoolQuery &= _objNestedquery;
+                                }
+                            }
+                            qc &= _objNestedBoolQuery;
+                        }
+                    }
+                }
+
+                _objktdata = FreeTextMapping(qc, _oLayer.CreateConnection(), "cricket");
+             }
+            catch (Exception ex) {
+
+            }
+            return _objktdata;
+        }
+        public List<KTData> FreeTextMapping(QueryContainer _objQuery, ElasticClient EsClient, string IndexName)
+        {
+            int Count = Convert.ToInt32(objCF.getIndexCount(IndexName, EsClient, 1));
+            List<KTData> KTData = new List<KTData>();
+            var results2MasterData = EsClient.Search<KTData>(s => s.Index(IndexName).Query(q => _objQuery).Size(Count)
+           .Aggregations(a => a.Terms("agg_E1", st => st.Script(p => p.Source("doc['attribute_Id_Level1.keyword'].value + '|' + doc['attribute_Name_Level1.keyword'].value + '|' + doc['attribute_Id_Level2.keyword'].value + '|' + doc['attribute_Name_Level2.keyword'].value + '|' + doc['attribute_Id_Level3.keyword'].value + '|' + doc['attribute_Name_Level3.keyword'].value + '|' + doc['attribute_Id_Level4.keyword'].value + '|' + doc['attribute_Name_Level4.keyword'].value + '|' + doc['emotionId.keyword'].value  + '|' + doc['emotionName.keyword'].value"))
+           .Size(Count)))
+           );
+            return KTData;
         }
 
-        //private QueryContainer GetMatchDetailQuery(MatchDetail _objMatchDetail, QueryContainer _objNestedQuery, bool isMasterData = false)
-        //{
-        //    if (_objMatchDetail != null)
-        //    {
-        //        QueryContainer queryShould = new QueryContainer();
-
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.MatchFormat))
-        //        {
-        //            if (_objMatchDetail.MatchFormat.Contains(","))
-        //            {
-        //                string[] _objaaray = _objMatchDetail.MatchFormat.Split(',');
-        //                foreach (var v in _objaaray)
-        //                {
-        //                    QueryContainer q1 = new TermQuery { Field = "compType", Value = v.ToLower() };
-        //                    queryShould |= q1;
-        //                }
-        //                //_objNestedQuery.Add(bq, Occur.MUST);
-        //            }
-        //            else {
-        //                QueryContainer q1 = new TermQuery { Field = "compType", Value = _objMatchDetail.MatchFormat.ToLower() };
-        //                _objNestedQuery &= q1;
-        //            }
-        //        }
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.VenueId))
-        //        {
-        //            QueryContainer q2 = new TermQuery { Field = "venueId", Value = _objMatchDetail.MatchFormat.ToLower().ToString() };
-        //            _objNestedQuery &= q2;
-        //        }
-
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.Team1Id))
-        //        {
-        //            QueryContainer q3 = new TermQuery { Field = "team1Id", Value = _objMatchDetail.Team1Id.ToLower().ToString() };
-        //            queryShould |= q3;
-        //            _objNestedQuery &= queryShould;
-        //        }
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.Team2Id))
-        //        {
-        //            QueryContainer q4 = new TermQuery { Field = "team2Id", Value = _objMatchDetail.Team1Id.ToLower().ToString() };
-        //            queryShould |= q4;
-        //            _objNestedQuery &= queryShould;
-        //        }
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.Team2Id))
-        //        {
-
-        //            QueryContainer q5 = new TermQuery { Field = "team1Id", Value = _objMatchDetail.Team2Id.ToLower().ToString() };
-        //            QueryContainer q6 = new TermQuery { Field = "team2Id", Value = _objMatchDetail.Team2Id.ToLower().ToString() };
-        //            queryShould |= q5 |= q6;
-        //            _objNestedQuery &= queryShould;
-        //        }
-
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.SeriesId) && _objMatchDetail.IsParentSeries)
-        //        {
-        //            string Dlist = _objMatchDetail.SeriesId;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q7 = new TermQuery { Field = "parentSeriesId", Value = str };
-        //                queryShould  |= q7;
-        //            }
-        //            // QueryContainer q7 = new TermQuery { Field = "parentSeriesId", Value = _objMatchDetail.SeriesId };
-        //            //_objNestedQuery &= q7;
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.SeriesId) && !_objMatchDetail.IsParentSeries)
-        //        {
-
-
-        //            string Dlist = _objMatchDetail.SeriesId;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-
-        //                QueryContainer q8 = new TermQuery { Field = "seriesId", Value = str };
-        //                queryShould |= q8;
-        //            }
-
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.MatchId))
-        //        {
-
-        //            string Dlist = _objMatchDetail.MatchId;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q9 = new TermQuery { Field = "matchId", Value = str };
-        //                queryShould |= q9;
-        //            }
-        //        }
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.ClearId))
-        //        {
-        //            var myQuery = new BoolQuery();
-        //            QueryContainer q10 = new TermQuery { Field = "qClearId", Value = Convert.ToString(_objMatchDetail.ClearId).Replace("-", string.Empty).ToLower() };
-        //            QueryContainer q11 = new TermQuery { Field = "qClearId2", Value = Convert.ToString(_objMatchDetail.ClearId).Replace("-", string.Empty).ToLower() };
-        //            QueryContainer q12 = new TermQuery { Field = "qClearId3", Value = Convert.ToString(_objMatchDetail.ClearId).Replace("-", string.Empty).ToLower() };
-        //            QueryContainer q13 = new TermQuery { Field = "qClearId4", Value = _objMatchDetail.ClearId.Replace("-", string.Empty).ToLower() };
-        //            QueryContainer q14 = new TermQuery { Field = "qClearId5", Value = _objMatchDetail.ClearId.Replace("-", string.Empty).ToLower() };
-        //            QueryContainer q15 = new TermQuery { Field = "qClearId6", Value = _objMatchDetail.ClearId.Replace("-", string.Empty).ToLower() };
-        //            queryShould |= q10 |= q11 |= q12 |= q13 |= q14 |= q15;
-        //            _objNestedQuery &= queryShould;
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.MatchStageId))
-        //        {
+            //private QueryContainer GetMatchDetailQuery(MatchDetail _objMatchDetail, QueryContainer _objNestedQuery, bool isMasterData = false)
+            //{
+            //    if (_objMatchDetail != null)
+            //    {
+            //        QueryContainer queryShould = new QueryContainer();
+
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.MatchFormat))
+            //        {
+            //            if (_objMatchDetail.MatchFormat.Contains(","))
+            //            {
+            //                string[] _objaaray = _objMatchDetail.MatchFormat.Split(',');
+            //                foreach (var v in _objaaray)
+            //                {
+            //                    QueryContainer q1 = new TermQuery { Field = "compType", Value = v.ToLower() };
+            //                    queryShould |= q1;
+            //                }
+            //                //_objNestedQuery.Add(bq, Occur.MUST);
+            //            }
+            //            else {
+            //                QueryContainer q1 = new TermQuery { Field = "compType", Value = _objMatchDetail.MatchFormat.ToLower() };
+            //                _objNestedQuery &= q1;
+            //            }
+            //        }
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.VenueId))
+            //        {
+            //            QueryContainer q2 = new TermQuery { Field = "venueId", Value = _objMatchDetail.MatchFormat.ToLower().ToString() };
+            //            _objNestedQuery &= q2;
+            //        }
+
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.Team1Id))
+            //        {
+            //            QueryContainer q3 = new TermQuery { Field = "team1Id", Value = _objMatchDetail.Team1Id.ToLower().ToString() };
+            //            queryShould |= q3;
+            //            _objNestedQuery &= queryShould;
+            //        }
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.Team2Id))
+            //        {
+            //            QueryContainer q4 = new TermQuery { Field = "team2Id", Value = _objMatchDetail.Team1Id.ToLower().ToString() };
+            //            queryShould |= q4;
+            //            _objNestedQuery &= queryShould;
+            //        }
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.Team2Id))
+            //        {
+
+            //            QueryContainer q5 = new TermQuery { Field = "team1Id", Value = _objMatchDetail.Team2Id.ToLower().ToString() };
+            //            QueryContainer q6 = new TermQuery { Field = "team2Id", Value = _objMatchDetail.Team2Id.ToLower().ToString() };
+            //            queryShould |= q5 |= q6;
+            //            _objNestedQuery &= queryShould;
+            //        }
+
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.SeriesId) && _objMatchDetail.IsParentSeries)
+            //        {
+            //            string Dlist = _objMatchDetail.SeriesId;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q7 = new TermQuery { Field = "parentSeriesId", Value = str };
+            //                queryShould  |= q7;
+            //            }
+            //            // QueryContainer q7 = new TermQuery { Field = "parentSeriesId", Value = _objMatchDetail.SeriesId };
+            //            //_objNestedQuery &= q7;
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.SeriesId) && !_objMatchDetail.IsParentSeries)
+            //        {
+
+
+            //            string Dlist = _objMatchDetail.SeriesId;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+
+            //                QueryContainer q8 = new TermQuery { Field = "seriesId", Value = str };
+            //                queryShould |= q8;
+            //            }
+
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.MatchId))
+            //        {
+
+            //            string Dlist = _objMatchDetail.MatchId;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q9 = new TermQuery { Field = "matchId", Value = str };
+            //                queryShould |= q9;
+            //            }
+            //        }
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.ClearId))
+            //        {
+            //            var myQuery = new BoolQuery();
+            //            QueryContainer q10 = new TermQuery { Field = "qClearId", Value = Convert.ToString(_objMatchDetail.ClearId).Replace("-", string.Empty).ToLower() };
+            //            QueryContainer q11 = new TermQuery { Field = "qClearId2", Value = Convert.ToString(_objMatchDetail.ClearId).Replace("-", string.Empty).ToLower() };
+            //            QueryContainer q12 = new TermQuery { Field = "qClearId3", Value = Convert.ToString(_objMatchDetail.ClearId).Replace("-", string.Empty).ToLower() };
+            //            QueryContainer q13 = new TermQuery { Field = "qClearId4", Value = _objMatchDetail.ClearId.Replace("-", string.Empty).ToLower() };
+            //            QueryContainer q14 = new TermQuery { Field = "qClearId5", Value = _objMatchDetail.ClearId.Replace("-", string.Empty).ToLower() };
+            //            QueryContainer q15 = new TermQuery { Field = "qClearId6", Value = _objMatchDetail.ClearId.Replace("-", string.Empty).ToLower() };
+            //            queryShould |= q10 |= q11 |= q12 |= q13 |= q14 |= q15;
+            //            _objNestedQuery &= queryShould;
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.MatchStageId))
+            //        {
 
-        //            var myQuery = new BoolQuery();
-        //            string Dlist = Convert.ToString(_objMatchDetail.MatchStageId);
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q16 = new TermQuery { Field = "matchStageId", Value = str };
-        //                queryShould |= q16;
-
-        //            }
-        //            _objNestedQuery &= queryShould;
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.CompTypeId))
-        //        {
-        //            var myQuery = new BoolQuery();
-        //            string Dlist = Convert.ToString(_objMatchDetail.CompTypeId);
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q17 = new TermQuery { Field = "CompTypeId", Value = str };
-        //                queryShould |= q17;
-        //            }
-        //            _objNestedQuery &= queryShould;
-
-        //        }
-
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.GameTypeId))
-        //        {
-        //            var myQuery = new BoolQuery();
-        //            string Dlist = Convert.ToString(_objMatchDetail.GameTypeId);
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q23 = new TermQuery { Field = "gameTypeId", Value = str };
-        //                queryShould |= q23;
-        //            }
-        //           // _objNestedQuery &= queryShould;
-
-        //        }
-
-
-
-        //        if (_objMatchDetail.HasShortClip)
-        //        {
-        //            QueryContainer q21 = new TermQuery { Field = "hasShortClip", Value = "1" };
-        //            _objNestedQuery &= q21;
-        //        }
-
-        //        if (!_objMatchDetail.IsAssetSearch)
-        //        {
-        //            QueryContainer q20 = new TermQuery { Field = "isTagged", Value = "1" };
-        //            _objNestedQuery &= q20;
-
-
-        //        }
-
-        //        //if (!string.IsNullOrEmpty(_objMatchDetail.LanguageId) && _objMatchDetail.LanguageId != "0")
-        //        //{
-        //        //    QueryContainer q19 = new TermQuery { Field = "languageId", Value = _objMatchDetail.LanguageId };
-        //        //    _objNestedQuery &= q19;
-
-        //        //}
-
-
-        //        if (!string.IsNullOrEmpty(_objMatchDetail.LanguageId) && _objMatchDetail.LanguageId != "0" && _objMatchDetail.IsAsset)
-        //        {
-        //            string[] Id = _objMatchDetail.LanguageId.Split(',');
-
-        //            foreach (string str in Id)
-        //            {
-
-        //                QueryContainer q19 = new TermQuery { Field = "languageId", Value = str };
-        //                queryShould |= q19;
-        //            }
-        //            //_objNestedQuery.Add(bq, Occur.MUST);
-        //        }
-
-
-
-
-        //        string input = Convert.ToInt32(Convert.ToBoolean(_objMatchDetail.IsAsset)).ToString();
-        //        QueryContainer q18 = new TermQuery { Field = "isAsset", Value = input };
-        //        _objNestedQuery &= q18;
-        //        _objNestedQuery &= queryShould;
-
-        //    }
-
-        //    return _objNestedQuery;
-        //}
-        //private QueryContainer GetCricketPlayerDetailQueryS2(PlayerDetail _objPlayerDetail, QueryContainer _objNestedQuery, bool isMasterData = false)
-        //{
-        //    QueryContainer qShould = new QueryContainer();
-        //    if (_objPlayerDetail != null)
-        //    {
-
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.BatsmanID))
-        //        {
-        //            QueryContainer q1 = new TermQuery { Field = "batsmanId", Value = _objPlayerDetail.BatsmanID };
-        //            _objNestedQuery &= q1;
-        //            //_objNestedQuery.Add(query, Occur.MUST);
-        //        }
-        //        if (_objPlayerDetail.BatsmanFours || _objPlayerDetail.BatsmanSixes || _objPlayerDetail.BatsmanDots || _objPlayerDetail.BatsmanEdged || _objPlayerDetail.BastsmanBeaten || _objPlayerDetail.BatsmanDismissal || _objPlayerDetail.BatsmanAppeal)
-        //        {
-
-        //            if (_objPlayerDetail.BatsmanFours)
-        //            {
-        //                QueryContainer q2 = new TermQuery { Field = "isFour", Value = 1 };
-        //                qShould |= q2;
-
-        //            }
-        //            if (_objPlayerDetail.BatsmanSixes)
-        //            {
-        //                QueryContainer q3 = new TermQuery { Field = "isSix", Value = 1 };
-        //                qShould |= q3;
-        //            }
-        //            if (_objPlayerDetail.BatsmanDots)
-        //            {
-
-        //                QueryContainer q4 = new TermQuery { Field = "isDot", Value = 1 };
-        //                qShould |= q4;
-        //            }
-        //            if (_objPlayerDetail.BatsmanEdged)
-        //            {
-
-
-        //                QueryContainer q5 = new TermQuery { Field = "isEdged", Value = 1 };
-        //                qShould |= q5;
-        //            }
-        //            if (_objPlayerDetail.BastsmanBeaten)
-        //            {
-
-        //                QueryContainer q6 = new TermQuery { Field = "isBeaten", Value = 1 };
-        //                qShould |= q6;
-
-        //            }
-        //            if (_objPlayerDetail.BatsmanDismissal)
-        //            {
-        //                QueryContainer q7 = new TermQuery { Field = "isWicket", Value = 1 };
-        //                qShould |= q7;
-        //            }
-        //            if (_objPlayerDetail.BatsmanAppeal)
-        //            {
-        //                QueryContainer q8 = new TermQuery { Field = "isAppeal", Value = 1 };
-        //                qShould |= q8;
-
-        //            }
-        //            //_objNestedQuery.Add(Bq, Occur.MUST);
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.ShotType) && !isMasterData)
-        //        {
-
-        //            string Dlist = _objPlayerDetail.ShotType;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-
-        //                QueryContainer q9 = new TermQuery { Field = "shotTypeId", Value = str };
-        //                qShould |= q9;
-        //            }
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.ShotZone) && !isMasterData)
-        //        {
-        //            //BooleanQuery bq = new BooleanQuery();
-        //            string Dlist = _objPlayerDetail.ShotZone;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q10 = new TermQuery { Field = "shotZoneId", Value = str };
-        //                qShould |= q10;
-        //            }
-        //            //_objNestedQuery.Add(bq, Occur.MUST);
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.DismissalType) && !isMasterData)
-        //        {
-
-        //            string Dlist = _objPlayerDetail.DismissalType;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-
-        //                QueryContainer q11 = new TermQuery { Field = "dismissalId", Value = str };
-        //                qShould |= q11;
-        //            }
-
-        //        }
-        //        if (_objPlayerDetail.FielderStumping)
-        //        {
-
-        //            QueryContainer q12 = new TermQuery { Field = "dismissalId", Value = "st" };
-        //            _objNestedQuery &= q12;
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.BowlerID))
-        //        {
-
-
-        //            QueryContainer q13 = new TermQuery { Field = "bowlerId", Value = _objPlayerDetail.BowlerID };
-        //            _objNestedQuery &= q13;
-        //        }
-        //        if (_objPlayerDetail.BowlerWides || _objPlayerDetail.BowlerNoBalls || _objPlayerDetail.BowlerBeaten || _objPlayerDetail.BowlerDots || _objPlayerDetail.BowlerEdged || _objPlayerDetail.BowlerDismissal || _objPlayerDetail.BowlerAppeal)
-        //        {
-        //            ;
-        //            if (_objPlayerDetail.BowlerWides)
-        //            {
-
-
-        //                QueryContainer q14 = new TermQuery { Field = "isWide", Value = "1" };
-        //                qShould |= q14;
-        //            }
-        //            if (_objPlayerDetail.BowlerNoBalls)
-        //            {
-
-        //                QueryContainer q15 = new TermQuery { Field = "isNoBall", Value = "1" };
-        //                qShould |= q15;
-        //            }
-        //            if (_objPlayerDetail.BowlerDots)
-        //            {
-
-        //                QueryContainer q16 = new TermQuery { Field = "isDot", Value = "1" };
-        //                qShould |= q16;
-        //            }
-        //            if (_objPlayerDetail.BowlerEdged)
-        //            {
-        //                QueryContainer q17 = new TermQuery { Field = "isEdged", Value = "1" };
-        //                qShould |= q17;
-        //            }
-        //            if (_objPlayerDetail.BowlerBeaten)
-        //            {
-        //                QueryContainer q18 = new TermQuery { Field = "isBeaten", Value = "1" };
-        //                qShould |= q18;
-        //            }
-        //            if (_objPlayerDetail.BowlerDismissal)
-        //            {
-
-        //                QueryContainer q19 = new TermQuery { Field = "isWicket", Value = "1" };
-        //                qShould |= q19;
-
-        //            }
-        //            if (_objPlayerDetail.BowlerAppeal)
-        //            {
-        //                QueryContainer q20 = new TermQuery { Field = "isAppeal", Value = "1" };
-        //                qShould |= q20;
-        //            }
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.DeliveryType) && !isMasterData)
-        //        {
-
-        //            string Dlist = _objPlayerDetail.DeliveryType;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q21 = new TermQuery { Field = "deliveryTypeId", Value = str };
-        //                qShould |= q21;
-        //            }
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.BowlingLength) && !isMasterData)
-        //        {
-
-        //            string Dlist = _objPlayerDetail.BowlingLength;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q22 = new TermQuery { Field = "bowlingLengthId", Value = str };
-        //                qShould |= q22;
-        //            }
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.BowlingLine) && !isMasterData)
-        //        {
-
-        //            string Dlist = _objPlayerDetail.BowlingLine;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q23 = new TermQuery { Field = "bowlingLineId", Value = str };
-        //                qShould |= q23;
-        //            }
-
-        //        }
-        //        if (_objPlayerDetail.BowlingOver || _objPlayerDetail.BowlingRound)
-        //        {
-        //            if (_objPlayerDetail.BowlingOver)
-        //            {
-
-        //                QueryContainer q24 = new TermQuery { Field = "isOverTheWicket", Value = "1" };
-        //                qShould |= q24;
-        //            }
-        //            if (_objPlayerDetail.BowlingRound)
-        //            {
-        //                QueryContainer q25 = new TermQuery { Field = "isRoundTheWicket", Value = "1" };
-        //                qShould |= q25;
-
-        //            }
-
-        //        }
-        //        if (_objPlayerDetail.BowlerSpin || _objPlayerDetail.BowlerPace)
-        //        {
-
-        //            if (_objPlayerDetail.BowlerSpin)
-        //            {
-        //                QueryContainer q26 = new TermQuery { Field = "skill", Value = "s" };
-        //                qShould |= q26;
-
-        //             }
-
-        //            if (_objPlayerDetail.BowlerPace)
-        //            {
-
-
-        //                QueryContainer q27 = new TermQuery { Field = "skill", Value = "p" };
-        //                qShould |= q27;
-        //            }
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.FielderID))
-        //        {
-
-
-        //            QueryContainer q27 = new TermQuery { Field = "fielderId", Value = _objPlayerDetail.FielderID };
-        //            _objNestedQuery &= q27;
-        //        }
-        //        if (_objPlayerDetail.FielderCatch || _objPlayerDetail.FielderRunOut || _objPlayerDetail.FielderDrops || _objPlayerDetail.FielderMisFields)
-        //        {
-
-        //            if (_objPlayerDetail.FielderCatch)
-        //            {
-
-        //                QueryContainer q28 = new TermQuery { Field = "isCatch", Value = "1" };
-        //                qShould |= q28;
-        //            }
-        //            if (_objPlayerDetail.FielderRunOut)
-        //            {
-
-        //                QueryContainer q29 = new TermQuery { Field = "isRunOut", Value = "1" };
-        //                qShould |= q29;
-        //            }
-        //            if (_objPlayerDetail.FielderDrops)
-        //            {
-        //                QueryContainer q30 = new TermQuery { Field = "isDropped", Value = "1" };
-        //                qShould |= q30;
-        //            }
-        //            if (_objPlayerDetail.FielderMisFields)
-        //            {
-
-        //                QueryContainer q31 = new TermQuery { Field = "isMisField", Value = "1" };
-        //                qShould |= q31;
-        //            }
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.FieldingPosition) && !isMasterData)
-        //        {
-
-        //            string Dlist = _objPlayerDetail.FieldingPosition;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                 QueryContainer q32 = new TermQuery { Field = "fielderPositionId", Value = str };
-        //                qShould |= q32;
-        //            }
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.RunsSaved) && _objPlayerDetail.RunsSaved != "0")
-        //        {
-        //            QueryContainer q33 = new TermQuery { Field = "runsSaved", Value = Convert.ToString(_objPlayerDetail.RunsSaved) };
-        //            _objNestedQuery &= q33;
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.BattingOrder) && !isMasterData)
-        //        {
-        //            string Dlist = _objPlayerDetail.BattingOrder;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q34 = new TermQuery { Field = "battingOrder", Value = str };
-        //                qShould |= q34;
-        //            }
-
-        //        }
-        //        if (!string.IsNullOrEmpty(_objPlayerDetail.BowlingArm) && !isMasterData)
-        //        {
-        //            string Dlist = _objPlayerDetail.BowlingArm;
-        //            string[] strnumbers = Dlist.Split(',');
-        //            foreach (string str in strnumbers)
-        //            {
-        //                QueryContainer q35 = new TermQuery { Field = "bowlingArm", Value = str.ToLower() };
-        //                qShould |= q35;
-        //            }
-
-        //        }
-        //    }
-        //    _objNestedQuery &= qShould;
-        //    return _objNestedQuery;
-        //}
-
-        public ExtendedSearchResultFilterData searchStoryTeller(ELModels.MatchDetail _objMatchDetail, QueryContainer _objNestedQuery, dynamic _objS1Data, Dictionary<string, object> ObjectArray, IEnumerable<SearchResultFilterData> obj, string value, string IndexName)
+            //            var myQuery = new BoolQuery();
+            //            string Dlist = Convert.ToString(_objMatchDetail.MatchStageId);
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q16 = new TermQuery { Field = "matchStageId", Value = str };
+            //                queryShould |= q16;
+
+            //            }
+            //            _objNestedQuery &= queryShould;
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.CompTypeId))
+            //        {
+            //            var myQuery = new BoolQuery();
+            //            string Dlist = Convert.ToString(_objMatchDetail.CompTypeId);
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q17 = new TermQuery { Field = "CompTypeId", Value = str };
+            //                queryShould |= q17;
+            //            }
+            //            _objNestedQuery &= queryShould;
+
+            //        }
+
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.GameTypeId))
+            //        {
+            //            var myQuery = new BoolQuery();
+            //            string Dlist = Convert.ToString(_objMatchDetail.GameTypeId);
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q23 = new TermQuery { Field = "gameTypeId", Value = str };
+            //                queryShould |= q23;
+            //            }
+            //           // _objNestedQuery &= queryShould;
+
+            //        }
+
+
+
+            //        if (_objMatchDetail.HasShortClip)
+            //        {
+            //            QueryContainer q21 = new TermQuery { Field = "hasShortClip", Value = "1" };
+            //            _objNestedQuery &= q21;
+            //        }
+
+            //        if (!_objMatchDetail.IsAssetSearch)
+            //        {
+            //            QueryContainer q20 = new TermQuery { Field = "isTagged", Value = "1" };
+            //            _objNestedQuery &= q20;
+
+
+            //        }
+
+            //        //if (!string.IsNullOrEmpty(_objMatchDetail.LanguageId) && _objMatchDetail.LanguageId != "0")
+            //        //{
+            //        //    QueryContainer q19 = new TermQuery { Field = "languageId", Value = _objMatchDetail.LanguageId };
+            //        //    _objNestedQuery &= q19;
+
+            //        //}
+
+
+            //        if (!string.IsNullOrEmpty(_objMatchDetail.LanguageId) && _objMatchDetail.LanguageId != "0" && _objMatchDetail.IsAsset)
+            //        {
+            //            string[] Id = _objMatchDetail.LanguageId.Split(',');
+
+            //            foreach (string str in Id)
+            //            {
+
+            //                QueryContainer q19 = new TermQuery { Field = "languageId", Value = str };
+            //                queryShould |= q19;
+            //            }
+            //            //_objNestedQuery.Add(bq, Occur.MUST);
+            //        }
+
+
+
+
+            //        string input = Convert.ToInt32(Convert.ToBoolean(_objMatchDetail.IsAsset)).ToString();
+            //        QueryContainer q18 = new TermQuery { Field = "isAsset", Value = input };
+            //        _objNestedQuery &= q18;
+            //        _objNestedQuery &= queryShould;
+
+            //    }
+
+            //    return _objNestedQuery;
+            //}
+            //private QueryContainer GetCricketPlayerDetailQueryS2(PlayerDetail _objPlayerDetail, QueryContainer _objNestedQuery, bool isMasterData = false)
+            //{
+            //    QueryContainer qShould = new QueryContainer();
+            //    if (_objPlayerDetail != null)
+            //    {
+
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.BatsmanID))
+            //        {
+            //            QueryContainer q1 = new TermQuery { Field = "batsmanId", Value = _objPlayerDetail.BatsmanID };
+            //            _objNestedQuery &= q1;
+            //            //_objNestedQuery.Add(query, Occur.MUST);
+            //        }
+            //        if (_objPlayerDetail.BatsmanFours || _objPlayerDetail.BatsmanSixes || _objPlayerDetail.BatsmanDots || _objPlayerDetail.BatsmanEdged || _objPlayerDetail.BastsmanBeaten || _objPlayerDetail.BatsmanDismissal || _objPlayerDetail.BatsmanAppeal)
+            //        {
+
+            //            if (_objPlayerDetail.BatsmanFours)
+            //            {
+            //                QueryContainer q2 = new TermQuery { Field = "isFour", Value = 1 };
+            //                qShould |= q2;
+
+            //            }
+            //            if (_objPlayerDetail.BatsmanSixes)
+            //            {
+            //                QueryContainer q3 = new TermQuery { Field = "isSix", Value = 1 };
+            //                qShould |= q3;
+            //            }
+            //            if (_objPlayerDetail.BatsmanDots)
+            //            {
+
+            //                QueryContainer q4 = new TermQuery { Field = "isDot", Value = 1 };
+            //                qShould |= q4;
+            //            }
+            //            if (_objPlayerDetail.BatsmanEdged)
+            //            {
+
+
+            //                QueryContainer q5 = new TermQuery { Field = "isEdged", Value = 1 };
+            //                qShould |= q5;
+            //            }
+            //            if (_objPlayerDetail.BastsmanBeaten)
+            //            {
+
+            //                QueryContainer q6 = new TermQuery { Field = "isBeaten", Value = 1 };
+            //                qShould |= q6;
+
+            //            }
+            //            if (_objPlayerDetail.BatsmanDismissal)
+            //            {
+            //                QueryContainer q7 = new TermQuery { Field = "isWicket", Value = 1 };
+            //                qShould |= q7;
+            //            }
+            //            if (_objPlayerDetail.BatsmanAppeal)
+            //            {
+            //                QueryContainer q8 = new TermQuery { Field = "isAppeal", Value = 1 };
+            //                qShould |= q8;
+
+            //            }
+            //            //_objNestedQuery.Add(Bq, Occur.MUST);
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.ShotType) && !isMasterData)
+            //        {
+
+            //            string Dlist = _objPlayerDetail.ShotType;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+
+            //                QueryContainer q9 = new TermQuery { Field = "shotTypeId", Value = str };
+            //                qShould |= q9;
+            //            }
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.ShotZone) && !isMasterData)
+            //        {
+            //            //BooleanQuery bq = new BooleanQuery();
+            //            string Dlist = _objPlayerDetail.ShotZone;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q10 = new TermQuery { Field = "shotZoneId", Value = str };
+            //                qShould |= q10;
+            //            }
+            //            //_objNestedQuery.Add(bq, Occur.MUST);
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.DismissalType) && !isMasterData)
+            //        {
+
+            //            string Dlist = _objPlayerDetail.DismissalType;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+
+            //                QueryContainer q11 = new TermQuery { Field = "dismissalId", Value = str };
+            //                qShould |= q11;
+            //            }
+
+            //        }
+            //        if (_objPlayerDetail.FielderStumping)
+            //        {
+
+            //            QueryContainer q12 = new TermQuery { Field = "dismissalId", Value = "st" };
+            //            _objNestedQuery &= q12;
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.BowlerID))
+            //        {
+
+
+            //            QueryContainer q13 = new TermQuery { Field = "bowlerId", Value = _objPlayerDetail.BowlerID };
+            //            _objNestedQuery &= q13;
+            //        }
+            //        if (_objPlayerDetail.BowlerWides || _objPlayerDetail.BowlerNoBalls || _objPlayerDetail.BowlerBeaten || _objPlayerDetail.BowlerDots || _objPlayerDetail.BowlerEdged || _objPlayerDetail.BowlerDismissal || _objPlayerDetail.BowlerAppeal)
+            //        {
+            //            ;
+            //            if (_objPlayerDetail.BowlerWides)
+            //            {
+
+
+            //                QueryContainer q14 = new TermQuery { Field = "isWide", Value = "1" };
+            //                qShould |= q14;
+            //            }
+            //            if (_objPlayerDetail.BowlerNoBalls)
+            //            {
+
+            //                QueryContainer q15 = new TermQuery { Field = "isNoBall", Value = "1" };
+            //                qShould |= q15;
+            //            }
+            //            if (_objPlayerDetail.BowlerDots)
+            //            {
+
+            //                QueryContainer q16 = new TermQuery { Field = "isDot", Value = "1" };
+            //                qShould |= q16;
+            //            }
+            //            if (_objPlayerDetail.BowlerEdged)
+            //            {
+            //                QueryContainer q17 = new TermQuery { Field = "isEdged", Value = "1" };
+            //                qShould |= q17;
+            //            }
+            //            if (_objPlayerDetail.BowlerBeaten)
+            //            {
+            //                QueryContainer q18 = new TermQuery { Field = "isBeaten", Value = "1" };
+            //                qShould |= q18;
+            //            }
+            //            if (_objPlayerDetail.BowlerDismissal)
+            //            {
+
+            //                QueryContainer q19 = new TermQuery { Field = "isWicket", Value = "1" };
+            //                qShould |= q19;
+
+            //            }
+            //            if (_objPlayerDetail.BowlerAppeal)
+            //            {
+            //                QueryContainer q20 = new TermQuery { Field = "isAppeal", Value = "1" };
+            //                qShould |= q20;
+            //            }
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.DeliveryType) && !isMasterData)
+            //        {
+
+            //            string Dlist = _objPlayerDetail.DeliveryType;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q21 = new TermQuery { Field = "deliveryTypeId", Value = str };
+            //                qShould |= q21;
+            //            }
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.BowlingLength) && !isMasterData)
+            //        {
+
+            //            string Dlist = _objPlayerDetail.BowlingLength;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q22 = new TermQuery { Field = "bowlingLengthId", Value = str };
+            //                qShould |= q22;
+            //            }
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.BowlingLine) && !isMasterData)
+            //        {
+
+            //            string Dlist = _objPlayerDetail.BowlingLine;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q23 = new TermQuery { Field = "bowlingLineId", Value = str };
+            //                qShould |= q23;
+            //            }
+
+            //        }
+            //        if (_objPlayerDetail.BowlingOver || _objPlayerDetail.BowlingRound)
+            //        {
+            //            if (_objPlayerDetail.BowlingOver)
+            //            {
+
+            //                QueryContainer q24 = new TermQuery { Field = "isOverTheWicket", Value = "1" };
+            //                qShould |= q24;
+            //            }
+            //            if (_objPlayerDetail.BowlingRound)
+            //            {
+            //                QueryContainer q25 = new TermQuery { Field = "isRoundTheWicket", Value = "1" };
+            //                qShould |= q25;
+
+            //            }
+
+            //        }
+            //        if (_objPlayerDetail.BowlerSpin || _objPlayerDetail.BowlerPace)
+            //        {
+
+            //            if (_objPlayerDetail.BowlerSpin)
+            //            {
+            //                QueryContainer q26 = new TermQuery { Field = "skill", Value = "s" };
+            //                qShould |= q26;
+
+            //             }
+
+            //            if (_objPlayerDetail.BowlerPace)
+            //            {
+
+
+            //                QueryContainer q27 = new TermQuery { Field = "skill", Value = "p" };
+            //                qShould |= q27;
+            //            }
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.FielderID))
+            //        {
+
+
+            //            QueryContainer q27 = new TermQuery { Field = "fielderId", Value = _objPlayerDetail.FielderID };
+            //            _objNestedQuery &= q27;
+            //        }
+            //        if (_objPlayerDetail.FielderCatch || _objPlayerDetail.FielderRunOut || _objPlayerDetail.FielderDrops || _objPlayerDetail.FielderMisFields)
+            //        {
+
+            //            if (_objPlayerDetail.FielderCatch)
+            //            {
+
+            //                QueryContainer q28 = new TermQuery { Field = "isCatch", Value = "1" };
+            //                qShould |= q28;
+            //            }
+            //            if (_objPlayerDetail.FielderRunOut)
+            //            {
+
+            //                QueryContainer q29 = new TermQuery { Field = "isRunOut", Value = "1" };
+            //                qShould |= q29;
+            //            }
+            //            if (_objPlayerDetail.FielderDrops)
+            //            {
+            //                QueryContainer q30 = new TermQuery { Field = "isDropped", Value = "1" };
+            //                qShould |= q30;
+            //            }
+            //            if (_objPlayerDetail.FielderMisFields)
+            //            {
+
+            //                QueryContainer q31 = new TermQuery { Field = "isMisField", Value = "1" };
+            //                qShould |= q31;
+            //            }
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.FieldingPosition) && !isMasterData)
+            //        {
+
+            //            string Dlist = _objPlayerDetail.FieldingPosition;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                 QueryContainer q32 = new TermQuery { Field = "fielderPositionId", Value = str };
+            //                qShould |= q32;
+            //            }
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.RunsSaved) && _objPlayerDetail.RunsSaved != "0")
+            //        {
+            //            QueryContainer q33 = new TermQuery { Field = "runsSaved", Value = Convert.ToString(_objPlayerDetail.RunsSaved) };
+            //            _objNestedQuery &= q33;
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.BattingOrder) && !isMasterData)
+            //        {
+            //            string Dlist = _objPlayerDetail.BattingOrder;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q34 = new TermQuery { Field = "battingOrder", Value = str };
+            //                qShould |= q34;
+            //            }
+
+            //        }
+            //        if (!string.IsNullOrEmpty(_objPlayerDetail.BowlingArm) && !isMasterData)
+            //        {
+            //            string Dlist = _objPlayerDetail.BowlingArm;
+            //            string[] strnumbers = Dlist.Split(',');
+            //            foreach (string str in strnumbers)
+            //            {
+            //                QueryContainer q35 = new TermQuery { Field = "bowlingArm", Value = str.ToLower() };
+            //                qShould |= q35;
+            //            }
+
+            //        }
+            //    }
+            //    _objNestedQuery &= qShould;
+            //    return _objNestedQuery;
+            //}
+
+            public ExtendedSearchResultFilterData searchStoryTeller(ELModels.MatchDetail _objMatchDetail, QueryContainer _objNestedQuery, dynamic _objS1Data, Dictionary<string, object> ObjectArray, IEnumerable<SearchResultFilterData> obj, string value, string IndexName)
         {
             ExtendedSearchResultFilterData _objSearchResults = new ExtendedSearchResultFilterData();
             try
