@@ -7,6 +7,7 @@ using Nest;
 using WebApis.DAL;
 using WebApis.elastic;
 using WebApis.Model;
+using static WebApis.Model.ELModels;
 
 namespace WebApis.Controllers
 {
@@ -38,7 +39,7 @@ namespace WebApis.Controllers
                     obj2 = objCricket.getCricketData(connection, true, i, 10000);
                     if (obj2.Count > 0)
                     {
-                        _oLayer.BulkInsert<SearchCricketData>(EsClient_obj, obj2, "cricket");
+                        _oLayer.BulkInsert<SearchCricketData>(EsClient_obj, obj2, "cricketkeytags");
                     }
 
                 }
@@ -165,6 +166,43 @@ namespace WebApis.Controllers
                         obj3.RemoveRange(1, 20000);
                     }
                 }
+                return Ok(new { Result = obj2 });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message.ToString());
+            }
+        }
+
+
+
+        [System.Web.Http.HttpPost]
+        [Route("api/KeyTagsforFTS")]
+        public IActionResult GetAllKeyTagsforFTS()
+        {
+            EsClient_obj = _oLayer.CreateConnection();
+            List<KTData> obj2 = new List<KTData>();
+           
+            string connection = _con.GetKeyValueAppSetting("ConnectionStrings", "DefaultConnection");
+            Dictionary<string, object> column = new Dictionary<string, object>();
+            obj2 = objCricket.GetAllKeyTagsforFTS(connection, 1, true);
+           
+            try
+            {
+                _oLayer.BulkInsert<KTData>(EsClient_obj, obj2, "keytags");
+                //for (int i = 1; i <= 45; i++)
+                //{
+                //    obj3 = obj3.Take(20000).ToList();
+                //    if (obj3.Count > 0)
+                //    {
+                //        _oLayer.BulkInsert<SearchS2Data>(EsClient_obj, obj3, "kabaddis2data");
+                //    }
+                //    if (obj3.Count > 20000)
+                //    {
+                //        obj3.RemoveRange(1, 20000);
+                //    }
+                //}
                 return Ok(new { Result = obj2 });
             }
             catch (Exception ex)

@@ -130,6 +130,7 @@ namespace WebApis.Model
         public string BowlingArm { get; set; }
         public CompletionField CF_Batsman { get; set; }
         public CompletionField CF_Bowler { get; set; }
+        public CompletionField KeyTags { get; set; }
         public string batsmanddl { get; set; }
         public string bowlerddl { get; set; }
 

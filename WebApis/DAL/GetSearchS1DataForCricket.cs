@@ -181,7 +181,10 @@ namespace WebApis.Model
                         };
                         _objSearchData.batsmanddl = Convert.ToString(rowitem["batsman"]) + "|" + Convert.ToString(rowitem["batsman_id"]);
                         _objSearchData.bowlerddl = Convert.ToString(rowitem["bowler"]) + "|" + Convert.ToString(rowitem["bowler_id"]);
-
+                        _objSearchData.KeyTags = new CompletionField
+                        {
+                            Input = new[] { Convert.ToString(rowitem["batsman"]) , Convert.ToString(rowitem["bowler"]) , Convert.ToString(rowitem["Bowling_arm"]),  Convert.ToString(rowitem["venue_name"]), Convert.ToString(rowitem["series_name"]), Convert.ToString(rowitem["team1"]), Convert.ToString(rowitem["team2"]), Convert.ToString(rowitem["fielder"]), Convert.ToString(rowitem["shot_type"]), Convert.ToString(rowitem["zone_name"]), Convert.ToString(rowitem["DeliveryTypeName"]), Convert.ToString(rowitem["dismissal"]), Convert.ToString(rowitem["pitching_line"]), Convert.ToString(rowitem["pitching_length"]), Convert.ToString(rowitem["title"]), Convert.ToString(rowitem["description"]), Convert.ToString(rowitem["parent_series_name"]), }
+                        };
                         _objLstData.Add(_objSearchData);
                         _objSearchData = null;
                     }
@@ -299,6 +302,42 @@ namespace WebApis.Model
                 response = ex.ToString();
             }
             return response;
+        }
+
+        public List<KTData> GetAllKeyTagsforFTS(string DBConnectionString,int SportId, bool isFullDownload = true) {
+
+            int FullDownloadFlag = isFullDownload ? 1 : 0;
+            List<KTData> _objLstData = new List<KTData>();
+            try
+            {
+                
+                DataSet _objDsSearch = new DataSet();
+                _objDsSearch = DBTask.ExecuteDataset(DBConnectionString, "dh_lucene_fts_getkeytags", SportId);
+                if (_objDsSearch.Tables != null && _objDsSearch.Tables.Count > 0)
+                {
+                    foreach (DataRow rowitem in _objDsSearch.Tables[0].Rows)
+                    {
+                        KTData _objSearchData = new KTData();
+                        _objSearchData.Id = Convert.ToInt64(rowitem["key_tag_id"]);
+                        _objSearchData.KeyTags = Convert.ToString(rowitem["keywords"]);
+                        _objSearchData.LookUpFields = Convert.ToString(rowitem["lookup_field"]);
+                        _objSearchData.DataType = Convert.ToString(rowitem["data_type"]);
+                        _objSearchData.SearchPosition = Convert.ToString(rowitem["keyword_search_position"]);
+                        _objSearchData.IsPhrase = Convert.ToString(rowitem["is_phrase"]) != string.Empty ? Convert.ToBoolean(rowitem["is_phrase"]) : false;
+                        _objSearchData.SportId = Convert.ToString(rowitem["sport_id"]);
+                        _objSearchData.GlobalId = Convert.ToString(rowitem["global_id"]);
+                        _objSearchData.SkillId = Convert.ToString(rowitem["individual_skill_id"]);
+                        _objSearchData.SType = Convert.ToString(rowitem["s_type"]);
+                        _objLstData.Add(_objSearchData);
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+               
+            }
+            return _objLstData;
         }
 
 

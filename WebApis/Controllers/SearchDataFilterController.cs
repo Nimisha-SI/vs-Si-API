@@ -303,7 +303,7 @@ namespace WebApis.Controllers
             try
             {
                 if (!string.IsNullOrEmpty(term)) {
-
+                    result = _sObj.GetAutoCompleteData(sportid, stype,term);
                 }
             }
             catch (Exception ex)
@@ -373,22 +373,22 @@ namespace WebApis.Controllers
         }
 
 
-        [System.Web.Http.HttpPost]
-        [Route("api/GetAutoCompleteData")]
-        public IActionResult GetAutoCompleteData(string sportid, string stype, string term = "")
-        {
-            string result = string.Empty;
-            try
-            {
+        //[System.Web.Http.HttpPost]
+        //[Route("api/GetAutoCompleteData")]
+        //public IActionResult GetAutoCompleteData(string sportid, string stype, string term = "")
+        //{
+        //    string result = string.Empty;
+        //    try
+        //    {
               
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message.ToString());
-            }
-            return Ok(new { Response = result });
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message.ToString());
+        //    }
+        //    return Ok(new { Response = result });
+        //}
 
         [System.Web.Http.HttpPost]
         [Route("api/AddUpdateLuceneForSearch")]

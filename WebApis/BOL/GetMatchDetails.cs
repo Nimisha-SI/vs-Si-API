@@ -1441,13 +1441,24 @@ namespace WebApis.BOL
             try
             {
                 _objSqModel = new SearchQueryModel();
-                _objSqModel.FieldName = "KeyTags";
+                _objSqModel.FieldName = "keyTags";
                 _objSqModel.FieldType = ElasticQueryType.FieldType_Text;
                 _objSqModel.SearchText = term;
                 _objSqModel.Operator = ElasticQueryType.Field_Operator_AND;
                 _objLstSearchQuery.Add(_objSqModel);
                 _objKTdata = GetSelectedFTData(_objLstSearchQuery, Convert.ToInt32(sportid), 1, true);
                 _objResultFTData.FilterData = _objLstSkill;
+                var Title = _objKTdata.Where(r => r.KeyTags != "").Select(r => new { Title = r.KeyTags, Text = r.Id + "-" + r.GlobalId + "-" + r.LookUpFields + "-" + r.DataType + "-" + r.SkillId + "-" + r.SearchPosition + "-" + r.SType + "-" + r.IsPhrase }).Distinct().ToList();
+                foreach (var ss in Title)
+                {
+                    FTData ft = new FTData();
+                    ft.Title = ss.Title;
+                    ft.Text = ss.Text;
+                    _objFTData.Add(ft);
+                }
+                _objResultFTData.ResultData = _objFTData.Select(x => new FTData { Text = x.Text, Title = x.Title }).Distinct().ToList();
+                string jsonData = JsonConvert.SerializeObject(_objResultFTData);
+                response = jsonData;
             }
             catch (Exception ex) {
                 response = ex.Message.ToString();
@@ -1470,16 +1481,18 @@ namespace WebApis.BOL
                     {
                         QueryContainer query = new WildcardQuery { Field= objSearchQueryModel.FieldName, Value= objSearchQueryModel.SearchText.Trim() + "*" };
                         qc &= query;
+                        //_objktdata = FreeTextMapping(qc, _oLayer.CreateConnection(), "cricketkeytags", objSearchQueryModel.SearchText.Trim());
 
                     }
                     else if (objSearchQueryModel.FieldType == ElasticQueryType.FieldType_Number)
                     {
-                        QueryContainer query = new TermQuery { Field = objSearchQueryModel.FieldName, Value = objSearchQueryModel.SearchText.Trim()  };
+                        QueryContainer query = new TermQuery { Field = objSearchQueryModel.FieldName, Value = objSearchQueryModel.SearchText.Trim() };
 
                         if (objSearchQueryModel.Operator == ElasticQueryType.Field_Operator_AND)
                         {
                             qc &= query;
                         }
+                        //_objktdata = FreeTextMapping(qc, _oLayer.CreateConnection(), "cricketkeytags", objSearchQueryModel.SearchText.Trim());
                     }
 
                     else if (objSearchQueryModel.FieldType == ElasticQueryType.FieldType_TextMultiple)
@@ -1569,8 +1582,8 @@ namespace WebApis.BOL
                     }
                 }
 
-                _objktdata = FreeTextMapping(qc, _oLayer.CreateConnection(), "cricket");
-             }
+                _objktdata = FreeTextMapping(qc, _oLayer.CreateConnection(), "keytags");
+            }
             catch (Exception ex) {
 
             }
@@ -1578,12 +1591,30 @@ namespace WebApis.BOL
         }
         public List<KTData> FreeTextMapping(QueryContainer _objQuery, ElasticClient EsClient, string IndexName)
         {
-            int Count = Convert.ToInt32(objCF.getIndexCount(IndexName, EsClient, 1));
+           int Count = Convert.ToInt32(objCF.getIndexCount(IndexName, EsClient, 1));
             List<KTData> KTData = new List<KTData>();
-            var results2MasterData = EsClient.Search<KTData>(s => s.Index(IndexName).Query(q => _objQuery).Size(Count)
-           .Aggregations(a => a.Terms("agg_E1", st => st.Script(p => p.Source("doc['attribute_Id_Level1.keyword'].value + '|' + doc['attribute_Name_Level1.keyword'].value + '|' + doc['attribute_Id_Level2.keyword'].value + '|' + doc['attribute_Name_Level2.keyword'].value + '|' + doc['attribute_Id_Level3.keyword'].value + '|' + doc['attribute_Name_Level3.keyword'].value + '|' + doc['attribute_Id_Level4.keyword'].value + '|' + doc['attribute_Name_Level4.keyword'].value + '|' + doc['emotionId.keyword'].value  + '|' + doc['emotionName.keyword'].value"))
-           .Size(Count)))
+            var FreeTextResult = EsClient.Search<KTData>(s => s.Index(IndexName).Query(q => _objQuery).Size(Count)
+           //.Aggregations(a => a.Terms("agg_E1", st => st.Script(p => p.Source("doc['attribute_Id_Level1.keyword'].value + '|' + doc['attribute_Name_Level1.keyword'].value + '|' + doc['attribute_Id_Level2.keyword'].value + '|' + doc['attribute_Name_Level2.keyword'].value + '|' + doc['attribute_Id_Level3.keyword'].value + '|' + doc['attribute_Name_Level3.keyword'].value + '|' + doc['attribute_Id_Level4.keyword'].value + '|' + doc['attribute_Name_Level4.keyword'].value + '|' + doc['emotionId.keyword'].value  + '|' + doc['emotionName.keyword'].value"))
+           //.Size(Count))
+
            );
+            foreach (var items in FreeTextResult.Hits) {
+                KTData.Add(new KTData
+                {
+                    SportId = items.Source.SportId.ToString(),
+                    Id= items.Source.Id,
+                    KeyTags= items.Source.KeyTags.ToString(),
+                    LookUpFields = items.Source.LookUpFields.ToString(),
+                    DataType = items.Source.DataType.ToString(),
+                    SearchPosition = items.Source.SearchPosition.ToString(),
+                    IsPhrase = items.Source.IsPhrase,
+                    GlobalId = items.Source.GlobalId.ToString(),
+                    SkillId = items.Source.SkillId.ToString(),
+                    //identifier = items.Source.identifier.ToString(),
+                    SType = items.Source.SType.ToString(),
+                   
+                });
+            }
             return KTData;
         }
 
