@@ -527,5 +527,27 @@ namespace WebApis.Controllers
                 return BadRequest(ex.Message.ToString());
             }
         }
+
+
+        [System.Web.Http.HttpPost]
+        [Route("api/GetSearchResultForFreeText")]
+        public IActionResult SearchResultForFreeText(dynamic _objReqData)
+        {
+            try
+            {
+                string result = string.Empty;
+                if (_objReqData != null) {
+                    FTSRequestData _fTSRequestData = new FTSRequestData();
+                    string Jsonstring = JsonConvert.SerializeObject(_objReqData);
+                    _fTSRequestData = JsonConvert.DeserializeObject<FTSRequestData>(Jsonstring);
+                    result = _sObj.GetSearchResultForFreeText(_fTSRequestData);
+                }
+                return Ok(new { result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+        }
     }
 }

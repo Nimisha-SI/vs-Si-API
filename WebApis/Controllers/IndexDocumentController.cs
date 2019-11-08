@@ -191,18 +191,6 @@ namespace WebApis.Controllers
             try
             {
                 _oLayer.BulkInsert<KTData>(EsClient_obj, obj2, "keytags");
-                //for (int i = 1; i <= 45; i++)
-                //{
-                //    obj3 = obj3.Take(20000).ToList();
-                //    if (obj3.Count > 0)
-                //    {
-                //        _oLayer.BulkInsert<SearchS2Data>(EsClient_obj, obj3, "kabaddis2data");
-                //    }
-                //    if (obj3.Count > 20000)
-                //    {
-                //        obj3.RemoveRange(1, 20000);
-                //    }
-                //}
                 return Ok(new { Result = obj2 });
             }
             catch (Exception ex)

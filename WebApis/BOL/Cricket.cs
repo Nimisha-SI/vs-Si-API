@@ -15,6 +15,7 @@ namespace WebApis.BOL
    
     public class Cricket : AbstractClasses , IDdlForSpecificMatch, ICricket
     {
+        CommonFunction objCf = new CommonFunction();
         private ESInterface _oLayer;
       public Cricket(ESInterface oLayer) {
             _oLayer = oLayer;
@@ -556,5 +557,8 @@ namespace WebApis.BOL
         {
             throw new NotImplementedException();
         }
+        
+
+
     }
 }

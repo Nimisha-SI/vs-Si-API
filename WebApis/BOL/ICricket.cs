@@ -22,5 +22,6 @@ namespace WebApis.BOL
         QueryContainer GetEntityBySport(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, Dictionary<string, string> _columns, string searchtext);
         List<FilteredEntityForCricket> GetFilteredEntitiesBySportResult(QueryContainer qc, string EntityId, string EntityName, ElasticClient EsClient, string searchText, int sDate = 0, int Edate = 0);
        dynamic getFinalResult(QueryContainer _objNestedQuery, MatchDetail _objMatchDetail, ElasticClient EsClient, string sportid = "1");
+       
     }
 }

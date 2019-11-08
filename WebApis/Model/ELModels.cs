@@ -308,6 +308,61 @@ namespace WebApis.Model
             public string identifier { get; set; }
             public string SType { get; set; }
         }
+
+        public class FTSRequestData
+        {
+            public int MaxResultCount { get; set; }
+            public List<KTData> RequestDataList { get; set; }
+            public int SportId { get; set; }
+            public string SearchType { get; set; }
+        }
+        public class SearchCricketResultDataFreeText
+        {
+            public string Id { get; set; }
+            public string ClearId { get; set; }
+            public string MatchId { get; set; }
+            public string MatchDate { get; set; }
+            public string MarkIn { get; set; }
+            public string MarkOut { get; set; }
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public string Duration { get; set; }
+            public string IsAsset { get; set; }
+            public string Event { get; set; }
+            public string EventText { get; set; }
+            public string SType { get; set; }
+            public string BatsmanId { get; set; }
+            public string BowlerId { get; set; }
+            public string FielderId { get; set; }
+        }
+        public class FTSSearchResults
+        {
+            public List<FTSResultData> ResultData { get; set; }
+            public Dictionary<string, Int64> ResultCount { get; set; }
+        }
+        public class FTSResultData
+        {
+            public string Id { get; set; }
+            public string ClearId { get; set; }
+            public string MatchId { get; set; }
+            public int MatchDate { get; set; }
+            public string MarkIn { get; set; }
+            public string MarkOut { get; set; }
+            public string ShortMarkIn { get; set; }
+            public string ShortMarkOut { get; set; }
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public string Duration { get; set; }
+            public string IsAsset { get; set; }
+            public string EventId { get; set; }
+            public string EventText { get; set; }
+            public string SType { get; set; }
+        }
+        public class SearchCricketResults
+        {
+            public List<SearchCricketResultDataFreeText> ResultData { get; set; }
+            public Dictionary<string, Int64> ResultCount { get; set; }
+        }
         public class S2FilteredEntity
         {
             public string EntityName { get; set; }

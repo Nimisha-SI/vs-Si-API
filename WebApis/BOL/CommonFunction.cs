@@ -664,6 +664,15 @@ namespace WebApis.BOL
             return strConvert.ToString().Remove(strConvert.Length - 1, 1);
         }
 
+        public SearchQueryModel IsAssetForKeyTags(string fieldName) {
+            SearchQueryModel _objSqModel = new SearchQueryModel();
+            _objSqModel.FieldName = fieldName;
+            _objSqModel.FieldType = ElasticQueryType.FieldType_Number;
+            _objSqModel.SearchText = "1";
+            _objSqModel.Operator = ElasticQueryType.Field_Operator_AND;
+            return _objSqModel;
+        }
+
         //private static List<SearchResultFilterData> SearchResultFilterDataMap(Searcher searcher, TopDocs topDocs, MatchDetail _objMatchDetail)
         //{
         //    List<SearchResultFilterData> _ObjResult = new List<SearchResultFilterData>();

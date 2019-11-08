@@ -40,8 +40,7 @@ namespace WebApis.BOL
         string GetFilteredEntityBySportForS2(SearchS2RequestData _ObjreqData);
         bool AddUpdateForSearch(string RequestData, int sportId,bool isS2= false);
         string GetSearchResults(SearchRequestData _objReqData);
-        //string GetAutoCompleteData(string sportid, string stype, string term = "");
-        // bool AddUpdateLuceneIndexForS2(IEnumerable<SearchS2Data> sampleDatas, bool isFullIndex = true, int sportid = 1);
+        string GetSearchResultForFreeText(FTSRequestData _fTSRequestData);
 
 
 
